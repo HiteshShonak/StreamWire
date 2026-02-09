@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+
+# Private User Routes
+Disallow: /dashboard
+Disallow: /settings
+Disallow: /history
+Disallow: /saved
+Disallow: /upload
+Disallow: /customize
+Disallow: /change-password
+Disallow: /kill-switch
+Disallow: /build-feed
+
+# Sitemap Location
+Sitemap: https://streamwire.app/sitemap.xml
