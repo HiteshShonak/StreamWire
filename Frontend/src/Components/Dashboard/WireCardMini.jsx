@@ -1,0 +1,78 @@
+import React from 'react'
+import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
+import { Ghost, Heart, MessageSquare, Eye, EyeOff, Trash2 } from 'lucide-react'
+import { formatDistanceToNow } from 'date-fns'
+
+const WireCardMini = ({ wire, onToggleStealth, onDelete, isStealth }) => {
+    const navigate = useNavigate();
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`
+        p-4 rounded-xl border transition-all cursor-pointer group
+        ${isStealth || wire.isStealthMode
+                    ? 'bg-green-500/5 border-green-500/20 hover:border-green-500/40'
+                    : 'bg-zinc-900/50 border-zinc-800 hover:border-zinc-700'
+                }
+      `}
+            onClick={() => navigate(`/wire/${wire._id}`)}
+        >
+            <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-2">
+                        {wire.isStealthMode && (
+                            <span className="flex items-center gap-1 px-2 py-0.5 bg-green-500/20 rounded-full">
+                                <Ghost className="w-3 h-3 text-green-500" />
+                                <span className="text-[10px] font-bold text-green-400">STEALTH</span>
+                            </span>
+                        )}
+                        <span className="text-xs text-zinc-600">
+                            {formatDistanceToNow(new Date(wire.createdAt), { addSuffix: true })}
+                        </span>
+                    </div>
+
+                    <p className="text-sm text-zinc-300 line-clamp-2 group-hover:text-white transition-colors">
+                        {wire.content}
+                    </p>
+
+                    <div className="flex items-center gap-4 mt-3 text-xs text-zinc-500">
+                        <span className="flex items-center gap-1">
+                            <Heart className="w-3 h-3" /> {wire.likesCount || 0}
+                        </span>
+                        <span className="flex items-center gap-1">
+                            <MessageSquare className="w-3 h-3" /> {wire.commentsCount || 0}
+                        </span>
+                    </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
+                    <button
+                        onClick={onToggleStealth}
+                        className={`p-2 rounded-lg transition-colors ${wire.isStealthMode
+                                ? 'text-sky-400 hover:bg-sky-500/10'
+                                : 'text-green-400 hover:bg-green-500/10'
+                            }`}
+                        title={wire.isStealthMode ? 'Make Public' : 'Go Stealth'}
+                    >
+                        {wire.isStealthMode ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                    </button>
+                    <button
+                        onClick={() => {
+                            if (confirm('Delete this wire?')) onDelete();
+                        }}
+                        className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                        title="Delete"
+                    >
+                        <Trash2 className="w-4 h-4" />
+                    </button>
+                </div>
+            </div>
+        </motion.div>
+    );
+}
+
+export default WireCardMini

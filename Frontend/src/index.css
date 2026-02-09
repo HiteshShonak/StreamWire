@@ -1,0 +1,103 @@
+/* 1. Imports FIRST */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+/* 2. Theme Configuration SECOND */
+@theme {
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --color-primary: #6366f1;
+  --color-primary-dark: #4f46e5;
+
+  /* SaaS Grays (Zinc) */
+  --color-surface: #ffffff;
+  --color-surface-subtle: #fafafa;
+  --color-border: #e4e4e7;
+  --color-text-main: #18181b;
+  --color-text-muted: #71717a;
+}
+
+/* 3. Base & Custom Utilities THIRD */
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    @apply bg-zinc-50 text-zinc-900 antialiased selection:bg-indigo-100 selection:text-indigo-700;
+  }
+}
+
+/* 🧼 Hide Scrollbar */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: none;
+}
+
+/* For IE and Edge */
+* {
+  -ms-overflow-style: none;
+}
+
+/* ✨ Premium Utilities */
+.glass-panel {
+  @apply bg-white/70 backdrop-blur-xl border border-white/50 shadow-sm;
+}
+
+.btn-primary {
+  @apply bg-indigo-600 text-white font-medium px-5 py-2.5 rounded-xl hover:bg-indigo-700 transition-all active:scale-[0.98] shadow-lg shadow-indigo-500/20;
+}
+
+/* 🫨 Animations */
+@keyframes shake {
+
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(1deg);
+  }
+
+  75% {
+    transform: rotate(-1deg);
+  }
+}
+
+.animate-shake {
+  animation: shake 0.3s ease-in-out infinite;
+}
+
+/* ✨ Skeleton Shimmer Effect */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
+/* Premium Skeleton Base */
+.skeleton {
+  @apply relative overflow-hidden bg-zinc-800/50 rounded-xl;
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.04) 50%,
+    transparent 100%
+  );
+  animation: shimmer 2s infinite;
+}
