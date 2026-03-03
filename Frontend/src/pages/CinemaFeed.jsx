@@ -17,15 +17,11 @@ import VideoCard from '../Components/Cinema/VideoCard'
 import { VideoGridSkeleton } from '../Components/Common/Skeleton'
 import { formatViews, formatDuration, formatTimeAgo } from '../utils/formatters'
 
-// ==========================================
-// 🎞️ CATEGORIES
-// ==========================================
+// Categories
 // Default categories if nothing stored
 const DEFAULT_CATEGORIES = ["All", "For You", "Sci-Fi", "Documentaries", "Tech", "Cinematic", "Gaming", "AI"]
 
-// ==========================================
-// 🍿 MAIN PAGE: CinemaFeed
-// ==========================================
+// Main page: CinemaFeed
 export default function CinemaFeed() {
   const navigate = useNavigate()
   const { userData } = useSelector((state) => state.auth)
@@ -152,13 +148,13 @@ export default function CinemaFeed() {
       {/* Video Upload Modal */}
       <VideoUploadForm isOpen={isUploadModalOpen} onClose={() => setIsUploadModalOpen(false)} />
 
-      {/* 1. Header (Cinema Variant) - Sits on TOP of Hero */}
+      {/* Header (Cinema Variant) - Sits on top of hero */}
       <Header variant="cinema" onUploadClick={() => setIsUploadModalOpen(true)} />
 
-      {/* 2. Sidebar (Floating) - Sits on TOP of Hero */}
+      {/* Sidebar (Floating) - Sits on top of hero */}
       <Sidebar />
 
-      {/* 3. HERO SECTION (Edge-to-Edge) */}
+      {/* Hero section (edge-to-edge) */}
       <section className="relative w-full h-[85vh] min-h-screen overflow-hidden">
         <HeroSection
           hasVideos={hasVideos}
@@ -168,7 +164,7 @@ export default function CinemaFeed() {
         />
       </section>
 
-      {/* 4. MAIN CONTENT (Grid) */}
+      {/* Main content (grid) */}
       <div className="relative z-10 -mt-20 px-6 md:px-12 lg:pl-[300px] pb-24">
 
         {/* Category Filters */}

@@ -1,23 +1,23 @@
 import api from '../axios';
 
 export const userService = {
-    // 🔎 SEARCH USERS
+    // Search users
     searchUsers: async (params) => {
         // params: { query, page, limit }
         return await api.get('/users/search', { params });
     },
 
-    // 👤 GET USER CHANNEL PROFILE
+    // Get user channel profile
     getUserChannelProfile: async (username) => {
         return await api.get(`/users/c/${username}`);
     },
 
-    // 🔑 GET CURRENT USER
+    // Get current user
     getCurrentUser: async () => {
         return await api.get('/users/me');
     },
 
-    // 👥 UPDATE PROFILE
+    // Update profile
     updateProfile: async (formData) => {
         // formData: fullName, bio, avatar (optional), coverImage (optional)
         return await api.patch('/users/update-profile', formData, {
@@ -25,19 +25,19 @@ export const userService = {
         });
     },
 
-    // 🔐 CHANGE PASSWORD
+    // Change password
     changePassword: async (data) => {
         // data: { oldPassword, newPassword, confirmPassword }
         return await api.patch('/users/change-password', data);
     },
 
-    // 🔒 UPDATE PRIVACY SETTINGS
+    // Update privacy settings
     updatePrivacySettings: async (data) => {
         // data: { isProfilePublic, isIdentityCloaked }
         return await api.patch('/users/toggle-privacy', data);
     },
 
-    // ❌ DEACTIVATE ACCOUNT
+    // Deactivate account
     deactivateAccount: async () => {
         return await api.patch('/users/deactivate');
     }

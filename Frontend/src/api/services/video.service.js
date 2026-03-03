@@ -11,7 +11,7 @@ export const videoService = {
         return await api.get(`/videos/v/${videoId}`);
     },
 
-    // 🔥 Trending Videos - sorted by trendScore
+    // Trending Videos - sorted by trendScore
     getTrendingVideos: async (params = {}) => {
         return await api.get('/videos', {
             params: {
@@ -60,13 +60,13 @@ export const videoService = {
         });
     },
 
-    // --- 🎯 For You Feed ---
+    // For You Feed
     getForYouFeed: async (params) => {
         // params: { page, limit }
         return await api.get('/users/feed/for-you', { params });
     },
 
-    // --- 🏷️ Feed Management ---
+    // Feed Management
     getFeedPreferences: async () => {
         return await api.get('/users/feed/preferences');
     },

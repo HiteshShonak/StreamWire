@@ -38,23 +38,23 @@ export default function WirePost() {
     })
   }
 
-  // 1. Fetch Wire
+  // Fetch Wire
   const { data: wire, isLoading: wireLoading, error: wireError } = useQuery({
     queryKey: ['wire', wireId],
     queryFn: async () => await tweetService.getTweetById(wireId),
     retry: 1
   })
 
-  // 2. Fetch Comments
+  // Fetch Comments
   const { data: commentsData, isLoading: commentsLoading } = useQuery({
     queryKey: ['wireComments', wireId],
     queryFn: async () => await commentService.getTweetComments(wireId, { page: 1, limit: 50 }),
     enabled: !!wireId
   })
 
-  // --- ACTIONS ---
+  // Actions
 
-  // ⚡ INSTANT LIKE (Optimistic UI)
+  // Instant like (optimistic UI)
   const likeMutation = useMutation({
     mutationFn: likeService.toggleTweetLike,
     onMutate: async () => {
@@ -84,7 +84,7 @@ export default function WirePost() {
     }
   })
 
-  // ⚡ VOTE MUTATION (Optimistic)
+  // Vote mutation (optimistic)
   const voteMutation = useMutation({
     mutationFn: ({ tweetId, optionIndex }) => tweetService.voteOnPoll(tweetId, optionIndex),
     onMutate: async ({ optionIndex }) => {
@@ -119,7 +119,7 @@ export default function WirePost() {
     }
   })
 
-  // ⚡ STEALTH TOGGLE
+  // Stealth toggle
   const toggleStealthMutation = useMutation({
     mutationFn: () => tweetService.updateTweet(wireId, { isStealthMode: !wire.isStealthMode }),
     onSuccess: () => {
@@ -232,7 +232,7 @@ export default function WirePost() {
     }
   })
 
-  // ⚡ COMMENT CLAIM/UNCLAIM TOGGLE (Optimistic)
+  // Comment claim/unclaim toggle (optimistic)
   const toggleCommentClaimMutation = useMutation({
     mutationFn: ({ commentId, currentStealth }) =>
       commentService.updateComment(commentId, undefined, !currentStealth),
@@ -270,7 +270,7 @@ export default function WirePost() {
     }
   })
 
-  // 🔔 SUBSCRIBE MUTATION (for main post author)
+  // Subscribe mutation (for main post author)
   const subscribeToPostAuthorMutation = useMutation({
     mutationFn: () => subscriptionService.toggleSubscription(wire?.owner?._id),
     onSuccess: (data) => {
@@ -287,7 +287,7 @@ export default function WirePost() {
     onError: (err) => toast.error(err.message || 'Failed to update subscription')
   })
 
-  // 🔔 SUBSCRIBE MUTATION (for comment authors)
+  // Subscribe mutation (for comment authors)
   const subscribeFromCommentMutation = useMutation({
     mutationFn: (channelId) => subscriptionService.toggleSubscription(channelId),
     onMutate: async (channelId) => {
@@ -339,7 +339,7 @@ export default function WirePost() {
     addCommentMutation.mutate({ content: commentText, isStealthMode: isStealthComment })
   }
 
-  // --- UI RENDER ---
+  // Render
 
   if (wireLoading) {
     return (
@@ -502,7 +502,7 @@ export default function WirePost() {
                   </div>
                 )}
 
-                {/* 📊 POLL RENDERER */}
+                {/* Poll renderer */}
                 {wire.poll && (
                   <div className="mb-4 space-y-2 mt-2">
                     {wire.poll.options.map((option, index) => {

@@ -4,7 +4,7 @@ import { UserPlus, UserCheck, Ghost, Shield } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 const UserCard = memo(function UserCard({ user, onSubscribe }) {
-  // 🎭 Check if this is a "Ghost" profile (Already masked by backend, but we style it)
+  // Check if this is a "Ghost" profile (already masked by backend, but we style it)
   const isGhost = user.username === 'anonymous' || user.isIdentityCloaked
 
   return (

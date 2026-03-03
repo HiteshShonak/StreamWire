@@ -1,16 +1,16 @@
 import axios from 'axios';
 
-// 1. Create the instance
+// Create the instance
 const api = axios.create({
     // Use the environment variable, but fallback to your local server for dev
     baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1',
-    withCredentials: true, // 🚨 CRITICAL: Matches backend 'cors({ credentials: true })'
+    withCredentials: true, // Important: matches backend 'cors({ credentials: true })'
     headers: {
         'Accept': 'application/json',
     }
 });
 
-// 1. Request Interceptor (Handle FormData properly)
+// Request interceptor (handle FormData properly)
 api.interceptors.request.use(
     (config) => {
         // If the data is FormData, let axios set the Content-Type with boundary automatically
@@ -25,7 +25,7 @@ api.interceptors.request.use(
     }
 );
 
-// 2. Response Interceptor (Auto Token Refresh + Error Handler)
+// Response Interceptor (Auto Token Refresh + Error Handler)
 let isRefreshing = false;
 let failedQueue = [];
 
@@ -54,7 +54,7 @@ api.interceptors.response.use(
         const fieldErrors = errorResponse?.errors || [];
         const originalRequest = error.config;
 
-        // 🔄 Handle 401 Unauthorized - Try Token Refresh
+        // Handle 401 Unauthorized - Try Token Refresh
         if (error.response?.status === 401 && !originalRequest._retry) {
             // Prevent refresh-token endpoint from triggering infinite loop
             if (originalRequest.url?.includes('/users/refresh-token')) {
@@ -106,7 +106,7 @@ api.interceptors.response.use(
         const customError = new Error(errorMessage);
         customError.statusCode = errorResponse?.statusCode || 500;
         customError.fieldErrors = fieldErrors; // Attach validation errors (e.g., for forms)
-        
+
         return Promise.reject(customError);
     }
 );

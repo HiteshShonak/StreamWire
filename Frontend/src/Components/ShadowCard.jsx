@@ -28,7 +28,7 @@ const ShadowCard = memo(function ShadowCard({ shadow, onLike, onDelete }) {
         })
     }
 
-    // 🛡️ SAFETY: Guard against undefined shadow
+    // Guard against undefined shadow
     if (!shadow) return null
 
     // Check ownership (owner can still see their own anonymous posts)
@@ -64,14 +64,14 @@ const ShadowCard = memo(function ShadowCard({ shadow, onLike, onDelete }) {
             className="relative border-b border-zinc-900 bg-[#09090b] hover:bg-zinc-950/60 transition-colors cursor-pointer p-3 sm:p-4 border-l-2 border-l-emerald-900/40"
         >
             <div className="flex gap-3 sm:gap-4">
-                {/* 1. Avatar Column - Anonymous Icon */}
+                {/* Avatar Column - Anonymous Icon */}
                 <div className="flex-shrink-0">
                     <div className="w-10 h-10 rounded-full bg-zinc-900 border border-emerald-900/30 flex items-center justify-center">
                         <Ghost className="w-5 h-5 text-emerald-500/70" />
                     </div>
                 </div>
 
-                {/* 2. Content Column */}
+                {/* Content Column */}
                 <div className="flex-1 min-w-0">
 
                     {/* Header: Name, Badge, Handle, Time, Menu */}

@@ -184,7 +184,7 @@ export default function Customize() {
 
          toast.success(message);
 
-         // 🎊 Confetti celebration on first avatar upload during onboarding!
+         // Confetti celebration on first avatar upload during onboarding!
          if (isOnboarding && hasAvatarChange) {
             confetti({
                particleCount: 100,

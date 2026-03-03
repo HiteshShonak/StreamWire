@@ -1,8 +1,6 @@
 import { z } from "zod";
 
-/* ==========================================================================
-   📹 VIDEO VALIDATION SCHEMAS
-   ========================================================================== */
+// Video validation schemas
 
 // Publish Video Schema
 export const publishVideoSchema = z.object({

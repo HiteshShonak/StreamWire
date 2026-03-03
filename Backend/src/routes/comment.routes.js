@@ -16,9 +16,7 @@ import { addCommentSchema, updateCommentSchema } from "../validations/index.js";
 
 const router = Router();
 
-/* ==========================================================================
-   🔓 PUBLIC ROUTES (View)
-   ========================================================================== */
+// Public routes (read-only)
 // Video Comments
 router.route("/v/:videoId").get(getVideoComments);
 
@@ -28,9 +26,7 @@ router.route("/t/:tweetId").get(getTweetComments);
 // Get Pinned Comments for a Video
 router.route("/v/:videoId/pinned").get(getPinnedComments);
 
-/* ==========================================================================
-   🔐 PROTECTED ROUTES (Interact)
-   ========================================================================== */
+// Protected routes
 router.use(restrictTo(["USER", "ADMIN"]));
 
 // Add Comment (Video) - WITH RATE LIMITING

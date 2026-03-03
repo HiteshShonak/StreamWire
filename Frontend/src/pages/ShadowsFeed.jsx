@@ -6,14 +6,14 @@ import { motion } from 'framer-motion'
 import { Ghost, Lock } from 'lucide-react'
 import toast from 'react-hot-toast'
 
-// 🔌 API Services
+// API Services
 import { tweetService } from '../api/services/tweet.service'
 import { likeService } from '../api/services/like.service'
 
-// 🧩 Components
+// Components
 import ShadowInput from '../Components/ShadowInput'
 import ShadowCard from '../Components/ShadowCard'
-import AuthLock from '../components/Common/AuthLock'
+import AuthLock from '../Components/Common/AuthLock'
 import { ShadowListSkeleton, ShadowCardSkeleton } from '../Components/Common/Skeleton'
 
 export default function ShadowsFeed() {
@@ -21,9 +21,7 @@ export default function ShadowsFeed() {
     const queryClient = useQueryClient()
     const { userData } = useSelector((state) => state.auth)
 
-    // =========================================
-    // 📡 FETCHING STRATEGY - Only stealth posts
-    // =========================================
+    // Only fetch stealth posts
     const {
         data,
         fetchNextPage,
@@ -36,7 +34,7 @@ export default function ShadowsFeed() {
             return await tweetService.getAllTweets({
                 page: pageParam,
                 limit: 20,
-                isStealthMode: true // 🕵️ Only fetch stealth posts
+                isStealthMode: true // Only fetch stealth posts
             })
         },
         getNextPageParam: (lastPage) => lastPage.hasNextPage ? lastPage.nextPage : undefined,
@@ -50,11 +48,9 @@ export default function ShadowsFeed() {
         }
     }, [inView, hasNextPage, fetchNextPage])
 
-    // =========================================
-    // ⚡ ACTIONS
-    // =========================================
+    // Actions
 
-    // ⚡ Instant Like (Optimistic UI)
+    // Instant Like (Optimistic UI)
     const likeMutation = useMutation({
         mutationFn: likeService.toggleTweetLike,
         onMutate: async (tweetId) => {
@@ -124,7 +120,7 @@ export default function ShadowsFeed() {
                         <p className="text-zinc-500 text-sm">Anonymous thoughts from the void</p>
                     </div>
 
-                    {/* ✍️ SHADOW INPUT */}
+                    {/* Shadow Input */}
                     <div className="mb-6">
                         {userData ? (
                             <ShadowInput
@@ -138,7 +134,7 @@ export default function ShadowsFeed() {
                         )}
                     </div>
 
-                    {/* 📜 FEED CONTENT */}
+                    {/* Feed content */}
                     <div className="space-y-0 border border-zinc-900 rounded-2xl overflow-hidden bg-[#09090b]">
                         {status === 'pending' ? (
                             <ShadowListSkeleton count={5} />

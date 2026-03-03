@@ -6,10 +6,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
-/* ==========================================================================
-   📊 GET CHANNEL STATS
-   Aggregates Views, Subscribers, Likes, and Stealth Metrics
-   ========================================================================== */
+// Get channel stats
 export const getChannelStats = asyncHandler(async (req, res) => {
     const userId = req.user._id;
 
@@ -25,7 +22,7 @@ export const getChannelStats = asyncHandler(async (req, res) => {
                 _id: null,
                 totalViews: { $sum: "$views" },
                 totalVideos: { $sum: 1 },
-                // 🎭 NEW: Count how many videos are currently in Stealth Mode
+                // New: Count how many videos are currently in Stealth Mode
                 totalStealthVideos: {
                     $sum: {
                         $cond: [{ $eq: ["$isStealthMode", true] }, 1, 0]
@@ -54,7 +51,7 @@ export const getChannelStats = asyncHandler(async (req, res) => {
     const stats = {
         totalViews: videoStats[0]?.totalViews || 0,
         totalVideos: videoStats[0]?.totalVideos || 0,
-        totalStealthVideos: videoStats[0]?.totalStealthVideos || 0, // 👈 Included in response
+        totalStealthVideos: videoStats[0]?.totalStealthVideos || 0, // Included in response
         totalSubscribers: subscribersCount || 0,
         totalLikes: totalLikes || 0
     };
@@ -64,14 +61,11 @@ export const getChannelStats = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, stats, "Channel stats fetched successfully"));
 });
 
-/* ==========================================================================
-   📑 GET CHANNEL VIDEOS (Manager View)
-   Returns a table-ready list of videos with Publish/Stealth status
-   ========================================================================== */
+// GET CHANNEL VIDEOS (Manager View) - Returns a table-ready list of videos with Publish/Stealth status
 export const getChannelVideos = asyncHandler(async (req, res) => {
     // This view is for the CREATOR to manage their content.
     // We do NOT mask identity here, as the user needs to see their own data.
-    
+
     const { page = 1, limit = 10, query } = req.query;
 
     const matchStage = {
@@ -101,7 +95,7 @@ export const getChannelVideos = asyncHandler(async (req, res) => {
                 views: 1,
                 duration: 1,
                 isPublished: 1,
-                isStealthMode: 1, // 👈 Frontend uses this to show "Ghost" icon
+                isStealthMode: 1, // Frontend uses this to show "Ghost" icon
                 createdAt: 1,
                 updatedAt: 1
             }

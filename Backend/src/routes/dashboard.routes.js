@@ -4,10 +4,7 @@ import { restrictTo } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-/* ==========================================================================
-   🔐 PROTECTED ROUTES (Owner Dashboard)
-   All dashboard routes require a logged-in user.
-   ========================================================================== */
+// Protected routes
 router.use(restrictTo(["USER", "ADMIN"]));
 
 // Get the big numbers (Views, Subs, Likes)

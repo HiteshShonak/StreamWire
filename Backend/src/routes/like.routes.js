@@ -8,10 +8,7 @@ import { restrictTo } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-/* ==========================================================================
-   🔐 PROTECTED ROUTES (Interactions)
-   All like actions require a logged-in user.
-   ========================================================================== */
+// Protected routes
 router.use(restrictTo(["USER", "ADMIN"]));
 
 // 1. Toggle Video Like (The Cinema)

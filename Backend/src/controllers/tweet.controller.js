@@ -1,27 +1,24 @@
 import mongoose, { isValidObjectId } from "mongoose";
 import { Tweet } from "../models/tweet.model.js";
 import { User } from "../models/user.model.js";
-import { Subscription } from "../models/subscription.model.js"; 
-import { PollVote } from "../models/pollVote.model.js"; 
-import { Like } from "../models/like.model.js"; 
-import { Comment } from "../models/comment.model.js"; 
-import { TweetView } from "../models/tweetView.model.js"; // 👈 View tracking
+import { Subscription } from "../models/subscription.model.js";
+import { PollVote } from "../models/pollVote.model.js";
+import { Like } from "../models/like.model.js";
+import { Comment } from "../models/comment.model.js";
+import { TweetView } from "../models/tweetView.model.js"; // View tracking
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
-import { updateTweetTrendScore } from "../utils/trendScore.js"; // 🔥 TrendScore
+import { updateTweetTrendScore } from "../utils/trendScore.js"; // TrendScore
 import { ANONYMOUS_USER_NAME } from "../constants.js";
 
-/* ==========================================================================
-   🛠️ HELPER: COMMON AGGREGATION PIPELINE
-   Handles: Identity, Likes, Comments, Polls, Subscription Status
-   ========================================================================== */
+// Helper: common tweet aggregation pipeline (handles identity, likes, comments, polls, subscription)
 const getTweetAggregation = (userId) => {
     const validUserId = userId ? new mongoose.Types.ObjectId(userId) : null;
 
     return [
-        // 1. 🔔 CHECK SUBSCRIPTION STATUS
+        // 1. Check subscription status
         {
             $lookup: {
                 from: "subscriptions",
@@ -37,7 +34,7 @@ const getTweetAggregation = (userId) => {
                             }
                         }
                     },
-                    { $project: { _id: 1 } } // ⚡ Optimization: Only fetch ID
+                    { $project: { _id: 1 } } // Optimization: only fetch ID
                 ],
                 as: "isSubscribed"
             }
@@ -48,7 +45,7 @@ const getTweetAggregation = (userId) => {
             }
         },
 
-        // 2. 👤 POPULATE OWNER
+        // 2. Populate owner
         {
             $lookup: {
                 from: "users",
@@ -62,7 +59,7 @@ const getTweetAggregation = (userId) => {
         },
         { $unwind: "$owner" },
 
-        // 3. 🎭 IDENTITY MASKING
+        // 3. Identity masking
         {
             $addFields: {
                 "owner.isSubscribed": "$isSubscribed", // Add subscription status to owner object
@@ -105,7 +102,7 @@ const getTweetAggregation = (userId) => {
             }
         },
 
-        // 4. ❤️ LIKE STATUS & COUNT
+        // 4. Like status & count
         {
             $lookup: {
                 from: "likes",
@@ -113,7 +110,7 @@ const getTweetAggregation = (userId) => {
                 foreignField: "tweet",
                 as: "likes",
                 pipeline: [
-                    { $project: { likedBy: 1 } } // ⚡ Optimization: Don't fetch full Like docs
+                    { $project: { likedBy: 1 } } // Optimization: don't fetch full Like docs
                 ]
             }
         },
@@ -130,7 +127,7 @@ const getTweetAggregation = (userId) => {
             }
         },
 
-        // 5. 💬 COMMENT COUNT
+        // 5. Comment count
         {
             $lookup: {
                 from: "comments",
@@ -138,7 +135,7 @@ const getTweetAggregation = (userId) => {
                 foreignField: "tweet",
                 as: "comments",
                 pipeline: [
-                    { $project: { _id: 1 } } // ⚡ Optimization: Don't fetch comment content
+                    { $project: { _id: 1 } } // Optimization: don't fetch comment content
                 ]
             }
         },
@@ -148,21 +145,21 @@ const getTweetAggregation = (userId) => {
             }
         },
 
-        // 6. 🗳️ POLL VOTE STATUS
+        // 6. Poll vote status
         {
             $lookup: {
                 from: "pollvotes",
                 let: { tweetId: "$_id" },
                 pipeline: [
-                    { 
-                        $match: { 
-                            $expr: { 
+                    {
+                        $match: {
+                            $expr: {
                                 $and: [
                                     { $eq: ["$tweet", "$$tweetId"] },
                                     { $eq: ["$voter", validUserId] }
-                                ] 
-                            } 
-                        } 
+                                ]
+                            }
+                        }
                     },
                     { $project: { optionIndex: 1 } }
                 ],
@@ -175,7 +172,7 @@ const getTweetAggregation = (userId) => {
             }
         },
 
-        // 7. 🧹 CLEANUP
+        // 7. Cleanup
         {
             $project: {
                 likes: 0,
@@ -186,9 +183,7 @@ const getTweetAggregation = (userId) => {
     ];
 };
 
-/* ==========================================================================
-   🌍 GET FEED
-   ========================================================================== */
+// Get feed
 export const getAllTweets = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, isStealthMode, type, query, sortBy, sortType } = req.query;
     const userId = req.user?._id;
@@ -198,11 +193,7 @@ export const getAllTweets = asyncHandler(async (req, res) => {
 
     if (query) matchStage.$text = { $search: query };
 
-    // Explicit stealth filtering (if requested)
-    // NOTE: If requesting stealth feed, include posts that are either
-    // isStealthMode=true OR whose owner is identity-cloaked. We can't match
-    // owner.isIdentityCloaked before the owner $lookup, so we'll apply a
-    // post-aggregation match after owner is populated.
+    // Explicit stealth filtering (precise match applied after aggregation since we can't match owner.isIdentityCloaked before $lookup)
     if (isStealthMode !== undefined) {
         if (isStealthMode === "true") {
             // leave initial match broad; apply precise match after aggregation
@@ -217,7 +208,7 @@ export const getAllTweets = asyncHandler(async (req, res) => {
             subscriber: userId,
             status: "ACCEPTED"
         }).select("channel");
-        
+
         const channelIds = subscriptions.map(sub => sub.channel);
         channelIds.push(userId);
         matchStage.owner = { $in: channelIds };
@@ -252,17 +243,15 @@ export const getAllTweets = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, result, "Feed fetched successfully"));
 });
 
-/* ==========================================================================
-   📝 CREATE TWEET
-   ========================================================================== */
+// Create tweet
 export const createTweet = asyncHandler(async (req, res) => {
     const { content, isPoll, pollQuestion, pollOptions, isStealthMode } = req.body;
 
-    // 🔍 DEBUG LOGGING
-    console.log('📝 CREATE TWEET - Request Body:', req.body);
-    console.log('📎 CREATE TWEET - File Present:', !!req.file);
+    // Debug logging
+    console.log('CREATE TWEET - Request Body:', req.body);
+    console.log('CREATE TWEET - File Present:', !!req.file);
     if (req.file) {
-        console.log('📁 File Details:', {
+        console.log('File Details:', {
             fieldname: req.file.fieldname,
             originalname: req.file.originalname,
             mimetype: req.file.mimetype,
@@ -275,31 +264,30 @@ export const createTweet = asyncHandler(async (req, res) => {
 
     let image = null;
     if (req.file) {
-        console.log('☁️ Uploading to Cloudinary:', req.file.path);
-        
+        console.log('Uploading to Cloudinary:', req.file.path);
+
         // Generate custom filename: first 10 chars of content + username + timestamp
         const contentPrefix = content.trim()
             .substring(0, 10)
             .replace(/\s+/g, '_')
             .replace(/[^a-zA-Z0-9_]/g, '');
         const customFilename = `${contentPrefix}_${req.user.username}_${Date.now()}`;
-        
-        console.log('📝 Custom filename:', customFilename);
+
+        console.log('Custom filename:', customFilename);
         const uploadedImage = await uploadOnCloudinary(req.file.path, "tweet", customFilename);
         if (!uploadedImage) {
-            console.log('❌ Cloudinary upload failed');
             throw new ApiError(500, "Image upload failed");
         }
-        console.log('✅ Cloudinary upload successful:', uploadedImage.secure_url);
+        console.log('Cloudinary upload successful:', uploadedImage.secure_url);
         image = { url: uploadedImage.secure_url, public_id: uploadedImage.public_id };
     } else {
-        console.log('ℹ️ No file attached to request');
+        console.log('No file attached to request');
     }
 
     let poll = null;
     if (isPoll === "true" || isPoll === true) {
         if (!pollQuestion?.trim()) throw new ApiError(400, "Poll question is required");
-        
+
         let parsedOptions = typeof pollOptions === "string" ? JSON.parse(pollOptions) : pollOptions;
         if (!Array.isArray(parsedOptions) || parsedOptions.length < 2) throw new ApiError(400, "Poll must have 2+ options");
 
@@ -320,7 +308,7 @@ export const createTweet = asyncHandler(async (req, res) => {
         isStealthMode: finalStealthMode
     });
 
-    // 🔥 Initialize trendScore (new tweets get recency boost)
+    // Set trendScore (new tweets get recency boost)
     updateTweetTrendScore(tweet._id);
 
     const pipeline = [
@@ -332,9 +320,7 @@ export const createTweet = asyncHandler(async (req, res) => {
     return res.status(201).json(new ApiResponse(201, aggregatedTweet[0], "Tweet created successfully"));
 });
 
-/* ==========================================================================
-   🐦 GET USER TWEETS
-   ========================================================================== */
+// Get tweet by ID
 export const getUserTweets = asyncHandler(async (req, res) => {
     const { userId } = req.params;
     const { page = 1, limit = 10, publicView } = req.query;
@@ -359,9 +345,7 @@ export const getUserTweets = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, result, "User tweets fetched"));
 });
 
-/* ==========================================================================
-   ✏️ UPDATE TWEET
-   ========================================================================== */
+// Update tweet
 export const updateTweet = asyncHandler(async (req, res) => {
     const { tweetId } = req.params;
     const { content, isStealthMode } = req.body;
@@ -373,7 +357,7 @@ export const updateTweet = asyncHandler(async (req, res) => {
     if (tweet.owner.toString() !== req.user._id.toString()) throw new ApiError(403, "Unauthorized");
 
     if (content !== undefined) tweet.content = content;
-    
+
     if (typeof isStealthMode !== "undefined") {
         tweet.isStealthMode = isStealthMode === "true" || isStealthMode === true;
     }
@@ -389,9 +373,7 @@ export const updateTweet = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, updatedTweets[0], "Tweet updated"));
 });
 
-/* ==========================================================================
-   🗑️ DELETE TWEET
-   ========================================================================== */
+// Delete tweet
 export const deleteTweet = asyncHandler(async (req, res) => {
     const { tweetId } = req.params;
     if (!isValidObjectId(tweetId)) throw new ApiError(400, "Invalid Tweet ID");
@@ -402,7 +384,7 @@ export const deleteTweet = asyncHandler(async (req, res) => {
 
     // 1. Delete tweet from database INSTANTLY (user sees immediate response)
     await Tweet.findByIdAndDelete(tweetId);
-    
+
     // 2. Send success response immediately
     const response = res.status(200).json(new ApiResponse(200, {}, "Tweet deleted"));
 
@@ -410,25 +392,23 @@ export const deleteTweet = asyncHandler(async (req, res) => {
     // Delete orphaned image from Cloudinary
     if (tweet.image?.public_id) {
         deleteFromCloudinary(tweet.image.public_id, "image")
-            .then(() => console.log('✅ Tweet image deleted from Cloudinary:', tweet.image.public_id))
-            .catch(err => console.error('❌ Failed to delete tweet image from Cloudinary:', err.message));
+            .then(() => console.log('Tweet image deleted from Cloudinary:', tweet.image.public_id))
+            .catch(err => console.error('Failed to delete tweet image from Cloudinary:', err.message));
     }
-    
+
     // Delete related records (poll votes, likes, comments)
     Promise.all([
         PollVote.deleteMany({ tweet: tweetId }),
         Like.deleteMany({ tweet: tweetId }),
         Comment.deleteMany({ tweet: tweetId })
     ])
-        .then(() => console.log('✅ Related records deleted for tweet:', tweetId))
-        .catch(err => console.error('❌ Failed to delete related records:', err.message));
+        .then(() => console.log('Related records deleted for tweet:', tweetId))
+        .catch(err => console.error('Failed to delete related records:', err.message));
 
     return response;
 });
 
-/* ==========================================================================
-   🗳️ VOTE ON POLL
-   ========================================================================== */
+// Vote on poll
 export const voteOnPoll = asyncHandler(async (req, res) => {
     const { tweetId } = req.params;
     const { optionIndex } = req.body;
@@ -457,11 +437,11 @@ export const voteOnPoll = asyncHandler(async (req, res) => {
             await PollVote.findByIdAndDelete(existingVote._id);
         } else {
             // Change Vote (Switch Option)
-            await Tweet.findByIdAndUpdate(tweetId, { 
-                $inc: { 
+            await Tweet.findByIdAndUpdate(tweetId, {
+                $inc: {
                     [`poll.options.${existingVote.optionIndex}.votes`]: -1,
-                    [`poll.options.${index}.votes`]: 1 
-                } 
+                    [`poll.options.${index}.votes`]: 1
+                }
             });
             existingVote.optionIndex = index;
             await existingVote.save();
@@ -472,7 +452,7 @@ export const voteOnPoll = asyncHandler(async (req, res) => {
         await PollVote.create({ tweet: tweetId, voter: userId, optionIndex: index });
     }
 
-    // 🔥 Update trendScore in background (poll votes affect engagement)
+    // Update trendScore in background (poll votes affect engagement)
     updateTweetTrendScore(tweetId);
 
     // Re-fetch aggregated data for instant UI sync
@@ -488,16 +468,14 @@ export const voteOnPoll = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, updatedTweets[0], "Vote recorded"));
 });
 
-/* ==========================================================================
-   🔎 GET SINGLE TWEET
-   ========================================================================== */
+// Toggle tweet stealth mode
 export const getTweetById = asyncHandler(async (req, res) => {
     const { tweetId } = req.params;
     const userId = req.user?._id;
 
     if (!isValidObjectId(tweetId)) throw new ApiError(400, "Invalid Tweet ID");
 
-    // 📊 Smart View Tracking: 1 view per user per 12 hours
+    // Smart View Tracking: 1 view per user per 12 hours
     if (userId) {
         // Check if user already viewed this tweet in the last 12 hours
         const existingView = await TweetView.findOne({
@@ -511,14 +489,14 @@ export const getTweetById = asyncHandler(async (req, res) => {
                 Tweet.findByIdAndUpdate(tweetId, { $inc: { views: 1 } }),
                 TweetView.create({ tweet: tweetId, viewer: userId })
             ]);
-            // 🔥 Update trendScore in background
+            // Update trendScore in background
             updateTweetTrendScore(tweetId);
         }
         // If existingView exists, TTL will auto-delete it after 12 hours
     } else {
         // Anonymous users still get views counted (no tracking)
         Tweet.findByIdAndUpdate(tweetId, { $inc: { views: 1 } }).exec();
-        // 🔥 Update trendScore in background
+        // Update trendScore in background
         updateTweetTrendScore(tweetId);
     }
 

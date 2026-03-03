@@ -1,8 +1,6 @@
 import { z } from "zod";
 
-/* ==========================================================================
-   🔔 SUBSCRIPTION VALIDATION SCHEMAS
-   ========================================================================== */
+// Subscription validation schemas
 
 // Manage Subscription Request Schema
 export const manageRequestSchema = z.object({

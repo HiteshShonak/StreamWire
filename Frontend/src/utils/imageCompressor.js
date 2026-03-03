@@ -1,7 +1,5 @@
 /**
- * 🖼️ IMAGE COMPRESSION UTILITY
- * Compresses images to WebP format for optimal performance
- * Uses 3x multiplier for Retina displays
+ * IMAGE COMPRESSION UTILITY
  */
 
 /**
@@ -55,11 +53,11 @@ export const compressImage = async (file, options = {}) => {
 
                 // Draw image on canvas
                 const ctx = canvas.getContext('2d');
-                
+
                 // Enable image smoothing for better quality
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'high';
-                
+
                 ctx.drawImage(img, 0, 0, width, height);
 
                 // Convert to WebP blob
@@ -80,7 +78,7 @@ export const compressImage = async (file, options = {}) => {
                             }
                         );
 
-                        console.log('📊 Image Compression Stats:');
+                        console.log('Image Compression Stats:');
                         console.log(`  Original: ${(file.size / 1024).toFixed(2)} KB`);
                         console.log(`  Compressed: ${(compressedFile.size / 1024).toFixed(2)} KB`);
                         console.log(`  Saved: ${(((file.size - compressedFile.size) / file.size) * 100).toFixed(1)}%`);

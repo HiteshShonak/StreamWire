@@ -19,7 +19,7 @@ export default function Header({ variant = 'gateway', onUploadClick }) {
   const [showTooltip, setShowTooltip] = useState(false)
   const mobileInputRef = useRef(null)
 
-  // 🔍 SMART SEARCH LOGIC
+  // Smart search logic
   const navigate = useNavigate()
   const location = useLocation()
   const [searchParams] = useSearchParams()
@@ -74,9 +74,7 @@ export default function Header({ variant = 'gateway', onUploadClick }) {
     }
   }, [isMobileSearchOpen])
 
-  // ==========================================
-  // 🎨 CONFIGURATION MAPS (CLEANED)
-  // ==========================================
+
   const config = {
     gateway: {
       theme: "border-white/10 bg-[#0A0A0A]/80 shadow-black/50 backdrop-blur-xl",

@@ -7,18 +7,14 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { ANONYMOUS_USER_NAME } from "../constants.js";
 
-/* ==========================================================================
-   📝 CREATE PLAYLIST
-   ========================================================================== */
+// Create playlist
 export const createPlaylist = asyncHandler(async (req, res) => {
     const { name, description, isPublic, isStealthMode } = req.body;
 
     if (!name?.trim()) throw new ApiError(400, "Playlist name is required");
 
-    // DETERMINE STEALTH STATUS
-    // Logic: If user explicitly sets it, use that value.
-    // Otherwise, default to the user's global "Identity Cloaked" setting.
-    let finalStealthMode = req.user.isIdentityCloaked; 
+    // Figure out stealth status (use explicit value or default to user's global cloak setting)
+    let finalStealthMode = req.user.isIdentityCloaked;
     if (typeof isStealthMode !== "undefined") {
         finalStealthMode = isStealthMode === "true" || isStealthMode === true;
     }
@@ -26,8 +22,8 @@ export const createPlaylist = asyncHandler(async (req, res) => {
     const playlist = await Playlist.create({
         name,
         description,
-        isPublic: isPublic === "true" || isPublic === true, 
-        isStealthMode: finalStealthMode, // 👈 Save stealth state
+        isPublic: isPublic === "true" || isPublic === true,
+        isStealthMode: finalStealthMode, // Save stealth state
         owner: req.user._id,
         videos: []
     });
@@ -37,17 +33,14 @@ export const createPlaylist = asyncHandler(async (req, res) => {
         .json(new ApiResponse(201, playlist, "Playlist created successfully"));
 });
 
-/* ==========================================================================
-   📂 GET USER PLAYLISTS (Profile Tab)
-   Handles Privacy (Hide Private) & Stealth (Mask Name)
-   ========================================================================== */
+// Get user playlists
 export const getUserPlaylists = asyncHandler(async (req, res) => {
     const { userId } = req.params;
     const { page = 1, limit = 10 } = req.query;
 
     if (!isValidObjectId(userId)) throw new ApiError(400, "Invalid User ID");
 
-    // 1. Determine Access Level
+    // 1. Check access level
     const isViewerOwner = req.user?._id?.toString() === userId.toString();
 
     const matchStage = {
@@ -81,7 +74,7 @@ export const getUserPlaylists = asyncHandler(async (req, res) => {
             }
         },
         { $unwind: "$owner" },
-        // 🎭 Mask Identity: "StreamWire User" if cloaked OR playlist is stealth
+        // Mask Identity: "StreamWire User" if cloaked or playlist is stealth
         {
             $addFields: {
                 "owner.fullName": {
@@ -108,7 +101,7 @@ export const getUserPlaylists = asyncHandler(async (req, res) => {
             $project: {
                 name: 1,
                 description: 1,
-                videoCount: { $size: "$videos" }, 
+                videoCount: { $size: "$videos" },
                 updatedAt: 1,
                 isPublic: 1,
                 isStealthMode: 1,
@@ -133,9 +126,7 @@ export const getUserPlaylists = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, result, "User playlists fetched successfully"));
 });
 
-/* ==========================================================================
-   📜 GET PLAYLIST BY ID (Full View)
-   ========================================================================== */
+// Get playlist by ID
 export const getPlaylistById = asyncHandler(async (req, res) => {
     const { playlistId } = req.params;
 
@@ -165,7 +156,7 @@ export const getPlaylistById = asyncHandler(async (req, res) => {
                         }
                     },
                     { $addFields: { owner: { $first: "$owner" } } },
-                    // 🎭 STEALTH MASKING FOR VIDEOS INSIDE PLAYLIST
+                    // Stealth masking for videos inside playlist
                     // We must check if the *video itself* or *video owner* is stealth
                     {
                         $addFields: {
@@ -216,7 +207,7 @@ export const getPlaylistById = asyncHandler(async (req, res) => {
             }
         },
         { $unwind: "$owner" },
-        // 🎭 STEALTH MASKING FOR PLAYLIST OWNER
+        // Stealth masking for playlist owner
         {
             $addFields: {
                 "owner.fullName": {
@@ -245,7 +236,7 @@ export const getPlaylistById = asyncHandler(async (req, res) => {
     const playlist = playlistData[0];
     const isOwner = req.user?._id?.toString() === playlist.owner._id.toString();
 
-    // 🔒 Privacy Gate
+    // Privacy gate
     if (!playlist.isPublic && !isOwner) {
         throw new ApiError(403, "This playlist is private");
     }
@@ -255,9 +246,7 @@ export const getPlaylistById = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, playlist, "Playlist fetched successfully"));
 });
 
-/* ==========================================================================
-   ➕ ADD VIDEO TO PLAYLIST
-   ========================================================================== */
+// Add video to playlist
 export const addVideoToPlaylist = asyncHandler(async (req, res) => {
     const { playlistId, videoId } = req.params;
 
@@ -287,9 +276,7 @@ export const addVideoToPlaylist = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, playlist, "Video added to playlist"));
 });
 
-/* ==========================================================================
-   ➖ REMOVE VIDEO FROM PLAYLIST
-   ========================================================================== */
+// Remove video from playlist
 export const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
     const { playlistId, videoId } = req.params;
 
@@ -313,9 +300,7 @@ export const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, playlist, "Video removed from playlist"));
 });
 
-/* ==========================================================================
-   🗑️ DELETE PLAYLIST
-   ========================================================================== */
+// Delete playlist
 export const deletePlaylist = asyncHandler(async (req, res) => {
     const { playlistId } = req.params;
 
@@ -338,9 +323,7 @@ export const deletePlaylist = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, {}, "Playlist deleted successfully"));
 });
 
-/* ==========================================================================
-   ✏️ UPDATE PLAYLIST
-   ========================================================================== */
+// Update playlist
 export const updatePlaylist = asyncHandler(async (req, res) => {
     const { playlistId } = req.params;
     const { name, description, isPublic, isStealthMode } = req.body;
@@ -356,7 +339,7 @@ export const updatePlaylist = asyncHandler(async (req, res) => {
 
     if (name) playlist.name = name;
     if (description) playlist.description = description;
-    
+
     if (typeof isPublic !== "undefined") {
         playlist.isPublic = isPublic === "true" || isPublic === true;
     }
@@ -373,9 +356,7 @@ export const updatePlaylist = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, playlist, "Playlist updated successfully"));
 });
 
-/* ==========================================================================
-   💾 TOGGLE SAVE PLAYLIST (Add to Viewer's Library)
-   ========================================================================== */
+// Get user playlists
 export const toggleSavePlaylist = asyncHandler(async (req, res) => {
     const { playlistId } = req.params;
 

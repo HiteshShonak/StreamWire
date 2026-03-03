@@ -7,10 +7,7 @@ import { ANONYMOUS_USER_NAME } from "../constants.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
-/* ==========================================================================
-   🕰️ WATCH HISTORY
-   Fetches videos watched by the user, ordered by most recent.
-   ========================================================================== */
+// Watch history (fetch videos watched by user, ordered by most recent)
 export const getWatchHistory = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
 
@@ -48,7 +45,7 @@ export const getWatchHistory = asyncHandler(async (req, res) => {
                         },
                     },
                     { $addFields: { owner: { $first: "$owner" } } },
-                    // 🎭 STEALTH MASKING (Video Level)
+                    // Stealth masking (video level)
                     {
                         $addFields: {
                             "owner.fullName": {
@@ -68,7 +65,7 @@ export const getWatchHistory = asyncHandler(async (req, res) => {
                 ],
             },
         },
-        // 🧹 Auto-clean: If video is deleted, remove from history result
+        // Auto-clean: if video is deleted, remove from history result
         { $unwind: { path: "$video", preserveNullAndEmptyArrays: false } },
         {
             $project: {
@@ -96,10 +93,7 @@ export const getWatchHistory = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, result, "Watch history fetched successfully"));
 });
 
-/* ==========================================================================
-   📍 UPDATE WATCH PROGRESS (Resume Playback)
-   Updates the lastPosition for a video in watch history
-   ========================================================================== */
+// Update watch progress (resume playback)
 export const updateWatchProgress = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
     const { lastPosition } = req.body;
@@ -114,7 +108,7 @@ export const updateWatchProgress = asyncHandler(async (req, res) => {
 
     const history = await History.findOneAndUpdate(
         { owner: req.user._id, video: videoId },
-        { 
+        {
             lastPosition,
             watchedAt: new Date() // Also update watchedAt when progress is saved
         },
@@ -126,9 +120,7 @@ export const updateWatchProgress = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, history, "Watch progress updated"));
 });
 
-/* ==========================================================================
-   ⏳ WATCH LATER
-   ========================================================================== */
+// Liked videos
 export const getWatchLater = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
 
@@ -165,7 +157,7 @@ export const getWatchLater = asyncHandler(async (req, res) => {
                         },
                     },
                     { $addFields: { owner: { $first: "$owner" } } },
-                    // 🎭 STEALTH MASKING
+                    // Stealth masking
                     {
                         $addFields: {
                             "owner.fullName": {
@@ -211,10 +203,8 @@ export const getWatchLater = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, result, "Watch later fetched successfully"));
 });
 
-/* ==========================================================================
-   ❤️ LIKED VIDEOS
-   Fetches only LIKES on VIDEOS (ignores tweets/comments)
-   ========================================================================== */
+
+// Watch later videos
 export const getLikedVideos = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
 
@@ -252,7 +242,7 @@ export const getLikedVideos = asyncHandler(async (req, res) => {
                         },
                     },
                     { $addFields: { owner: { $first: "$owner" } } },
-                    // 🎭 STEALTH MASKING
+                    // Stealth masking
                     {
                         $addFields: {
                             "owner.fullName": {
@@ -306,10 +296,8 @@ export const getLikedVideos = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, result, "Liked videos fetched successfully"));
 });
 
-/* ==========================================================================
-   💾 SAVED PLAYLISTS
-   Playlists saved by the user from other creators
-   ========================================================================== */
+
+// Bookmarked tweets
 export const getSavedPlaylists = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
 
@@ -346,7 +334,7 @@ export const getSavedPlaylists = asyncHandler(async (req, res) => {
                         },
                     },
                     { $addFields: { owner: { $first: "$owner" } } },
-                    // 🎭 STEALTH MASKING (Playlist Level - Only Global Cloak applies here)
+                    // Stealth masking (playlist level - only global cloak applies here)
                     {
                         $addFields: {
                             "owner.fullName": {
@@ -390,24 +378,22 @@ export const getSavedPlaylists = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, result, "Saved playlists fetched successfully"));
 });
 
-/* ==========================================================================
-   ⏳ TOGGLE WATCH LATER
-   Add or remove video from watch later list
-   ========================================================================== */
+
+// Liked comments
 export const toggleWatchLater = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
     const userId = req.user._id;
 
-    console.log('🎬 toggleWatchLater called - videoId:', videoId, 'userId:', userId);
+    console.log('toggleWatchLater called - videoId:', videoId, 'userId:', userId);
 
     if (!videoId) {
         return res.status(400).json(new ApiResponse(400, null, "Video ID is required"));
     }
 
     // Check if already in watch later
-    const existing = await WatchLater.findOne({ 
-        video: videoId, 
-        owner: userId 
+    const existing = await WatchLater.findOne({
+        video: videoId,
+        owner: userId
     });
 
     console.log('📌 Existing watch later entry:', existing ? 'Found' : 'Not found');
@@ -415,27 +401,25 @@ export const toggleWatchLater = asyncHandler(async (req, res) => {
     if (existing) {
         // Remove from watch later
         await WatchLater.findByIdAndDelete(existing._id);
-        console.log('❌ Removed from watch later');
+        console.log('Removed from watch later');
         return res.status(200).json(new ApiResponse(200, { isInWatchLater: false }, "Removed from My List"));
     } else {
         // Add to watch later
         const newEntry = await WatchLater.create({ video: videoId, owner: userId });
-        console.log('✅ Added to watch later:', newEntry._id);
+        console.log('Added to watch later:', newEntry._id);
         return res.status(200).json(new ApiResponse(200, { isInWatchLater: true }, "Added to My List"));
     }
 });
 
-/* ==========================================================================
-   🔍 CHECK WATCH LATER STATUS
-   Check if a video is in user's watch later list
-   ========================================================================== */
+
+// Clear watch history
 export const checkWatchLater = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
     const userId = req.user._id;
 
-    const existing = await WatchLater.findOne({ 
-        video: videoId, 
-        owner: userId 
+    const existing = await WatchLater.findOne({
+        video: videoId,
+        owner: userId
     });
 
     return res.status(200).json(new ApiResponse(200, { isInWatchLater: !!existing }, "Watch later status"));

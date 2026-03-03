@@ -17,21 +17,16 @@ import { publishVideoSchema, updateVideoSchema, askQuestionSchema } from "../val
 
 const router = Router();
 
-/* ==========================================================================
-   🔓 PUBLIC ROUTES (With Stealth/Privacy logic)
-   Req.user is populated globally.
-   ========================================================================== */
+// Public routes (with stealth/privacy logic, req.user populated globally)
 router.route("/").get(getAllVideos);
 router.route("/v/:videoId").get(getVideoById);
 
-// 🤖 AI Features (Public - anyone can summarize or ask questions) - WITH RATE LIMITING
+// AI Features (Public - anyone can summarize or ask questions) - with rate limiting
 router.route("/v/:videoId/summarize").post(aiLimiter, generateVideoSummary);
 router.route("/v/:videoId/ask").post(aiLimiter, validate(askQuestionSchema), askQuestionAboutVideo);
 
 
-/* ==========================================================================
-   🔐 PROTECTED ROUTES (Creator Tools)
-   ========================================================================== */
+// Protected routes (creator tools)
 router.use(restrictTo(["USER", "ADMIN"]));
 
 router.route("/publish").post(

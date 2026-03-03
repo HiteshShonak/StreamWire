@@ -22,7 +22,7 @@ export default function ShadowInput({ onSuccess }) {
     const MAX_CHARS = 500
     const MAX_IMAGES = 1
 
-    // ⚡ Mutation - Always stealth mode
+    // Mutation - always stealth mode
     const createMutation = useMutation({
         mutationFn: (payload) => {
             const formData = new FormData()
@@ -49,7 +49,7 @@ export default function ShadowInput({ onSuccess }) {
             if (onSuccess) onSuccess()
         },
         onError: (err) => {
-            console.error('❌ ShadowInput - Mutation error:', err);
+            console.error('ShadowInput - Mutation error:', err);
             toast.error(err.message || "Shadow failed to materialize")
         }
     })
@@ -62,7 +62,7 @@ export default function ShadowInput({ onSuccess }) {
         setPollOptions(["", ""])
     }
 
-    // 🖼️ Image Handling
+    // Image Handling
     const handleImageUpload = async (e) => {
         const files = Array.from(e.target.files)
 
@@ -111,7 +111,7 @@ export default function ShadowInput({ onSuccess }) {
         setImages(prev => prev.filter((_, i) => i !== index))
     }
 
-    // 📊 Poll Handling
+    // Poll Handling
     const handleAddOption = () => {
         if (pollOptions.length >= 4) return toast.error("Max 4 options allowed")
         setPollOptions([...pollOptions, ""])
@@ -136,14 +136,14 @@ export default function ShadowInput({ onSuccess }) {
         setShowPoll(!showPoll)
     }
 
-    // 📝 Submission - Always stealth
+    // Submission - Always stealth
     const handleSubmit = () => {
         if (!content.trim()) return
 
         const payload = {
             content,
             images,
-            isStealthMode: true // 🔒 ALWAYS TRUE for Shadows
+            isStealthMode: true // Always true for Shadows
         }
 
         if (showPoll) {
@@ -189,7 +189,7 @@ export default function ShadowInput({ onSuccess }) {
                     className="w-full bg-transparent outline-none text-zinc-200 placeholder:text-zinc-600 resize-none min-h-[100px]"
                 />
 
-                {/* 📊 Poll Creator Interface */}
+                {/* Poll Creator Interface */}
                 <AnimatePresence>
                     {showPoll && (
                         <motion.div

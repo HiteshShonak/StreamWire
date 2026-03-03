@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-// 1. ADDED IMPORTS
+// Imports
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import {
@@ -10,9 +10,6 @@ import {
 import Header from '../Components/Header'
 import Sidebar from '../Components/Sidebar'
 
-// ==========================================
-// 🎨 BACKGROUND COMPONENTS
-// ==========================================
 const NoiseOverlay = () => (
    <div className="absolute inset-0 pointer-events-none z-10 opacity-[0.04] mix-blend-overlay">
       <svg className="w-full h-full">
@@ -25,7 +22,7 @@ const NoiseOverlay = () => (
 )
 
 export default function About() {
-   // 2. GET AUTH STATUS
+   // Get auth status
    const { status } = useSelector((state) => state.auth)
 
    const coreFeatures = [
@@ -364,7 +361,7 @@ export default function About() {
                      </div>
                   </motion.div>
 
-                  {/* 3. UPDATED CALL TO ACTION */}
+                  {/* UPDATED CALL TO ACTION */}
                   <motion.div
                      initial={{ opacity: 0, scale: 0.95 }}
                      animate={{ opacity: 1, scale: 1 }}

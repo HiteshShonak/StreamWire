@@ -2,20 +2,19 @@ import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  Shield, Zap, Ghost, Lock, Play, 
-  ArrowRight, Globe, Users 
+import {
+  Shield, Zap, Ghost, Lock, Play,
+  ArrowRight, Globe, Users
 } from 'lucide-react'
 
-// 🎨 COMPONENT: The Interactive Stealth Demo
-// This sits on the landing page to show users EXACTLY how privacy works.
+// The interactive stealth demo
 const StealthDemo = () => {
   const [isStealth, setIsStealth] = useState(false)
 
   return (
     <div className="relative group cursor-default">
       {/* The Toggle Switch UI */}
-      <div 
+      <div
         onClick={() => setIsStealth(!isStealth)}
         className={`
           absolute -top-6 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider cursor-pointer select-none transition-all duration-300 shadow-lg z-20 flex items-center gap-2
@@ -27,12 +26,12 @@ const StealthDemo = () => {
       </div>
 
       {/* The Profile Card */}
-      <motion.div 
+      <motion.div
         layout
         className={`
           relative w-72 p-6 rounded-2xl border backdrop-blur-xl transition-all duration-500 overflow-hidden
-          ${isStealth 
-            ? "bg-zinc-950/80 border-green-500/30 shadow-2xl shadow-green-500/10" 
+          ${isStealth
+            ? "bg-zinc-950/80 border-green-500/30 shadow-2xl shadow-green-500/10"
             : "bg-white/80 border-zinc-200 shadow-xl shadow-indigo-500/10"
           }
         `}
@@ -40,7 +39,7 @@ const StealthDemo = () => {
         {/* Matrix Rain Effect (Only in Stealth) */}
         <AnimatePresence>
           {isStealth && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="absolute inset-0 bg-[url('https://upload.wikimedia.org/wikipedia/commons/1/17/Matrix_code.gif')] bg-cover opacity-5 pointer-events-none mix-blend-screen"
             />
@@ -48,7 +47,7 @@ const StealthDemo = () => {
         </AnimatePresence>
 
         <div className="flex items-center gap-4 mb-4 relative z-10">
-          <motion.div 
+          <motion.div
             layout
             className={`w-12 h-12 rounded-full flex items-center justify-center text-xl overflow-hidden transition-colors duration-500 ${isStealth ? "bg-zinc-900 text-green-500 border border-green-500/50" : "bg-indigo-100 text-indigo-600"}`}
           >
@@ -80,11 +79,11 @@ const StealthDemo = () => {
   )
 }
 
-// 🏠 MAIN COMPONENT
+// Main component
 export default function Home() {
   const { status, userData } = useSelector((state) => state.auth)
 
-  // 🔀 VIEW 1: LOGGED IN (The Dashboard/Feed)
+  // View 1: Logged in
   if (status) {
     return (
       <div className="space-y-8 animate-in fade-in duration-500">
@@ -122,16 +121,16 @@ export default function Home() {
     )
   }
 
-  // 🌍 VIEW 2: GUEST (The Landing Page)
+  // View 2: Guest (landing page)
   return (
     <div className="min-h-screen">
-      
+
       {/* HERO SECTION */}
       <section className="relative pt-20 pb-32 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
-          
+
           {/* Left: Copy */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
@@ -141,14 +140,14 @@ export default function Home() {
               <Zap className="w-3 h-3 fill-current" />
               <span>The Future of Streaming</span>
             </div>
-            
+
             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-zinc-900 leading-[1.1]">
               Stream Boldly. <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">
                 Speak Freely.
               </span>
             </h1>
-            
+
             <p className="text-lg text-zinc-600 max-w-lg leading-relaxed">
               The first platform where you can switch between a <b>Public Creator</b> and a <b>Stealth Ghost</b> instantly. Build a brand, or speak the truth anonymously.
             </p>
@@ -161,7 +160,7 @@ export default function Home() {
                 How it works
               </Link>
             </div>
-            
+
             <div className="pt-8 flex items-center gap-6 text-sm font-medium text-zinc-500">
               <div className="flex items-center gap-2">
                 <Globe className="w-4 h-4 text-indigo-600" /> Censorship Resistant
@@ -173,7 +172,7 @@ export default function Home() {
           </motion.div>
 
           {/* Right: Interactive Visual */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -182,11 +181,11 @@ export default function Home() {
             {/* Abstract Blobs */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
             <div className="absolute top-1/2 left-1/2 -translate-x-1/4 -translate-y-3/4 w-[300px] h-[300px] bg-green-500/10 rounded-full blur-3xl pointer-events-none"></div>
-            
+
             {/* The Demo Component */}
             <div className="relative">
-               <div className="absolute -inset-4 bg-white/50 backdrop-blur-sm rounded-3xl border border-white/50 -z-10 rotate-6 scale-105"></div>
-               <StealthDemo />
+              <div className="absolute -inset-4 bg-white/50 backdrop-blur-sm rounded-3xl border border-white/50 -z-10 rotate-6 scale-105"></div>
+              <StealthDemo />
             </div>
           </motion.div>
 
@@ -202,17 +201,17 @@ export default function Home() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <FeatureCard 
+            <FeatureCard
               icon={<Ghost className="w-8 h-8 text-indigo-600" />}
               title="Stealth Mode"
               desc="Flip a switch to cloak your identity. Post anonymously, and reveal yourself only when you are ready to claim the fame."
             />
-            <FeatureCard 
+            <FeatureCard
               icon={<Lock className="w-8 h-8 text-indigo-600" />}
               title="Ghost Mode"
               desc="Feeling unsafe? One button wipes your digital footprint from specific interactions instantly. Total control."
             />
-            <FeatureCard 
+            <FeatureCard
               icon={<Zap className="w-8 h-8 text-indigo-600" />}
               title="Viral Claim"
               desc="Go viral as a ghost. When your video hits 1M views, claim it to your main profile and transfer the stats."

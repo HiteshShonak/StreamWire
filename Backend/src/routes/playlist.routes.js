@@ -14,19 +14,14 @@ import { createContentLimiter } from "../middlewares/rate-limiters/index.js";
 import { validate } from "../middlewares/validate.middleware.js";
 import { createPlaylistSchema, updatePlaylistSchema } from "../validations/index.js";
 
+
 const router = Router();
 
-/* ==========================================================================
-   🔓 PUBLIC ROUTES (View)
-   Req.user is populated globally if logged in.
-   Controllers use this to apply "Stealth Mode" and "Private Playlist" logic.
-   ========================================================================== */
+// Public routes (req.user populated globally if logged in, controllers use this for stealth/private logic)
 router.route("/user/:userId").get(getUserPlaylists);
 router.route("/:playlistId").get(getPlaylistById);
 
-/* ==========================================================================
-   🔐 PROTECTED ROUTES (Manage)
-   ========================================================================== */
+// Protected routes
 router.use(restrictTo(["USER", "ADMIN"]));
 
 router.route("/").post(createContentLimiter, validate(createPlaylistSchema), createPlaylist);

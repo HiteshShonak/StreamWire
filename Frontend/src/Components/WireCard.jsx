@@ -10,7 +10,7 @@ import {
 import { formatDistanceToNow } from 'date-fns'
 import toast from 'react-hot-toast'
 
-// 🔌 Services (Imported for local mutation)
+// Services (Imported for local mutation)
 import { tweetService } from '../api/services/tweet.service'
 import { subscriptionService } from '../api/services/subscription.service'
 
@@ -30,13 +30,13 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
         })
     }
 
-    // �️ SAFETY: Guard against undefined wire
+    // Guard against undefined wire
     if (!wire) return null
 
-    // �🔍 CHECK OWNERSHIP
+    // Check ownership
     const isOwner = userData?._id === wire.owner?._id
 
-    // 🎭 IDENTITY LOGIC
+    // Identity logic
     const isStealth = wire.isStealthMode || wire.owner?.isIdentityCloaked
     const displayName = isStealth ? "StreamWire User" : wire.owner?.fullName
     const displayHandle = isStealth ? "@anonymous" : `@${wire.owner?.username}`
@@ -44,7 +44,7 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
         ? `https://ui-avatars.com/api/?name=S&background=18181b&color=22c55e`
         : wire.owner?.avatar?.url
 
-    // ⚡ STEALTH / CLAIM MUTATION
+    // Stealth / claim mutation
     const toggleStealthMutation = useMutation({
         mutationFn: () => tweetService.updateTweet(wire._id, { isStealthMode: !isStealth }),
         onSuccess: () => {
@@ -55,7 +55,7 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
         onError: () => toast.error("Failed to update privacy")
     })
 
-    // 🔔 SUBSCRIBE MUTATION
+    // Subscribe mutation
     const subscribeMutation = useMutation({
         mutationFn: () => subscriptionService.toggleSubscription(wire.owner?._id),
         onSuccess: (data) => {
@@ -89,7 +89,7 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
             `}
         >
             <div className="flex gap-3 sm:gap-4">
-                {/* 1. Avatar Column */}
+                {/* Avatar Column */}
                 <Link
                     to={isStealth ? "#" : `/c/${wire.owner?.username}`}
                     className="flex-shrink-0"
@@ -102,7 +102,7 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
                     />
                 </Link>
 
-                {/* 2. Content Column */}
+                {/* Content Column */}
                 <div className="flex-1 min-w-0">
 
                     {/* Header: Name, Badge, Handle, Time, Menu */}

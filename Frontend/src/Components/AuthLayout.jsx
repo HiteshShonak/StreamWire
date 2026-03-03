@@ -10,15 +10,15 @@ export default function AuthLayout({ children, authentication = true }) {
 
     useEffect(() => {
         // Logic:
-        // 1. If page requires Auth (true) AND user is NOT logged in -> Go to Login
-        // 2. If page is Guest Only (false) AND user IS logged in -> Go to Dashboard
-        
+        // If page requires Auth AND user is NOT logged in -> Go to Login
+        // If page is Guest Only AND user IS logged in -> Go to Dashboard
+
         if (authentication && authStatus !== authentication) {
             navigate("/login")
         } else if (!authentication && authStatus !== authentication) {
             navigate("/home")
         }
-        
+
         setLoader(false)
     }, [authStatus, navigate, authentication])
 

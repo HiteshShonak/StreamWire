@@ -38,23 +38,23 @@ export default function ShadowPost() {
     })
   }
 
-  // 1. Fetch Shadow
+  // Fetch Shadow
   const { data: shadow, isLoading: shadowLoading } = useQuery({
     queryKey: ['shadow', shadowId],
     queryFn: async () => await tweetService.getTweetById(shadowId),
     retry: 1
   })
 
-  // 2. Fetch Comments
+  // Fetch Comments
   const { data: commentsData, isLoading: commentsLoading } = useQuery({
     queryKey: ['shadowComments', shadowId],
     queryFn: async () => await commentService.getTweetComments(shadowId, { page: 1, limit: 50 }),
     enabled: !!shadowId
   })
 
-  // --- ACTIONS ---
+  // Actions
 
-  // ⚡ INSTANT LIKE (Optimistic UI)
+  // Instant like (optimistic UI)
   const likeMutation = useMutation({
     mutationFn: likeService.toggleTweetLike,
     onMutate: async () => {
@@ -84,7 +84,7 @@ export default function ShadowPost() {
     }
   })
 
-  // ⚡ VOTE MUTATION (Optimistic)
+  // Vote mutation (optimistic)
   const voteMutation = useMutation({
     mutationFn: ({ tweetId, optionIndex }) => tweetService.voteOnPoll(tweetId, optionIndex),
     onMutate: async ({ optionIndex }) => {
@@ -119,7 +119,7 @@ export default function ShadowPost() {
     }
   })
 
-  // ⚡ CLAIM SHADOW (Make public)
+  // Claim shadow (make public)
   const claimShadowMutation = useMutation({
     mutationFn: () => tweetService.updateTweet(shadowId, { isStealthMode: false }),
     onSuccess: () => {
@@ -230,7 +230,7 @@ export default function ShadowPost() {
     }
   })
 
-  // ⚡ COMMENT CLAIM/UNCLAIM TOGGLE (Optimistic)
+  // Comment claim/unclaim toggle (optimistic)
   const toggleCommentClaimMutation = useMutation({
     mutationFn: ({ commentId, currentStealth }) =>
       commentService.updateComment(commentId, undefined, !currentStealth),
@@ -277,7 +277,7 @@ export default function ShadowPost() {
     addCommentMutation.mutate({ content: commentText, isStealthMode: isStealthComment })
   }
 
-  // --- UI RENDER ---
+  // Render
 
   if (shadowLoading) {
     return (
@@ -406,7 +406,7 @@ export default function ShadowPost() {
                   </div>
                 )}
 
-                {/* 📊 POLL RENDERER */}
+                {/* Poll renderer */}
                 {shadow.poll && (
                   <div className="mb-4 space-y-2 mt-2">
                     {shadow.poll.options.map((option, index) => {

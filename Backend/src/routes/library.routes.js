@@ -12,9 +12,7 @@ import { restrictTo } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-/* ==========================================================================
-   🔐 PROTECTED ROUTES (Personal Library)
-   ========================================================================== */
+// Protected routes
 router.use(restrictTo(["USER", "ADMIN"]));
 
 router.route("/history").get(getWatchHistory);

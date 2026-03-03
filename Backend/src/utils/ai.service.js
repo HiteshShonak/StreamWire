@@ -8,11 +8,10 @@ import Groq from "groq-sdk";
 import { Video } from "../models/video.model.js";
 import { ApiError } from "./ApiError.js";
 
-// 🎬 Configure FFmpeg path (uses npm-installed binary)
+// Configure FFmpeg path
 ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
-// 🔑 Lazy-initialize Groq (to ensure dotenv has loaded first)
-// Free: 14,400 requests/day, 500K tokens/day
+// Lazy-load Groq
 let groq = null;
 const getGroq = () => {
     if (!groq) {
@@ -21,9 +20,7 @@ const getGroq = () => {
     return groq;
 };
 
-/**
- * 🧹 Helper: Safely deletes a file if it exists
- */
+// Safely delete file if it exists
 const safeDelete = (path) => {
     try {
         if (path && fs.existsSync(path)) fs.unlinkSync(path);
@@ -32,14 +29,12 @@ const safeDelete = (path) => {
     }
 };
 
-/**
- * 📥 Helper: Download file from URL to temp location (supports http/https)
- */
+// Download file from URL to temp location
 const downloadFromUrl = async (url, destPath) => {
     return new Promise((resolve, reject) => {
         const file = fs.createWriteStream(destPath);
         const protocol = url.startsWith('https') ? https : http;
-        
+
         const request = (targetUrl) => {
             protocol.get(targetUrl, (response) => {
                 // Handle redirects
@@ -63,19 +58,16 @@ const downloadFromUrl = async (url, destPath) => {
                     reject(new Error(`HTTP ${response.statusCode}`));
                 }
             }).on('error', (err) => {
-                fs.unlink(destPath, () => {}); // Cleanup on error
+                fs.unlink(destPath, () => { }); // Cleanup on error
                 reject(err);
             });
         };
-        
+
         request(url);
     });
 };
 
-/**
- * � Retry Helper with Exponential Backoff
- * Handles rate limiting (429) and transient errors
- */
+// Retry helper with backoff (handles rate limiting)
 const retryWithBackoff = async (fn, maxRetries = 3, baseDelay = 3000) => {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
@@ -83,30 +75,27 @@ const retryWithBackoff = async (fn, maxRetries = 3, baseDelay = 3000) => {
         } catch (error) {
             const isRateLimited = error.message?.includes('429') || error.message?.includes('quota');
             const isLastAttempt = attempt === maxRetries;
-            
+
             if (isLastAttempt || !isRateLimited) {
                 throw error;
             }
-            
+
             const delay = baseDelay * Math.pow(2, attempt - 1); // 3s, 6s, 12s
-            console.log(`⏳ [AI Worker] Rate limited. Retrying in ${delay/1000}s... (Attempt ${attempt}/${maxRetries})`);
+            console.log(`[AI Worker] Rate limited. Retrying in ${delay / 1000}s... (Attempt ${attempt}/${maxRetries})`);
             await new Promise(resolve => setTimeout(resolve, delay));
         }
     }
 };
 
-/**
- * �🛡️ Background Task Wrapper
- * Replaces 'asyncHandler' for non-HTTP tasks.
- */
+// Background task wrapper (replaces asyncHandler for non-HTTP tasks)
 const executeBackgroundTask = async (taskName, resourcesToCleanup, taskLogic) => {
     try {
-        console.log(`🤖 [AI Worker] Starting: ${taskName}`);
+        console.log(`[AI Worker] Starting: ${taskName}`);
         await taskLogic();
-        console.log(`✅ [AI Worker] Completed: ${taskName}`);
+        console.log(`[AI Worker] Completed: ${taskName}`);
     } catch (error) {
         const errorMsg = error instanceof ApiError ? error.message : "Internal AI Service Error";
-        console.error(`❌ [AI Worker] Failed (${taskName}):`, errorMsg);
+        console.error(`[AI Worker] Failed (${taskName}):`, errorMsg);
         if (error.stack && !(error instanceof ApiError)) console.error(error.stack);
     } finally {
         if (resourcesToCleanup && Array.isArray(resourcesToCleanup)) {
@@ -116,10 +105,10 @@ const executeBackgroundTask = async (taskName, resourcesToCleanup, taskLogic) =>
 };
 
 /**
- * 🧠 Generate metadata from Cloudinary URL
- * Downloads video → Extracts optimized audio with FFmpeg → Transcribes with Groq Whisper
- * Optionally generates description if not provided by user
- * This approach saves bandwidth and processing time!
+ * Generate metadata from Cloudinary URL
+ * Downloads video → Extracts audio with FFmpeg → Transcribes with Groq Whisper
+ * Can also generate description if user didn't provide one
+ * This saves bandwidth and processing time!
  * 
  * @param {string} cloudinaryUrl - The Cloudinary URL of the video
  * @param {string} videoId - The MongoDB video ID
@@ -138,25 +127,25 @@ export const generateVideoMetadataFromUrl = async (cloudinaryUrl, videoId, optio
     }
 
     await executeBackgroundTask(
-        `Metadata Gen from URL for ${videoId}`, 
+        `Metadata Gen from URL for ${videoId}`,
         [videoPath, audioPath], // Files to auto-delete in 'finally'
         async () => {
-            
+
             // 1. Validation
             if (!videoId) throw new ApiError(400, "Video ID is missing for AI processing");
             if (!cloudinaryUrl) throw new ApiError(400, "Cloudinary URL is missing");
 
-            console.log(`🤖 [AI Worker] Downloading video from Cloudinary...`);
+            console.log(`[AI Worker] Downloading video from Cloudinary...`);
 
             // 2. Download video from Cloudinary
             await downloadFromUrl(cloudinaryUrl, videoPath);
-            
+
             if (!fs.existsSync(videoPath)) {
                 throw new ApiError(500, "Failed to download video from Cloudinary");
             }
 
             const videoStats = fs.statSync(videoPath);
-            console.log(`🤖 [AI Worker] Video downloaded (${(videoStats.size / 1024 / 1024).toFixed(2)} MB). Extracting audio...`);
+            console.log(`[AI Worker] Video downloaded (${(videoStats.size / 1024 / 1024).toFixed(2)} MB). Extracting audio...`);
 
             // 3. Extract optimized audio with FFmpeg (saves bandwidth!)
             await new Promise((resolve, reject) => {
@@ -167,13 +156,13 @@ export const generateVideoMetadataFromUrl = async (cloudinaryUrl, videoId, optio
                     .audioChannels(1)    // Mono (halves file size)
                     .audioFrequency(16000) // 16kHz is perfect for speech
                     .output(audioPath)
-                    .on('start', (cmd) => console.log(`🎵 [FFmpeg] Starting: ${cmd}`))
+                    .on('start', (cmd) => console.log(`[FFmpeg] Starting: ${cmd}`))
                     .on('end', () => {
-                        console.log(`🎵 [FFmpeg] Audio extraction complete`);
+                        console.log(`[FFmpeg] Audio extraction complete`);
                         resolve();
                     })
                     .on('error', (err) => {
-                        console.error(`🎵 [FFmpeg] Error: ${err.message}`);
+                        console.error(`[FFmpeg] Error: ${err.message}`);
                         reject(new ApiError(500, `FFmpeg processing failed: ${err.message}`));
                     })
                     .run();
@@ -185,11 +174,11 @@ export const generateVideoMetadataFromUrl = async (cloudinaryUrl, videoId, optio
 
             const audioStats = fs.statSync(audioPath);
             const savings = ((1 - audioStats.size / videoStats.size) * 100).toFixed(1);
-            console.log(`🤖 [AI Worker] Audio extracted (${(audioStats.size / 1024 / 1024).toFixed(2)} MB) - ${savings}% smaller!`);
+            console.log(`[AI Worker] Audio extracted (${(audioStats.size / 1024 / 1024).toFixed(2)} MB) - ${savings}% smaller!`);
 
             // 4. Transcribe with Groq Whisper (best-in-class accuracy!)
-            console.log(`🤖 [AI Worker] Transcribing with Groq Whisper...`);
-            
+            console.log(`[AI Worker] Transcribing with Groq Whisper...`);
+
             const transcription = await retryWithBackoff(async () => {
                 return await getGroq().audio.transcriptions.create({
                     file: fs.createReadStream(audioPath),
@@ -200,7 +189,7 @@ export const generateVideoMetadataFromUrl = async (cloudinaryUrl, videoId, optio
             }, 3, 2000);
 
             const transcript = transcription || "";
-            console.log(`🤖 [AI Worker] Transcript received (${transcript.length} chars). Generating tags...`);
+            console.log(`[AI Worker] Transcript received (${transcript.length} chars). Generating tags...`);
 
             // 5. Generate Tags with Llama (super fast on Groq!)
             const tagsResponse = await retryWithBackoff(async () => {
@@ -228,13 +217,13 @@ export const generateVideoMetadataFromUrl = async (cloudinaryUrl, videoId, optio
                 tags = JSON.parse(tagsText.replace(/```json|```/g, "").trim());
                 if (!Array.isArray(tags)) tags = [];
             } catch (e) {
-                console.log(`🤖 [AI Worker] Failed to parse tags, using empty array`);
+                console.log(`[AI Worker] Failed to parse tags, using empty array`);
             }
 
             // 7. Generate Description (if needed)
             let description = "";
             if (generateDescription && transcript) {
-                console.log(`🤖 [AI Worker] Generating AI description...`);
+                console.log(`[AI Worker] Generating AI description...`);
                 const descriptionResponse = await retryWithBackoff(async () => {
                     return await getGroq().chat.completions.create({
                         model: "llama-3.3-70b-versatile",
@@ -254,7 +243,7 @@ export const generateVideoMetadataFromUrl = async (cloudinaryUrl, videoId, optio
                 }, 3, 2000);
 
                 description = descriptionResponse.choices[0]?.message?.content?.trim() || "";
-                console.log(`🤖 [AI Worker] Description generated: "${description.substring(0, 50)}..."`);
+                console.log(`[AI Worker] Description generated: "${description.substring(0, 50)}..."`);
             }
 
             // 8. Update Database
@@ -274,109 +263,23 @@ export const generateVideoMetadataFromUrl = async (cloudinaryUrl, videoId, optio
 
             if (!updatedVideo) throw new ApiError(404, "Video not found in DB during update");
 
-            // 🎉 SUCCESS SUMMARY
+            // SUCCESS SUMMARY
             console.log(`\n${'='.repeat(60)}`);
-            console.log(`🤖 AI PROCESSING COMPLETE - Video ID: ${videoId}`);
+            console.log(`AI PROCESSING COMPLETE - Video ID: ${videoId}`);
             console.log(`${'='.repeat(60)}`);
-            console.log(`📝 Transcript Generated: ${transcript ? '✅ YES' : '❌ NO'}`);
+            console.log(`Transcript Generated: ${transcript ? 'YES' : 'NO'}`);
             console.log(`   └─ Length: ${transcript.length || 0} characters`);
             console.log(`   └─ Preview: "${transcript.substring(0, 100)}${transcript.length > 100 ? '...' : ''}"`);
-            console.log(`🏷️  Tags Generated: ${tags.length || 0} tags`);
+            console.log(`Tags Generated: ${tags.length || 0} tags`);
             console.log(`   └─ Tags: [${tags.join(', ') || 'none'}]`);
             if (generateDescription) {
-                console.log(`📄 Description Generated: ${description ? '✅ YES' : '❌ NO'}`);
+                console.log(`Description Generated: ${description ? 'YES' : 'NO'}`);
                 console.log(`   └─ Preview: "${description.substring(0, 80)}${description.length > 80 ? '...' : ''}"`);
             }
-            console.log(`📊 Video Stats:`);
+            console.log(`Video Stats:`);
             console.log(`   └─ Title: ${updatedVideo.title}`);
             console.log(`   └─ Total Tags: ${updatedVideo.tags?.length || 0}`);
             console.log(`${'='.repeat(60)}\n`);
-        }
-    );
-};
-
-/**
- * 🧠 LEGACY: Core Logic - Direct video upload from local file (no FFmpeg)
- */
-export const generateVideoMetadata = async (videoLocalPath, videoId) => {
-    await executeBackgroundTask(
-        `Metadata Gen for ${videoId}`, 
-        [videoLocalPath],
-        async () => {
-            
-            // 1. Validation
-            if (!videoId) throw new ApiError(400, "Video ID is missing for AI processing");
-            if (!fs.existsSync(videoLocalPath)) throw new ApiError(404, "Video file not found on disk");
-
-            // 2. Upload Video directly to Gemini
-            const uploadResponse = await fileManager.uploadFile(videoLocalPath, {
-                mimeType: "video/mp4",
-                displayName: `Video_${videoId}`,
-            });
-
-            console.log(`🤖 [AI Worker] Video uploaded to Gemini. Waiting for processing...`);
-
-            // 3. Wait for video processing
-            let file = await fileManager.getFile(uploadResponse.file.name);
-            while (file.state === "PROCESSING") {
-                await new Promise(resolve => setTimeout(resolve, 5000));
-                file = await fileManager.getFile(uploadResponse.file.name);
-            }
-
-            if (file.state === "FAILED") {
-                throw new ApiError(500, "Gemini failed to process the video");
-            }
-
-            // 4. Select Model
-            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-            // 5. Generate Content
-            const result = await model.generateContent([
-                {
-                    fileData: {
-                        mimeType: file.mimeType,
-                        fileUri: file.uri,
-                    },
-                },
-                {
-                    text: `
-                    You are a video metadata AI. Watch and listen to this video carefully.
-                    1. Generate a comprehensive transcript of what is being said.
-                    2. Generate 5-8 SEO-friendly tags based on the topics discussed.
-                    
-                    Return ONLY a raw JSON object (no markdown formatting) with this schema:
-                    {
-                        "transcript": "Full text transcript here...",
-                        "tags": ["tag1", "tag2", "tag3"]
-                    }
-                    `
-                },
-            ]);
-
-            // 6. Parse JSON Response
-            const responseText = result.response.text().replace(/```json|```/g, "").trim();
-            let aiData;
-            
-            try {
-                aiData = JSON.parse(responseText);
-            } catch (error) {
-                throw new ApiError(500, "Failed to parse Gemini response as JSON");
-            }
-
-            // 7. Update Database
-            const updatedVideo = await Video.findByIdAndUpdate(videoId, {
-                $set: {
-                    transcript: aiData.transcript || "",
-                },
-                $addToSet: { tags: { $each: aiData.tags || [] } }
-            }, { new: true });
-
-            if (!updatedVideo) throw new ApiError(404, "Video not found in DB during update");
-
-            console.log(`🤖 [AI Worker] Database updated with transcript and ${aiData.tags?.length || 0} AI tags`);
-
-            // 8. Cleanup Gemini Cloud Storage
-            await fileManager.deleteFile(uploadResponse.file.name);
         }
     );
 };

@@ -23,7 +23,7 @@ const videoSchema = new Schema(
             trim: true
         },
         duration: {
-            type: Number, 
+            type: Number,
             required: [true, "Duration is required"]
         },
         views: {
@@ -31,13 +31,13 @@ const videoSchema = new Schema(
             default: 0
         },
         transcript: {
-            type: String, 
+            type: String,
             default: ""
         },
         tags: {
             type: [String],
             default: [],
-            index: true 
+            index: true
         },
         isPublished: {
             type: Boolean,
@@ -61,7 +61,7 @@ const videoSchema = new Schema(
             ref: "User",
             required: true
         },
-        // 🔥 Trend Score - Calculated periodically or on engagement
+        // Trend Score - Calculated periodically or on engagement
         trendScore: {
             type: Number,
             default: 0,
@@ -77,18 +77,18 @@ videoSchema.plugin(mongooseAggregatePaginate);
 // --- SEARCH ENGINE OPTIMIZATION ---
 // Weights allow title matches to rank higher than description matches
 videoSchema.index(
-    { 
-        title: "text", 
-        tags: "text",  
+    {
+        title: "text",
+        tags: "text",
         description: "text",
-        transcript: "text" 
+        transcript: "text"
     },
     {
         weights: {
-            title: 10,      
-            tags: 8,       
-            description: 5,  
-            transcript: 1    
+            title: 10,
+            tags: 8,
+            description: 5,
+            transcript: 1
         },
         name: "VideoTextIndex"
     }

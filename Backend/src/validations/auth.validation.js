@@ -1,8 +1,6 @@
 import { z } from "zod";
 
-/* ==========================================================================
-   AUTHENTICATION VALIDATION SCHEMAS
-   ========================================================================== */
+// Authentication validation schemas
 
 // Register Request Schema
 export const registerRequestSchema = z.object({

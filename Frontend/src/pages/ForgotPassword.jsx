@@ -6,18 +6,16 @@ import { motion, AnimatePresence } from "framer-motion"
 import { authService } from "../api/services/auth.service"
 import toast from "react-hot-toast"
 
-// ==========================================
-// 🎨 BACKGROUND COMPONENTS
-// ==========================================
+// Background components
 const NoiseOverlay = () => (
-  <div className="absolute inset-0 pointer-events-none z-10 opacity-[0.04] mix-blend-overlay">
-    <svg className="w-full h-full">
-      <filter id="noiseFilter">
-        <feTurbulence type="fractalNoise" baseFrequency="0.6" stitchTiles="stitch"/>
-      </filter>
-      <rect width="100%" height="100%" filter="url(#noiseFilter)"/>
-    </svg>
-  </div>
+    <div className="absolute inset-0 pointer-events-none z-10 opacity-[0.04] mix-blend-overlay">
+        <svg className="w-full h-full">
+            <filter id="noiseFilter">
+                <feTurbulence type="fractalNoise" baseFrequency="0.6" stitchTiles="stitch" />
+            </filter>
+            <rect width="100%" height="100%" filter="url(#noiseFilter)" />
+        </svg>
+    </div>
 )
 
 const AmbientBackground = () => (
@@ -27,12 +25,10 @@ const AmbientBackground = () => (
     </div>
 )
 
-// ==========================================
-// 🔢 OTP INPUT COMPONENT
-// ==========================================
+// OTP input component
 const OTPInput = ({ length = 6, onComplete, disabled = false }) => {
     const [otp, setOtp] = useState(new Array(length).fill(""))
-    
+
     const handleChange = (e, index) => {
         if (isNaN(e.target.value)) return
         const newOtp = [...otp]
@@ -42,7 +38,7 @@ const OTPInput = ({ length = 6, onComplete, disabled = false }) => {
         if (e.target.value && e.target.nextSibling) {
             e.target.nextSibling.focus()
         }
-        
+
         if (newOtp.join("").length === length) {
             onComplete(newOtp.join(""))
         }
@@ -70,9 +66,7 @@ const OTPInput = ({ length = 6, onComplete, disabled = false }) => {
     )
 }
 
-// ==========================================
-// 🔐 FORGOT PASSWORD COMPONENT
-// ==========================================
+// Forgot password page
 export default function ForgotPassword() {
     const [step, setStep] = useState(1) // 1: Enter identifier, 2: Enter OTP, 3: Enter new password
     const [email, setEmail] = useState("")
@@ -94,13 +88,13 @@ export default function ForgotPassword() {
             toast.success(`Recovery code sent to ${response.email}!`)
         } catch (error) {
             let errorMessage = error.message || "Failed to send recovery code"
-            
+
             if (error.message?.includes("No account")) {
                 errorMessage = "No account found with this username or email."
             } else if (error.message?.includes("required")) {
                 errorMessage = "Please enter your username or email."
             }
-            
+
             setServerError(errorMessage)
             toast.error(errorMessage)
         }
@@ -131,7 +125,7 @@ export default function ForgotPassword() {
             navigate("/login")
         } catch (error) {
             let errorMessage = error.message || "Failed to reset password"
-            
+
             if (error.message?.includes("Invalid or expired OTP")) {
                 errorMessage = "Invalid or expired code. Please go back and request a new one."
             } else if (error.message?.includes("no longer exists")) {
@@ -139,7 +133,7 @@ export default function ForgotPassword() {
             } else if (error.message?.includes("required")) {
                 errorMessage = "All fields are required to reset password."
             }
-            
+
             setServerError(errorMessage)
             toast.error(errorMessage)
         }
@@ -154,12 +148,12 @@ export default function ForgotPassword() {
             toast.success("New recovery code sent!")
         } catch (error) {
             let errorMessage = error.message || "Failed to resend code"
-            
+
             if (error.message?.includes("No account")) {
                 errorMessage = "Session expired. Please start over."
                 setStep(1)
             }
-            
+
             setServerError(errorMessage)
             toast.error(errorMessage)
         } finally {
@@ -172,15 +166,15 @@ export default function ForgotPassword() {
             <NoiseOverlay />
             <AmbientBackground />
 
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: "circOut" }}
                 className="w-full max-w-md relative z-20"
             >
-                {/* 🔮 GLASS CARD */}
+                {/* Glass Card */}
                 <div className="bg-zinc-900/40 backdrop-blur-2xl border border-white/10 p-8 rounded-[2rem] shadow-2xl shadow-black/50 overflow-hidden relative group">
-                    
+
                     {/* Top Glow Accent */}
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-50 blur-sm" />
 
@@ -194,18 +188,18 @@ export default function ForgotPassword() {
                             {step === 1 ? "Forgot Password" : step === 2 ? "Verify OTP" : "Reset Password"}
                         </h1>
                         <p className="text-zinc-400 text-sm">
-                            {step === 1 
-                                ? "Enter your email or username to receive an OTP" 
+                            {step === 1
+                                ? "Enter your email or username to receive an OTP"
                                 : step === 2
-                                ? "Enter the 6-digit OTP sent to your email"
-                                : "Create a new password for your account"
+                                    ? "Enter the 6-digit OTP sent to your email"
+                                    : "Create a new password for your account"
                             }
                         </p>
                     </div>
 
                     {/* Error Message */}
                     {serverError && (
-                        <motion.div 
+                        <motion.div
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: "auto", opacity: 1 }}
                             className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-3 text-red-200 text-sm backdrop-blur-sm"
@@ -218,12 +212,12 @@ export default function ForgotPassword() {
                     <AnimatePresence mode="wait">
                         {/* Step 1: Request OTP */}
                         {step === 1 && (
-                            <motion.form 
+                            <motion.form
                                 key="step1"
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: 20 }}
-                                onSubmit={handleSubmit(onRequestOTP)} 
+                                onSubmit={handleSubmit(onRequestOTP)}
                                 className="space-y-5"
                             >
                                 {/* Identifier Field */}
@@ -233,19 +227,19 @@ export default function ForgotPassword() {
                                     </label>
                                     <div className="relative">
                                         <Mail className="absolute left-4 top-3.5 h-5 w-5 text-zinc-500 group-focus-within/input:text-white transition-colors" />
-                                        <input 
-                                            {...register("identifier", { required: "Username or Email is required" })} 
-                                            className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:bg-black/40 focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 outline-none transition-all shadow-inner" 
-                                            placeholder="john@example.com or @johndoe" 
+                                        <input
+                                            {...register("identifier", { required: "Username or Email is required" })}
+                                            className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:bg-black/40 focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 outline-none transition-all shadow-inner"
+                                            placeholder="john@example.com or @johndoe"
                                         />
                                     </div>
                                     {errors.identifier && <p className="text-red-400 text-xs pl-1">{errors.identifier.message}</p>}
                                 </div>
 
                                 {/* Submit Button */}
-                                <button 
+                                <button
                                     disabled={isSubmitting}
-                                    type="submit" 
+                                    type="submit"
                                     className="w-full group relative overflow-hidden bg-white text-black font-bold py-3.5 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:hover:scale-100 mt-4 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]"
                                 >
                                     <div className="absolute inset-0 bg-gradient-to-r from-indigo-400 via-white to-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mix-blend-screen" />
@@ -270,7 +264,7 @@ export default function ForgotPassword() {
 
                         {/* Step 2: Verify OTP */}
                         {step === 2 && (
-                            <motion.div 
+                            <motion.div
                                 key="step2"
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
@@ -318,12 +312,12 @@ export default function ForgotPassword() {
 
                         {/* Step 3: Reset Password */}
                         {step === 3 && (
-                            <motion.form 
+                            <motion.form
                                 key="step3"
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: 20 }}
-                                onSubmit={handleSubmit(onResetPassword)} 
+                                onSubmit={handleSubmit(onResetPassword)}
                                 className="space-y-5"
                             >
                                 {/* Success Message */}
@@ -341,14 +335,14 @@ export default function ForgotPassword() {
                                     </label>
                                     <div className="relative">
                                         <Lock className="absolute left-4 top-3.5 h-5 w-5 text-zinc-500 group-focus-within/input:text-white transition-colors" />
-                                        <input 
+                                        <input
                                             type={showPassword ? "text" : "password"}
-                                            {...register("newPassword", { 
+                                            {...register("newPassword", {
                                                 required: "New password is required",
                                                 minLength: { value: 6, message: "Password must be at least 6 characters" }
-                                            })} 
-                                            className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-12 pr-12 text-white placeholder:text-zinc-600 focus:bg-black/40 focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 outline-none transition-all shadow-inner" 
-                                            placeholder="••••••••" 
+                                            })}
+                                            className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-12 pr-12 text-white placeholder:text-zinc-600 focus:bg-black/40 focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 outline-none transition-all shadow-inner"
+                                            placeholder="••••••••"
                                         />
                                         <button
                                             type="button"
@@ -369,9 +363,9 @@ export default function ForgotPassword() {
                                 </div>
 
                                 {/* Submit Button */}
-                                <button 
+                                <button
                                     disabled={isSubmitting}
-                                    type="submit" 
+                                    type="submit"
                                     className="w-full group relative overflow-hidden bg-white text-black font-bold py-3.5 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:hover:scale-100 mt-4 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]"
                                 >
                                     <div className="absolute inset-0 bg-gradient-to-r from-indigo-400 via-white to-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mix-blend-screen" />

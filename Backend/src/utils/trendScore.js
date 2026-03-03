@@ -11,7 +11,7 @@ const calculateRecencyBoost = (createdAt) => {
     const now = new Date();
     const created = new Date(createdAt);
     const daysSinceCreation = (now - created) / (1000 * 60 * 60 * 24);
-    
+
     if (daysSinceCreation < MAX_DAYS) {
         return (MAX_DAYS - daysSinceCreation) * (MAX_BOOST / MAX_DAYS);
     }
@@ -30,15 +30,15 @@ export const updateVideoTrendScore = async (videoId) => {
         ]);
 
         const recencyBoost = calculateRecencyBoost(video.createdAt);
-        
-        const trendScore = 
-            (video.views * 1) + 
-            (likesCount * 10) + 
-            (commentsCount * 20) + 
+
+        const trendScore =
+            (video.views * 1) +
+            (likesCount * 10) +
+            (commentsCount * 20) +
             recencyBoost;
 
         await Video.findByIdAndUpdate(videoId, { trendScore: Math.round(trendScore) });
-        
+
         return Math.round(trendScore);
     } catch (error) {
         console.error(`Failed to update video trendScore for ${videoId}:`, error.message);
@@ -63,51 +63,19 @@ export const updateTweetTrendScore = async (tweetId) => {
         }
 
         const recencyBoost = calculateRecencyBoost(tweet.createdAt);
-        
-        const trendScore = 
-            ((tweet.views || 0) * 1) + 
-            (likesCount * 10) + 
-            (commentsCount * 20) + 
+
+        const trendScore =
+            ((tweet.views || 0) * 1) +
+            (likesCount * 10) +
+            (commentsCount * 20) +
             (pollVotes * 5) +
             recencyBoost;
 
         await Tweet.findByIdAndUpdate(tweetId, { trendScore: Math.round(trendScore) });
-        
+
         return Math.round(trendScore);
     } catch (error) {
         console.error(`Failed to update tweet trendScore for ${tweetId}:`, error.message);
         return 0;
-    }
-};
-
-
-export const updateAllVideoTrendScores = async () => {
-    try {
-        const videos = await Video.find({ isPublished: true }).select('_id');
-        console.log(`🔄 Updating trendScores for ${videos.length} videos...`);
-        
-        for (const video of videos) {
-            await updateVideoTrendScore(video._id);
-        }
-        
-        console.log('✅ All video trendScores updated');
-    } catch (error) {
-        console.error('❌ Failed to update video trendScores:', error.message);
-    }
-};
-
-
-export const updateAllTweetTrendScores = async () => {
-    try {
-        const tweets = await Tweet.find({}).select('_id');
-        console.log(`🔄 Updating trendScores for ${tweets.length} tweets...`);
-        
-        for (const tweet of tweets) {
-            await updateTweetTrendScore(tweet._id);
-        }
-        
-        console.log('✅ All tweet trendScores updated');
-    } catch (error) {
-        console.error('❌ Failed to update tweet trendScores:', error.message);
     }
 };

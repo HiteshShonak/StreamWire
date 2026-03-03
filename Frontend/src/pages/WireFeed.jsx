@@ -6,14 +6,14 @@ import { motion } from 'framer-motion'
 import { Zap } from 'lucide-react'
 import toast from 'react-hot-toast'
 
-// 🔌 API Services
+// API Services
 import { tweetService } from '../api/services/tweet.service'
 import { likeService } from '../api/services/like.service'
 
-// 🧩 Components
+// Components
 import WireInput from '../Components/WireInput'
 import WireCard from '../Components/WireCard'
-import AuthLock from '../components/Common/AuthLock'
+import AuthLock from '../Components/Common/AuthLock'
 import { WireListSkeleton, WireCardSkeleton } from '../Components/Common/Skeleton'
 
 export default function WireFeed() {
@@ -22,9 +22,7 @@ export default function WireFeed() {
 
     const { userData } = useSelector((state) => state.auth)
 
-    // =========================================
-    // 📡 FETCHING STRATEGY
-    // =========================================
+
     const {
         data,
         fetchNextPage,
@@ -37,8 +35,7 @@ export default function WireFeed() {
             return await tweetService.getAllTweets({
                 page: pageParam,
                 limit: 20,
-                // 🟢 REMOVED 'isStealthMode: false' 
-                // Passing undefined/nothing here tells the backend to fetch EVERYTHING (Public + Stealth)
+                // Backend fetches both public and stealth posts
             })
         },
         getNextPageParam: (lastPage) => lastPage.hasNextPage ? lastPage.nextPage : undefined,
@@ -52,21 +49,19 @@ export default function WireFeed() {
         }
     }, [inView, hasNextPage, fetchNextPage])
 
-    // =========================================
-    // ⚡ ACTIONS (Memoized for React.memo)
-    // =========================================
 
-    // ⚡ Instant Like (Optimistic UI)
+
+    // Instant Like (Optimistic UI)
     const likeMutation = useMutation({
         mutationFn: likeService.toggleTweetLike,
         onMutate: async (tweetId) => {
-            // 1. Cancel outgoing refetches so they don't overwrite our optimistic update
+            // Cancel outgoing refetches
             await queryClient.cancelQueries(['wire'])
 
-            // 2. Snapshot the previous value
+            // Snapshot the previous value
             const previousFeed = queryClient.getQueryData(['wire'])
 
-            // 3. Optimistically update the cache
+            // Optimistically update the cache
             queryClient.setQueryData(['wire'], (oldData) => {
                 if (!oldData) return oldData
                 return {
@@ -133,7 +128,7 @@ export default function WireFeed() {
                         <p className="text-zinc-500 text-sm">Connect with the community</p>
                     </div>
 
-                    {/* ✍️ WIRE INPUT */}
+                    {/* WIRE INPUT */}
                     <div className="mb-6">
                         {userData ? (
                             <WireInput
@@ -148,7 +143,7 @@ export default function WireFeed() {
                         )}
                     </div>
 
-                    {/* 📜 FEED CONTENT */}
+                    {/* Feed content */}
                     <div className="space-y-0 border border-zinc-800 rounded-2xl overflow-hidden bg-[#0a0a0c]">
                         {status === 'pending' ? (
                             <WireListSkeleton count={5} />

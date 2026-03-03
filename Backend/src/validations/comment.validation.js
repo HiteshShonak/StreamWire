@@ -1,8 +1,6 @@
 import { z } from "zod";
 
-/* ==========================================================================
-   COMMENT VALIDATION SCHEMAS
-   ========================================================================== */
+// Comment validation schemas
 
 // Add Comment Schema
 export const addCommentSchema = z.object({

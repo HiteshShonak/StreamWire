@@ -4,14 +4,14 @@ import { Video } from "../models/video.model.js";
 import { User } from "../models/user.model.js";
 
 /**
- * 🎯 Build User Feed from Watch History
- * Analyzes user's watch history and extracts top 20 tags
+ * Build User Feed from Watch History
+ * Looks at user's watch history and grabs top 20 tags
  * @param {string} userId - User ID
  * @returns {Promise<string[]>} Array of top 20 tags
  */
 export const buildUserFeed = async (userId) => {
     try {
-        console.log('🔨 Building feed for user:', userId);
+        console.log('Building feed for user:', userId);
 
         // Get user's watch history (last 100 videos)
         const history = await History.find({ owner: userId })
@@ -20,10 +20,9 @@ export const buildUserFeed = async (userId) => {
             .populate('video', 'tags')
             .lean();
 
-        console.log('📜 Watch history entries found:', history.length);
 
         if (!history.length) {
-            console.log('⚠️ No watch history found');
+            console.log('No watch history found');
             return [];
         }
 
@@ -41,7 +40,6 @@ export const buildUserFeed = async (userId) => {
             }
         });
 
-        console.log('🏷️ Tag frequency:', tagFrequency);
 
         // Sort by frequency and take top 20
         const sortedTags = Object.entries(tagFrequency)
@@ -49,21 +47,21 @@ export const buildUserFeed = async (userId) => {
             .slice(0, 20)
             .map(([tag]) => tag);
 
-        console.log('✅ Sorted tags (top 20):', sortedTags);
+        console.log('Sorted tags (top 20):', sortedTags);
 
         // Update user's feedPreferences
         await User.findByIdAndUpdate(userId, { feedPreferences: sortedTags });
-        console.log('💾 Updated user feedPreferences');
+        console.log('Updated user feedPreferences');
 
         return sortedTags;
     } catch (error) {
-        console.error('❌ Error building user feed:', error);
+        console.error('Error building user feed:', error);
         return [];
     }
 };
 
 /**
- * 🔄 Update Feed Incrementally on Video Watch
+ * Update Feed Incrementally on Video Watch
  * @param {string} userId - User ID
  * @param {string[]} videoTags - Tags from the watched video
  */
@@ -105,8 +103,8 @@ export const updateFeedOnWatch = async (userId, videoTags) => {
 };
 
 /**
- * 📺 Get Recommended Videos for User
- * Fetches videos matching user's feed tags
+ * Get Recommended Videos for User
+ * Get videos that match user's feed tags
  * @param {string} userId - User ID
  * @param {number} limit - Number of videos to fetch
  * @returns {Promise<Array>} Array of recommended videos
@@ -150,8 +148,8 @@ export const getRecommendedVideos = async (userId, limit = 20) => {
 };
 
 /**
- * 🏷️ Get All Available Tags
- * Returns all unique tags from published videos
+ * Get All Available Tags
+ * Get all unique tags from published videos
  * @returns {Promise<string[]>} Array of all tags
  */
 export const getAllTags = async () => {
@@ -165,9 +163,9 @@ export const getAllTags = async () => {
 };
 
 /**
- * 📊 Get Popular Tags
- * Fetches unique tags from the top 10 trending videos (max 2 tags per video)
- * This ensures popular tags are from content people are actually watching
+ * Get Popular Tags
+ * Grabs unique tags from the top 10 trending videos (max 2 tags per video)
+ * This way popular tags come from content people actually watch
  * @param {number} limit - Max number of tags to return
  * @returns {Promise<Array>} Array of {tag, count}
  */

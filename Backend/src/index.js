@@ -9,10 +9,10 @@ let server;
 connectDB(process.env.MONGODB_URL)
   .then(() => {
     initTrendCron();
-    console.log("⏰ Cron Jobs Initialized");
+    console.log("Cron Jobs Initialized");
 
     server = app.listen(process.env.PORT || 8000, () => {
-      console.log(`⚙️  Server Started on port ${process.env.PORT || 8000}`);
+      console.log(`Server Started on port ${process.env.PORT || 8000}`);
     });
   })
   .catch((error) => {
@@ -20,23 +20,23 @@ connectDB(process.env.MONGODB_URL)
     process.exit(1);
   });
 
-// 🛑 Graceful Shutdown Handler
+// Graceful shutdown handler
 const gracefulShutdown = async (signal) => {
   console.log(`\n🛑 ${signal} received. Starting graceful shutdown...`);
 
   // 1. Stop accepting new connections
   if (server) {
     server.close(() => {
-      console.log("✅ HTTP server closed");
+      console.log("HTTP server closed");
     });
   }
 
   // 2. Close MongoDB connection
   try {
     await mongoose.connection.close();
-    console.log("✅ MongoDB connection closed");
+    console.log("MongoDB connection closed");
   } catch (err) {
-    console.error("❌ Error closing MongoDB connection:", err);
+    console.error("Error closing MongoDB connection:", err);
   }
 
   // 3. Exit process

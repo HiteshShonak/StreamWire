@@ -1,9 +1,9 @@
 import React from 'react'
 
 // ==========================================
-// 🦴 SKELETON COMPONENTS LIBRARY
+// Skeleton components library
 // Premium shimmer-enabled loading placeholders
-// IMPORTANT: Every skeleton MUST match its page layout EXACTLY
+// Every skeleton needs to match its page layout exactly
 // Same structure, same spacing, same responsive behavior
 // ==========================================
 
@@ -16,7 +16,7 @@ export const Skeleton = ({ className = '' }) => (
 )
 
 // ==========================================
-// 📼 VIDEO CARD SKELETON
+// Video card skeleton
 // Matches: Components/Cinema/VideoCard.jsx
 // ==========================================
 export const VideoCardSkeleton = () => (
@@ -44,7 +44,7 @@ export const VideoCardSkeleton = () => (
 )
 
 // ==========================================
-// 📼 VIDEO GRID SKELETON
+// Video grid skeleton
 // Matches: CinemaFeed grid layout
 // ==========================================
 export const VideoGridSkeleton = ({ count = 8 }) => (
@@ -56,8 +56,8 @@ export const VideoGridSkeleton = ({ count = 8 }) => (
 )
 
 // ==========================================
-// 💬 WIRE CARD SKELETON
-// Matches: Components/WireCard.jsx layout EXACTLY
+// Wire card skeleton
+// Matches: Components/WireCard.jsx layout exactly
 // border-b style, p-3 sm:p-4 spacing, flex gap-3 sm:gap-4
 // ==========================================
 export const WireCardSkeleton = () => (
@@ -109,8 +109,8 @@ export const WireListSkeleton = ({ count = 5 }) => (
 export const TweetListSkeleton = WireListSkeleton
 
 // ==========================================
-// 👻 SHADOW CARD SKELETON
-// Matches: Components/ShadowCard.jsx layout EXACTLY
+// Shadow card skeleton
+// Matches: Components/ShadowCard.jsx layout exactly
 // border-zinc-900, border-l-emerald-900/40, bg-[#09090b]
 // ==========================================
 export const ShadowCardSkeleton = () => (
@@ -156,8 +156,8 @@ export const ShadowListSkeleton = ({ count = 5 }) => (
 )
 
 // ==========================================
-// 👤 CHANNEL PAGE SKELETON
-// Matches: pages/Channel.jsx layout EXACTLY
+// Channel page skeleton
+// Matches: pages/Channel.jsx layout exactly
 // ==========================================
 export const ChannelPageSkeleton = () => (
     <div className="min-h-screen bg-zinc-950">
@@ -204,8 +204,8 @@ export const ChannelPageSkeleton = () => (
 )
 
 // ==========================================
-// 🎬 VIDEO PLAYER PAGE SKELETON
-// Matches: pages/VideoPlayer.jsx layout EXACTLY
+// Video player page skeleton
+// Matches: pages/VideoPlayer.jsx layout exactly
 // ==========================================
 export const VideoPlayerSkeleton = () => (
     <div className="lg:pl-[280px] pt-24 pb-20 px-4 md:px-6">
@@ -298,7 +298,7 @@ export const VideoPlayerSkeleton = () => (
 )
 
 // ==========================================
-// 📊 DASHBOARD STATS SKELETON
+// Dashboard stats skeleton
 // Matches: components/Dashboard/StatsOverview.jsx
 // ==========================================
 export const StatsCardSkeleton = () => (
@@ -318,7 +318,7 @@ export const StatsGridSkeleton = () => (
 )
 
 // ==========================================
-// 📊 DASHBOARD FULL SKELETON
+// Dashboard full skeleton
 // Matches: pages/Dashboard.jsx layout
 // ==========================================
 export const DashboardSkeleton = () => (
@@ -343,8 +343,8 @@ export const DashboardSkeleton = () => (
 )
 
 // ==========================================
-// 👥 CHANNEL CARD SKELETON
-// Matches: Components/ChannelCard.jsx EXACTLY
+// Channel card skeleton
+// Matches: Components/ChannelCard.jsx exactly
 // p-6 rounded-2xl, w-20 h-20 rounded-2xl avatar
 // ==========================================
 export const ChannelCardSkeleton = () => (
@@ -384,7 +384,7 @@ export const ChannelGridSkeleton = ({ count = 6 }) => (
 export const ChannelListSkeleton = ChannelGridSkeleton
 
 // ==========================================
-// 💬 COMMENT SKELETON
+// Comment skeleton
 // Matches: VideoPlayer/CommentsSection.jsx comments layout
 // ==========================================
 export const CommentSkeleton = () => (
@@ -415,7 +415,7 @@ export const CommentListSkeleton = ({ count = 4 }) => (
 )
 
 // ==========================================
-// 📜 WIRE POST PAGE SKELETON
+// Wire post page skeleton
 // Matches: Components/WirePost.jsx full post layout
 // ==========================================
 export const WirePostSkeleton = () => (
@@ -465,7 +465,7 @@ export const WirePostSkeleton = () => (
 )
 
 // ==========================================
-// 🔍 SEARCH RESULTS SKELETON
+// Search results skeleton
 // Matches: Components/Search.jsx layout with context-aware sections
 // ==========================================
 export const SearchSkeleton = ({ showUsers = true, showVideos = true, showWires = true }) => (
@@ -501,7 +501,7 @@ export const SearchSkeleton = ({ showUsers = true, showVideos = true, showWires 
 )
 
 // ==========================================
-// 👤 USER CARD SKELETON (for search results)
+// User card skeleton (for search results)
 // Matches smaller user result cards
 // ==========================================
 export const UserCardSkeleton = () => (
@@ -519,7 +519,7 @@ export const UserCardSkeleton = () => (
 )
 
 // ==========================================
-// 🏷️ TAG GRID SKELETON
+// Tag grid skeleton
 // Matches: pages/BuildFeed.jsx tag selection grid
 // ==========================================
 export const TagGridSkeleton = ({ count = 20 }) => (
@@ -534,7 +534,7 @@ export const TagGridSkeleton = ({ count = 20 }) => (
 )
 
 // ==========================================
-// 📝 CONTENT/TEXT SKELETON
+// Content/text skeleton
 // Generic lines of content
 // ==========================================
 export const ContentSkeleton = ({ lines = 3 }) => (
@@ -549,7 +549,7 @@ export const ContentSkeleton = ({ lines = 3 }) => (
 )
 
 // ==========================================
-// 🎬 CINEMA FEED SKELETON
+// Cinema feed skeleton
 // Matches: pages/CinemaFeed.jsx full page
 // ==========================================
 export const CinemaFeedSkeleton = () => (
@@ -570,7 +570,7 @@ export const CinemaFeedSkeleton = () => (
 )
 
 // ==========================================
-// 📺 WIRE FEED SKELETON
+// Wire feed skeleton
 // Matches: pages/WireFeed.jsx layout
 // ==========================================
 export const WireFeedSkeleton = () => (
@@ -584,7 +584,7 @@ export const WireFeedSkeleton = () => (
 )
 
 // ==========================================
-// 📚 HISTORY/SAVED PAGE SKELETON
+// History/saved page skeleton
 // Matches: pages/History.jsx, pages/Saved.jsx
 // ==========================================
 export const LibraryPageSkeleton = () => (
@@ -604,7 +604,7 @@ export const LibraryPageSkeleton = () => (
 )
 
 // ==========================================
-// 🔥 TRENDING PAGE SKELETON
+// Trending page skeleton
 // Matches: pages/Trending.jsx layout
 // ==========================================
 export const TrendingPageSkeleton = () => (
@@ -631,7 +631,7 @@ export const TrendingPageSkeleton = () => (
 )
 
 // ==========================================
-// EXPORTS
+// Exports
 // ==========================================
 export default {
     Skeleton,

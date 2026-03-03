@@ -1,8 +1,6 @@
 import { z } from "zod";
 
-/* ==========================================================================
-   👤 USER PROFILE & SETTINGS VALIDATION SCHEMAS
-   ========================================================================== */
+// User validation schemas
 
 // Update Profile Schema (all fields optional since partial updates allowed)
 export const updateProfileSchema = z.object({

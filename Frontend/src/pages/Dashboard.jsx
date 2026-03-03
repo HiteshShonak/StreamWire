@@ -30,9 +30,7 @@ export default function Dashboard() {
   const [videoPage, setVideoPage] = useState(1);
   const [wirePage, setWirePage] = useState(1);
 
-  // ==========================================
-  // 📊 DATA FETCHING
-  // ==========================================
+
 
   // Dashboard Stats
   const { data: stats, isLoading: statsLoading } = useQuery({
@@ -64,9 +62,7 @@ export default function Dashboard() {
     enabled: !!userData?._id
   });
 
-  // ==========================================
-  // 🎬 MUTATIONS
-  // ==========================================
+
 
   // Toggle Video Stealth
   const toggleVideoStealthMutation = useMutation({
@@ -145,9 +141,7 @@ export default function Dashboard() {
     }
   });
 
-  // ==========================================
-  // 🧮 COMPUTED DATA
-  // ==========================================
+
 
   const allVideos = myVideos?.videos || [];
   const stealthVideos = allVideos.filter(v => v.isStealthMode);
@@ -156,9 +150,7 @@ export default function Dashboard() {
   const allWires = myWires?.docs || [];
   const stealthWires = allWires.filter(w => w.isStealthMode);
 
-  // ==========================================
-  // 📐 SECTION CONFIGS
-  // ==========================================
+
   const sections = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
     { id: 'videos', label: 'My Videos', icon: Film, count: allVideos.length },
@@ -166,9 +158,7 @@ export default function Dashboard() {
     { id: 'stealth', label: 'Stealth Posts', icon: Ghost, count: stealthVideos.length + stealthWires.length },
   ];
 
-  // ==========================================
-  // 🖼️ RENDER
-  // ==========================================
+
 
   return (
     <div className="min-h-screen bg-[#050505] text-white">

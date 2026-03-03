@@ -1,19 +1,16 @@
 import mongoose, { isValidObjectId } from "mongoose";
 import { Comment } from "../models/comment.model.js";
 import { Video } from "../models/video.model.js";
-import { Tweet } from "../models/tweet.model.js"; // 👈 Added Tweet Model
+import { Tweet } from "../models/tweet.model.js"; // Added Tweet Model
 import { Like } from "../models/like.model.js";
-import { Subscription } from "../models/subscription.model.js"; // 👈 Added for subscription check
+import { Subscription } from "../models/subscription.model.js"; // Added for subscription check
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
-import { updateVideoTrendScore, updateTweetTrendScore } from "../utils/trendScore.js"; // 🔥 TrendScore
+import { updateVideoTrendScore, updateTweetTrendScore } from "../utils/trendScore.js"; // TrendScore
 import { ANONYMOUS_USER_NAME } from "../constants.js";
 
-/* ==========================================================================
-   🔎 HELPER: IDENTITY MASKING PIPELINE
-   Keeps code DRY. Reused for both Video and Tweet lookups.
-   ========================================================================== */
+// Helper: identity masking pipeline (reused for video and tweet lookups)
 const getOwnerLookupPipeline = (viewerId) => {
     const validViewerId = viewerId ? new mongoose.Types.ObjectId(viewerId) : null;
 
@@ -31,7 +28,7 @@ const getOwnerLookupPipeline = (viewerId) => {
             }
         },
         { $unwind: "$owner" },
-        
+
         // 2. Check subscription status
         {
             $lookup: {
@@ -53,7 +50,7 @@ const getOwnerLookupPipeline = (viewerId) => {
                 as: "ownerSubscription"
             }
         },
-        
+
         // 3. Apply identity masking and add isSubscribed
         {
             $addFields: {
@@ -96,7 +93,7 @@ const getOwnerLookupPipeline = (viewerId) => {
                 }
             }
         },
-        
+
         // 4. Remove temporary fields
         {
             $project: {
@@ -106,9 +103,7 @@ const getOwnerLookupPipeline = (viewerId) => {
     ];
 };
 
-/* ==========================================================================
-   🎬 VIDEO COMMENTS
-   ========================================================================== */
+// Video comments
 export const getVideoComments = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
     const { page = 1, limit = 10 } = req.query;
@@ -117,7 +112,7 @@ export const getVideoComments = asyncHandler(async (req, res) => {
 
     const aggregate = Comment.aggregate([
         { $match: { video: new mongoose.Types.ObjectId(videoId) } },
-        ...getOwnerLookupPipeline(req.user?._id), // 👈 Pass viewer ID for subscription check
+        ...getOwnerLookupPipeline(req.user?._id), // Pass viewer ID for subscription check
         { $sort: { createdAt: -1 } }
     ]);
 
@@ -150,15 +145,13 @@ export const addVideoComment = asyncHandler(async (req, res) => {
         isStealthMode: finalStealthMode
     });
 
-    // 🔥 Update trendScore in background
+    // Update trendScore in background
     updateVideoTrendScore(videoId);
 
     return res.status(201).json(new ApiResponse(201, comment, "Comment added"));
 });
 
-/* ==========================================================================
-   🐦 TWEET COMMENTS (The Wire)
-   ========================================================================== */
+// Tweet comments
 export const getTweetComments = asyncHandler(async (req, res) => {
     const { tweetId } = req.params;
     const { page = 1, limit = 10 } = req.query;
@@ -166,8 +159,8 @@ export const getTweetComments = asyncHandler(async (req, res) => {
     if (!isValidObjectId(tweetId)) throw new ApiError(400, "Invalid Tweet ID");
 
     const aggregate = Comment.aggregate([
-        { $match: { tweet: new mongoose.Types.ObjectId(tweetId) } }, // 👈 Match Tweet
-        ...getOwnerLookupPipeline(req.user?._id), // 👈 Pass viewer ID for subscription check
+        { $match: { tweet: new mongoose.Types.ObjectId(tweetId) } }, // Match Tweet
+        ...getOwnerLookupPipeline(req.user?._id), // Pass viewer ID for subscription check
         { $sort: { createdAt: -1 } }
     ]);
 
@@ -194,20 +187,18 @@ export const addTweetComment = asyncHandler(async (req, res) => {
 
     const comment = await Comment.create({
         content,
-        tweet: tweetId, // 👈 Link to Tweet
+        tweet: tweetId, // Link to Tweet
         owner: req.user._id,
         isStealthMode: finalStealthMode
     });
 
-    // 🔥 Update trendScore in background
+    // Update trendScore in background
     updateTweetTrendScore(tweetId);
 
     return res.status(201).json(new ApiResponse(201, comment, "Reply posted"));
 });
 
-/* ==========================================================================
-   ✏️ UPDATE COMMENT (Universal)
-   ========================================================================== */
+// Update comment
 export const updateComment = asyncHandler(async (req, res) => {
     const { commentId } = req.params;
     const { content, isStealthMode } = req.body;
@@ -231,9 +222,7 @@ export const updateComment = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, comment, "Comment updated"));
 });
 
-/* ==========================================================================
-   🗑️ DELETE COMMENT (Polymorphic Fix)
-   ========================================================================== */
+// Add comment
 export const deleteComment = asyncHandler(async (req, res) => {
     const { commentId } = req.params;
 
@@ -248,7 +237,7 @@ export const deleteComment = asyncHandler(async (req, res) => {
     // 2. Check if user owns the Content (Video OR Tweet)
     // This allows creators to moderate their own comment sections
     let isContentOwner = false;
-    
+
     if (comment.video) {
         const video = await Video.findById(comment.video);
         if (video && video.owner.toString() === req.user._id.toString()) isContentOwner = true;
@@ -262,7 +251,7 @@ export const deleteComment = asyncHandler(async (req, res) => {
     }
 
     await Comment.findByIdAndDelete(commentId);
-    
+
     // Cleanup likes
     await Like.deleteMany({ comment: commentId });
 
@@ -271,21 +260,19 @@ export const deleteComment = asyncHandler(async (req, res) => {
         await Video.findByIdAndUpdate(comment.video, {
             $pull: { pinnedComments: commentId }
         });
-        // 🔥 Update trendScore in background
+        // Update trendScore in background
         updateVideoTrendScore(comment.video);
     }
 
     if (comment.tweet) {
-        // 🔥 Update trendScore in background
+        // Update trendScore in background
         updateTweetTrendScore(comment.tweet);
     }
 
     return res.status(200).json(new ApiResponse(200, {}, "Comment deleted"));
 });
 
-/* ==========================================================================
-   📌 PINNED COMMENTS
-   ========================================================================== */
+// Pinned comments
 export const togglePinComment = asyncHandler(async (req, res) => {
     const { videoId, commentId } = req.params;
 
@@ -309,7 +296,7 @@ export const togglePinComment = asyncHandler(async (req, res) => {
 
     // 3. Toggle pin status
     const isPinned = video.pinnedComments?.includes(commentId);
-    
+
     if (isPinned) {
         // Unpin
         await Video.findByIdAndUpdate(videoId, {

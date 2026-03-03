@@ -10,9 +10,7 @@ import { jwtService } from "../services/auth.service.js";
 import { COOKIE_OPTIONS } from "../constants.js";
 import { sanitizeUser } from "../utils/helper.js";
 
-/* ==========================================================================
-   🚀 REGISTRATION & OTP FLOW
-   ========================================================================== */
+// Registration & OTP flow
 
 export const registerRequest = asyncHandler(async (req, res) => {
     const { fullName, email, username, password } = req.body;
@@ -25,8 +23,8 @@ export const registerRequest = asyncHandler(async (req, res) => {
     const cleanUsername = username.toLowerCase().trim();
 
     // 1. Check if user already exists in the main database
-    const existingUser = await User.findOne({ 
-        $or: [{ username: cleanUsername }, { email: cleanEmail }] 
+    const existingUser = await User.findOne({
+        $or: [{ username: cleanUsername }, { email: cleanEmail }]
     });
 
     if (existingUser) {
@@ -38,12 +36,12 @@ export const registerRequest = asyncHandler(async (req, res) => {
 
     // 3. Save to temporary storage (TTL handled by service)
     // We store the password here temporarily so we can create the user *after* verification
-    saveTempUser(cleanEmail, { 
-        fullName, 
-        email: cleanEmail, 
-        username: cleanUsername, 
-        password, 
-        otp 
+    saveTempUser(cleanEmail, {
+        fullName,
+        email: cleanEmail,
+        username: cleanUsername,
+        password,
+        otp
     });
 
     // 4. Send Verification Email
@@ -69,8 +67,7 @@ export const verifyAndCreateUser = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Invalid or expired OTP");
     }
 
-    // 2. 🛡️ Identity Engine: Resolve Avatar & Cover 
-    // (Generates Initials Avatar/Color Cover if no file uploaded during separate flow)
+    // 2. Identity Engine: Resolve Avatar & Cover (generates defaults if not uploaded)
     const avatar = await resolveIdentityMedia({
         type: "avatar",
         username: tempUser.username,
@@ -117,8 +114,8 @@ export const verifyAndCreateUser = asyncHandler(async (req, res) => {
         .cookie("refreshToken", refreshToken, COOKIE_OPTIONS)
         .json(
             new ApiResponse(
-                201, 
-                { user: createdUser, accessToken, refreshToken }, 
+                201,
+                { user: createdUser, accessToken, refreshToken },
                 "Account verified and created successfully!"
             )
         );
@@ -127,14 +124,14 @@ export const verifyAndCreateUser = asyncHandler(async (req, res) => {
 export const resendOtp = asyncHandler(async (req, res) => {
     const { email } = req.body;
     const cleanEmail = email?.toLowerCase().trim();
-    
+
     const tempUser = getTempUser(cleanEmail);
     if (!tempUser) {
         throw new ApiError(400, "Registration session expired. Please start the registration process again.");
     }
 
     const newOtp = crypto.randomInt(100000, 999999).toString();
-    
+
     // Update existing temp record with new OTP
     saveTempUser(cleanEmail, { ...tempUser, otp: newOtp });
 
@@ -143,9 +140,7 @@ export const resendOtp = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, { email: cleanEmail }, "New OTP sent successfully."));
 });
 
-/* ==========================================================================
-   🔐 SESSION MANAGEMENT (LOGIN/LOGOUT)
-   ========================================================================== */
+// Login flow
 
 export const loginUser = asyncHandler(async (req, res) => {
     const { identifier, password } = req.body;
@@ -164,11 +159,11 @@ export const loginUser = asyncHandler(async (req, res) => {
         throw new ApiError(404, "User does not exist");
     }
 
-    // 🛡️ Account Status Gates
+    // Account Status Gates
     if (user.accountStatus === "DELETED_PENDING") {
         throw new ApiError(403, "This account is scheduled for deletion. Please contact support to restore.");
     }
-    
+
     if (user.accountStatus === "BANNED") {
         throw new ApiError(403, "This account has been permanently suspended due to policy violations.");
     }
@@ -179,18 +174,18 @@ export const loginUser = asyncHandler(async (req, res) => {
         throw new ApiError(401, "Invalid credentials");
     }
 
-    // 🔄 Auto-Reactivation Logic
+    // Auto-Reactivation Logic
     let reactivated = false;
     if (user.accountStatus === "DEACTIVATED") {
         user.accountStatus = "ACTIVE";
         reactivated = true;
     }
 
-    // Generate Tokens
+    // Generate tokens
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
 
-    // Store Refresh Token (Handles 5-device limit)
+    // Store refresh token (handles 5-device limit)
     await user.addRefreshToken(refreshToken);
 
     const loggedInUser = sanitizeUser(user);
@@ -201,13 +196,13 @@ export const loginUser = asyncHandler(async (req, res) => {
         .cookie("refreshToken", refreshToken, COOKIE_OPTIONS)
         .json(
             new ApiResponse(
-                200, 
-                { 
-                    user: loggedInUser, 
-                    accessToken, 
+                200,
+                {
+                    user: loggedInUser,
+                    accessToken,
                     refreshToken,
-                    isReactivated: reactivated 
-                }, 
+                    isReactivated: reactivated
+                },
                 reactivated ? "Welcome back! Your account has been successfully reactivated." : "User logged in successfully"
             )
         );
@@ -239,7 +234,7 @@ export const logoutAllSessions = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user?._id);
     if (!user) throw new ApiError(404, "User not found");
 
-    // ☢️ Security Nuke: Clears all tokens from DB
+    // Security: clears all tokens from DB
     user.refreshTokens = [];
     await user.save({ validateBeforeSave: false });
 
@@ -269,7 +264,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
         throw new ApiError(401, "Invalid refresh token: User context missing");
     }
 
-    // 3. 🚨 Reuse Detection: Check if token exists in DB whitelist
+    // 3. Reuse Detection: Check if token exists in DB whitelist
     const isTokenValid = user.refreshTokens.some(t => t.token === incomingRefreshToken);
     if (!isTokenValid) {
         // If token is valid crypto-wise but missing from DB, it might be a reused token (theft attempt)
@@ -280,14 +275,14 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
     const accessToken = user.generateAccessToken();
     let newRefreshToken = incomingRefreshToken;
 
-    // 4. 🛡️ Token Rotation Strategy
+    // 4. Token rotation
     // Only issue a new Refresh Token if the old one is nearing expiry or policy dictates rotation
     if (jwtService.isTokenRotationNeeded(decodedToken)) {
         newRefreshToken = user.generateRefreshToken();
-        
+
         // Remove the old used token
         user.refreshTokens = user.refreshTokens.filter(t => t.token !== incomingRefreshToken);
-        
+
         // Add the new token (this call handles saving and limiting array size)
         await user.addRefreshToken(newRefreshToken);
     }
@@ -298,16 +293,14 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
         .cookie("refreshToken", newRefreshToken, COOKIE_OPTIONS)
         .json(
             new ApiResponse(
-                200, 
-                { accessToken, refreshToken: newRefreshToken }, 
+                200,
+                { accessToken, refreshToken: newRefreshToken },
                 "Access token refreshed successfully"
             )
         );
 });
 
-/* ==========================================================================
-   🔑 PASSWORD RECOVERY
-   ========================================================================== */
+// Password recovery
 
 export const forgotPasswordRequest = asyncHandler(async (req, res) => {
     const { identifier } = req.body;
@@ -324,7 +317,7 @@ export const forgotPasswordRequest = asyncHandler(async (req, res) => {
             { email: normalizedIdentifier }
         ]
     });
-    
+
     // Privacy: We technically shouldn't reveal if user exists, but for UX we usually do.
     if (!user) {
         throw new ApiError(404, "No account associated with this username or email");
@@ -332,9 +325,9 @@ export const forgotPasswordRequest = asyncHandler(async (req, res) => {
 
     const otp = crypto.randomInt(100000, 999999).toString();
 
-    saveTempUser(user.email, { 
-        email: user.email, 
-        otp, 
+    saveTempUser(user.email, {
+        email: user.email,
+        otp,
         type: "PASSWORD_RESET" // Distinction from registration OTP
     });
 
@@ -342,8 +335,8 @@ export const forgotPasswordRequest = asyncHandler(async (req, res) => {
 
     return res.status(200).json(
         new ApiResponse(
-            200, 
-            { email: user.email }, 
+            200,
+            { email: user.email },
             "Password reset OTP sent to your registered email."
         )
     );
@@ -369,12 +362,12 @@ export const resetPassword = asyncHandler(async (req, res) => {
         throw new ApiError(404, "User no longer exists");
     }
 
-    user.password = newPassword; 
-    
-    // 🛡️ Security: Revoke all existing sessions. 
+    user.password = newPassword;
+
+    // Security: Revoke all existing sessions 
     // User must log in again with new password.
-    user.refreshTokens = []; 
-    
+    user.refreshTokens = [];
+
     await user.save({ validateBeforeSave: false });
 
     deleteTempUser(cleanEmail);
@@ -392,8 +385,8 @@ export const resetPassword = asyncHandler(async (req, res) => {
         .clearCookie("refreshToken", COOKIE_OPTIONS)
         .json(
             new ApiResponse(
-                200, 
-                {}, 
+                200,
+                {},
                 "Password reset successfully. Please login with your new credentials."
             )
         );

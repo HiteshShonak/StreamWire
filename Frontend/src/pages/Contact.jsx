@@ -7,9 +7,6 @@ import api from '../api/axios'
 import Header from '../Components/Header'
 import Sidebar from '../Components/Sidebar'
 
-// ==========================================
-// 🎨 BACKGROUND COMPONENTS
-// ==========================================
 const NoiseOverlay = () => (
    <div className="absolute inset-0 pointer-events-none z-10 opacity-[0.04] mix-blend-overlay">
       <svg className="w-full h-full">

@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search as SearchIcon, Film, MessageSquare, Users, Ghost, Globe, ArrowRight } from 'lucide-react'
 
-// 🔌 API & Services
+// API & Services
 import api from '../api/axios'
 import { videoService } from '../api/services/video.service'
 import { tweetService } from '../api/services/tweet.service'
@@ -12,7 +12,7 @@ import { userService } from '../api/services/user.service'
 import { subscriptionService } from '../api/services/subscription.service'
 import { likeService } from '../api/services/like.service'
 
-// 🧩 Components
+// Components
 import VideoCard from '../Components/VideoCard'
 import WireCard from '../Components/WireCard'
 import UserCard from '../Components/UserCard'
@@ -23,7 +23,7 @@ export default function Search() {
    const query = searchParams.get("query") || ""
    const urlTab = searchParams.get("tab")
 
-   // 🧠 LOGIC: Context Locking
+   // Context locking
    // If URL has a specific tab (like 'videos' from Cinema Header), we start "Locked".
    // Once unlocked, it stays unlocked during the session.
    const [isContextLocked, setIsContextLocked] = useState(!!urlTab && urlTab !== 'all')
@@ -64,9 +64,7 @@ export default function Search() {
       setSearchParams({ query, tab: 'all' })
    }
 
-   // =========================================
-   // 🧠 LOGIC: Tab Configuration
-   // =========================================
+
    const tabs = [
       { id: 'all', label: 'All', icon: Globe, color: 'text-indigo-500', bg: 'bg-indigo-500' },
       { id: 'videos', label: 'Cinema', icon: Film, color: 'text-pink-500', bg: 'bg-pink-500' },
@@ -75,14 +73,12 @@ export default function Search() {
       { id: 'users', label: 'Channels', icon: Users, color: 'text-orange-500', bg: 'bg-orange-500' },
    ]
 
-   // Determine current "Mode" for API calls
+   // Figure out current mode for API calls
    const isStealthTab = activeTab === 'stealth'
 
-   // =========================================
-   // 📡 DATA FETCHING
-   // =========================================
 
-   // 1. Videos
+
+   // Videos
    const { data: videoData, isLoading: videoLoading } = useQuery({
       queryKey: ['search', 'videos', query, activeTab],
       queryFn: () => videoService.getAllVideos({
@@ -94,7 +90,7 @@ export default function Search() {
       enabled: !!query && (activeTab === 'all' || activeTab === 'videos' || activeTab === 'stealth')
    })
 
-   // 2. Tweets
+   // Tweets
    const { data: tweetData, isLoading: tweetLoading } = useQuery({
       queryKey: ['search', 'tweets', query, activeTab],
       queryFn: () => tweetService.getAllTweets({
@@ -105,16 +101,14 @@ export default function Search() {
       enabled: !!query && (activeTab === 'all' || activeTab === 'tweets' || activeTab === 'stealth')
    })
 
-   // 3. Users (Only fetch on All or Users tab, not Stealth)
+   // Users (Only fetch on All or Users tab)
    const { data: userData, isLoading: userLoading } = useQuery({
       queryKey: ['search', 'users', query],
       queryFn: () => userService.searchUsers({ query, page: 1, limit: 10 }),
       enabled: !!query && (activeTab === 'all' || activeTab === 'users')
    })
 
-   // =========================================
-   // ⚡ MUTATIONS
-   // =========================================
+
    const subMutation = useMutation({
       mutationFn: subscriptionService.toggleSubscription,
       onSuccess: () => queryClient.invalidateQueries(['search', 'users'])
@@ -125,9 +119,7 @@ export default function Search() {
       onSuccess: () => queryClient.invalidateQueries(['search', 'tweets'])
    })
 
-   // =========================================
-   // 🎨 UI HELPERS
-   // =========================================
+
    const isLoading = videoLoading || tweetLoading || userLoading
    const hasVideos = videoData?.videos?.length > 0
    const hasTweets = tweetData?.docs?.length > 0
@@ -141,13 +133,13 @@ export default function Search() {
    return (
       <div className="relative min-h-screen bg-[#050505] text-white">
 
-         {/* 🌟 Immersive Background Glow */}
+         {/* Immersive Background Glow */}
          <div className={`fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] ${activeBg} opacity-5 blur-[120px] pointer-events-none transition-colors duration-700`} />
 
          {/* Main Content Container - Added pt-32 to clear Header */}
          <div className="relative z-10 lg:pl-72 pt-32 px-6 pb-20 max-w-7xl mx-auto">
 
-            {/* 🟢 HEADER SECTION */}
+            {/* Header section */}
             <div className="flex flex-col gap-8 mb-12">
 
                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -179,7 +171,7 @@ export default function Search() {
                      </p>
                   </div>
 
-                  {/* 🔓 UNLOCK BUTTON (Only when context locked) */}
+                  {/* Unlock button (only when context locked) */}
                   <AnimatePresence>
                      {isContextLocked && (
                         <motion.button
@@ -199,7 +191,7 @@ export default function Search() {
                   </AnimatePresence>
                </div>
 
-               {/* 🎛️ 5-OPTION TAB BAR (Only visible when NOT context locked) */}
+               {/* 5-option tab bar (only visible when not context locked) */}
                {!isContextLocked && (
                   <div className="flex flex-wrap gap-2 border-b border-zinc-800 pb-1">
                      {tabs.map((tab) => {
@@ -230,7 +222,7 @@ export default function Search() {
                )}
             </div>
 
-            {/* 🌀 LOADER */}
+            {/* Loader */}
             {isLoading && (
                <SearchSkeleton
                   showUsers={activeTab === 'all' || activeTab === 'users'}
@@ -239,7 +231,7 @@ export default function Search() {
                />
             )}
 
-            {/* 📭 EMPTY STATE */}
+            {/* Empty state */}
             {isEmpty && query && (
                <motion.div
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }}
@@ -261,10 +253,10 @@ export default function Search() {
                </motion.div>
             )}
 
-            {/* 🚀 RESULTS GRID */}
+            {/* Results grid */}
             <div className="space-y-16">
 
-               {/* 1. CHANNELS (Users) */}
+               {/* CHANNELS (Users) */}
                {/* Logic: Show on 'All' or 'Users' tab only */}
                {(activeTab === 'all' || activeTab === 'users') && hasUsers && (
                   <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
@@ -276,7 +268,7 @@ export default function Search() {
                   </motion.section>
                )}
 
-               {/* 2. CINEMA (Videos) */}
+               {/* CINEMA (Videos) */}
                {/* Logic: Show on All, Videos, or Stealth */}
                {(activeTab === 'all' || activeTab === 'videos' || activeTab === 'stealth') && hasVideos && (
                   <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
@@ -294,7 +286,7 @@ export default function Search() {
                   </motion.section>
                )}
 
-               {/* 3. THE WIRE (Tweets) */}
+               {/* THE WIRE (Tweets) */}
                {(activeTab === 'all' || activeTab === 'tweets' || activeTab === 'stealth') && hasTweets && (
                   <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
                      {(activeTab === 'all' || activeTab === 'stealth') && (

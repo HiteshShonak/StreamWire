@@ -10,7 +10,7 @@ ffmpeg.setFfprobePath(ffprobeStatic.path);
 
 /**
  * Compress video to target size using FFmpeg
- * Uses CRF-based compression with aggressive settings for guaranteed results
+ * Uses CRF compression with aggressive settings to guarantee it fits
  * @param {string} inputPath - Path to input video file
  * @param {number} targetSizeMB - Target file size in MB (default: 90MB for safety margin)
  * @returns {Promise<string>} - Path to compressed video
@@ -26,16 +26,16 @@ export const compressVideo = async (inputPath, targetSizeMB = 90) => {
         const inputStats = fs.statSync(inputPath);
         const inputSizeMB = inputStats.size / (1024 * 1024);
 
-        console.log(`📹 Input video: ${inputSizeMB.toFixed(2)} MB`);
+        console.log(`Input video: ${inputSizeMB.toFixed(2)} MB`);
 
         // Skip compression if already under target (with 5MB margin)
         if (inputSizeMB <= targetSizeMB - 5) {
-            console.log(`✅ Video already under ${targetSizeMB}MB, skipping compression`);
+            console.log(`Video already under ${targetSizeMB}MB, skipping compression`);
             resolve(inputPath);
             return;
         }
 
-        console.log(`🔧 Compressing ${inputSizeMB.toFixed(2)}MB → target ${targetSizeMB}MB...`);
+        console.log(`Compressing ${inputSizeMB.toFixed(2)}MB → target ${targetSizeMB}MB...`);
 
         // Get video duration first
         ffmpeg.ffprobe(inputPath, (err, metadata) => {
@@ -59,7 +59,7 @@ export const compressVideo = async (inputPath, targetSizeMB = 90) => {
 
             console.log(`   Duration: ${duration.toFixed(2)}s (${(duration / 60).toFixed(1)} min)`);
             console.log(`   Target bitrate: ${videoBitrate}kbps video + ${audioBitrate}kbps audio`);
-            if (needsDownscale) console.log(`   ⚠️ Low bitrate - will downscale to 720p`);
+            if (needsDownscale) console.log(`   Low bitrate - will downscale to 720p`);
 
             const outputOptions = [
                 '-c:v libx264',
@@ -90,7 +90,7 @@ export const compressVideo = async (inputPath, targetSizeMB = 90) => {
                     }
                 })
                 .on('end', async () => {
-                    console.log('\n   ✅ First pass complete!');
+                    console.log('\n   First pass complete!');
 
                     const outputStats = fs.statSync(outputPath);
                     const outputSizeMB = outputStats.size / (1024 * 1024);
@@ -98,7 +98,7 @@ export const compressVideo = async (inputPath, targetSizeMB = 90) => {
 
                     // If still too large, do second pass with CRF
                     if (outputSizeMB > targetSizeMB) {
-                        console.log(`   ⚠️ Still over ${targetSizeMB}MB, doing aggressive recompress...`);
+                        console.log(`   Still over ${targetSizeMB}MB, doing aggressive recompress...`);
 
                         const secondPassPath = path.join(inputDir, `${inputBase}_final.mp4`);
 
@@ -126,7 +126,7 @@ export const compressVideo = async (inputPath, targetSizeMB = 90) => {
                                 }
                             })
                             .on('end', () => {
-                                console.log('\n   ✅ Second pass complete!');
+                                console.log('\n   Second pass complete!');
 
                                 const finalStats = fs.statSync(secondPassPath);
                                 const finalSizeMB = finalStats.size / (1024 * 1024);
@@ -143,7 +143,7 @@ export const compressVideo = async (inputPath, targetSizeMB = 90) => {
                                 resolve(secondPassPath);
                             })
                             .on('error', (err) => {
-                                console.error('\n   ❌ Second pass error:', err.message);
+                                console.error('\n   Second pass error:', err.message);
                                 // Return first pass output anyway
                                 try { fs.unlinkSync(inputPath); } catch (e) { }
                                 resolve(outputPath);
@@ -160,7 +160,7 @@ export const compressVideo = async (inputPath, targetSizeMB = 90) => {
                     }
                 })
                 .on('error', (err) => {
-                    console.error('\n   ❌ FFmpeg error:', err.message);
+                    console.error('\n   FFmpeg error:', err.message);
                     if (fs.existsSync(outputPath)) {
                         fs.unlinkSync(outputPath);
                     }

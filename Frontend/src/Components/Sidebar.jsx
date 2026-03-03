@@ -7,9 +7,7 @@ import {
   History, Bookmark, Users, Menu, X, ChevronRight
 } from 'lucide-react'
 
-// ==========================================
-// 🎯 CONTEXT DETECTION HELPER
-// ==========================================
+
 const getContextTab = (pathname) => {
   if (pathname.startsWith('/cinema')) return 'videos'
   if (pathname.startsWith('/wire')) return 'tweets'
@@ -22,9 +20,7 @@ const getContextPath = (basePath, contextTab) => {
   return `${basePath}?tab=${contextTab}`
 }
 
-// ==========================================
-// 🧩 SUB-COMPONENT: Nav Item
-// ==========================================
+
 const NavItem = ({ icon: Icon, label, path, isDanger = false, isCollapsed = false, onClick }) => {
   const location = useLocation()
 
@@ -85,9 +81,7 @@ const NavItem = ({ icon: Icon, label, path, isDanger = false, isCollapsed = fals
   )
 }
 
-// ==========================================
-// 🧠 MAIN COMPONENT: Sidebar
-// ==========================================
+
 export default function Sidebar() {
   const location = useLocation()
   const [isExpanded, setIsExpanded] = useState(false)
@@ -109,7 +103,7 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* 📱 MOBILE TOGGLE BUTTON (Bottom Left) */}
+      {/* Mobile toggle button (bottom left) */}
       <motion.button
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -142,7 +136,7 @@ export default function Sidebar() {
         </AnimatePresence>
       </motion.button>
 
-      {/* 🌑 MOBILE BACKDROP */}
+      {/* Mobile backdrop */}
       <AnimatePresence>
         {isExpanded && (
           <motion.div
@@ -155,7 +149,7 @@ export default function Sidebar() {
         )}
       </AnimatePresence>
 
-      {/* 🖥️ DESKTOP SIDEBAR (Always visible on lg+) */}
+      {/* Desktop sidebar (always visible on lg+) */}
       <motion.aside
         initial={{ x: -50, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
@@ -206,7 +200,7 @@ export default function Sidebar() {
         </div>
       </motion.aside>
 
-      {/* 📱 MOBILE SIDEBAR (Slide-in from left) */}
+      {/* Mobile sidebar (slide-in from left) */}
       <AnimatePresence>
         {isExpanded && (
           <motion.aside

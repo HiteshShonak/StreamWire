@@ -6,10 +6,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
-/* ==========================================================================
-   🔔 TOGGLE SUBSCRIPTION
-   Handles "Subscribe" (Public), "Request" (Private), and "Unsubscribe"
-   ========================================================================== */
+// Toggle subscription
 export const toggleSubscription = asyncHandler(async (req, res) => {
     const { channelId } = req.params;
 
@@ -40,10 +37,7 @@ export const toggleSubscription = asyncHandler(async (req, res) => {
             .json(new ApiResponse(200, { isSubscribed: false, status: null }, "Unsubscribed successfully"));
     }
 
-    // 2. Subscribe Logic (Check Privacy Gate)
-    // 
-    // If Profile is Public -> Status: ACCEPTED (Immediate Access)
-    // If Profile is Private -> Status: PENDING (Requires Approval)
+    // 2. Subscribe logic (public profile = accepted, private = pending approval)
     const subStatus = targetChannel.isProfilePublic ? "ACCEPTED" : "PENDING";
 
     const newSub = await Subscription.create({
@@ -58,17 +52,14 @@ export const toggleSubscription = asyncHandler(async (req, res) => {
 
     return res
         .status(200)
-        .json(new ApiResponse(200, { 
-            isSubscribed: subStatus === "ACCEPTED", 
+        .json(new ApiResponse(200, {
+            isSubscribed: subStatus === "ACCEPTED",
             isPending: subStatus === "PENDING",
-            status: subStatus 
+            status: subStatus
         }, message));
 });
 
-/* ==========================================================================
-   👥 GET SUBSCRIBERS (The "Fans" List)
-   Publicly visible (names masked if stealth mode is on)
-   ========================================================================== */
+// Get subscribers list
 export const getUserSubscriberList = asyncHandler(async (req, res) => {
     const { channelId } = req.params;
     const { page = 1, limit = 20 } = req.query;
@@ -102,8 +93,7 @@ export const getUserSubscriberList = asyncHandler(async (req, res) => {
             },
         },
         { $unwind: "$subscriber" },
-        // 🎭 Stealth Masking: Hide subscriber's name if they are cloaked
-        // Even the channel owner sees "StreamWire User" if the fan is in Stealth Mode
+        // Stealth masking: hide subscriber name if cloaked
         {
             $addFields: {
                 "subscriber.fullName": {
@@ -140,10 +130,7 @@ export const getUserSubscriberList = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, result, "Subscribers fetched successfully"));
 });
 
-/* ==========================================================================
-   📺 GET SUBSCRIBED CHANNELS (The "Following" List)
-   Protected: Only visible if Profile is Public OR Viewer is Owner
-   ========================================================================== */
+// Get subscribed channels list
 export const getSubscribedChannels = asyncHandler(async (req, res) => {
     const { subscriberId } = req.params;
     const { page = 1, limit = 20 } = req.query;
@@ -159,7 +146,7 @@ export const getSubscribedChannels = asyncHandler(async (req, res) => {
 
     const isOwner = req.user?._id.toString() === subscriberId.toString();
 
-    // 🔒 Privacy Gate: Prevent snooping on private users' following lists
+    // Privacy gate: prevent snooping on private users' following lists
     if (!user.isProfilePublic && !isOwner) {
         throw new ApiError(403, "This user's subscription list is private");
     }
@@ -191,7 +178,7 @@ export const getSubscribedChannels = asyncHandler(async (req, res) => {
             },
         },
         { $unwind: "$channel" },
-        // 🎭 Stealth Masking (Mask the names of channels they follow if those channels are stealth)
+        // Stealth masking (mask the names of channels they follow if those channels are stealth)
         {
             $addFields: {
                 "channel.fullName": {
@@ -228,11 +215,8 @@ export const getSubscribedChannels = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, result, "Subscribed channels fetched successfully"));
 });
 
-/* ==========================================================================
-   📨 GET PENDING REQUESTS (Owner Only)
-   For Private Profiles to approve/deny access.
-   Note: Owner sees REAL names here to make an informed decision.
-   ========================================================================== */
+
+// Get pending requests (owner only)
 export const getPendingRequests = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
 
@@ -289,9 +273,7 @@ export const getPendingRequests = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, result, "Pending requests fetched successfully"));
 });
 
-/* ==========================================================================
-   ⚖️ MANAGE REQUEST (Accept/Reject)
-   ========================================================================== */
+// Toggle subscription
 export const manageRequest = asyncHandler(async (req, res) => {
     const { requestId } = req.params;
     const { action } = req.body; // Expects: { action: "ACCEPT" } or { action: "REJECT" }

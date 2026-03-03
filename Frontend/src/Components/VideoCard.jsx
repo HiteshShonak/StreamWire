@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { Play, Clock, Ghost, UserCheck } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 
-// 🕒 Format Duration (Seconds -> MM:SS) - Outside component to avoid recreation
+// Format Duration (Seconds -> MM:SS) - Outside component to avoid recreation
 const formatDuration = (seconds) => {
   const min = Math.floor(seconds / 60)
   const sec = Math.floor(seconds % 60)
@@ -15,10 +15,10 @@ const formatDuration = (seconds) => {
 const VideoCard = memo(function VideoCard({ video }) {
   const { userData } = useSelector((state) => state.auth)
 
-  // 🛡️ SAFETY: Guard against undefined video
+  // Guard against undefined video
   if (!video) return null
 
-  // 🎭 Stealth Logic: If the video is stealth, we show generic info
+  // Stealth Logic: If the video is stealth, we show generic info
   const isStealth = video.isStealthMode || video.owner?.isIdentityCloaked
   const isOwner = userData?._id === video.owner?._id
   const ownerName = isStealth ? "StreamWire User" : video.owner?.fullName

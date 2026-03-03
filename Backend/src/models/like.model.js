@@ -7,22 +7,21 @@ const likeSchema = new Schema(
     tweet: { type: Schema.Types.ObjectId, ref: "Tweet" },
     comment: { type: Schema.Types.ObjectId, ref: "Comment" },
     likedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    isStealthMode: { type: Boolean, default: false } // ✅ Added missing field
+    isStealthMode: { type: Boolean, default: false } // Added missing field
   },
   { timestamps: true }
 );
 
-// 🛡️ Integrity Check: Ensure 1 like = 1 target
-// 🟢 OPTIMIZED: Synchronous check using 'throw' (No 'next' needed)
+// Integrity check: ensure 1 like = 1 target (optimized with sync throw)
 likeSchema.pre("save", function () {
   const fields = [this.video, this.tweet, this.comment].filter(Boolean);
 
   if (fields.length !== 1) {
-      throw new Error("A like must belong to exactly one entity (Video, Tweet, or Comment)");
+    throw new Error("A like must belong to exactly one entity (Video, Tweet, or Comment)");
   }
 });
 
-// 🛡️ Compound Indexes: Prevent duplicate likes on the same item
+// Compound indexes: prevent duplicate likes on same item
 likeSchema.index({ video: 1, likedBy: 1 }, { unique: true, sparse: true });
 likeSchema.index({ tweet: 1, likedBy: 1 }, { unique: true, sparse: true });
 likeSchema.index({ comment: 1, likedBy: 1 }, { unique: true, sparse: true });

@@ -1,9 +1,6 @@
 import rateLimit from "express-rate-limit";
 
-/* ==========================================================================
-   CONTACT FORM RATE LIMITER
-   Prevent spam submissions
-   ========================================================================== */
+// Contact form rate limiter
 
 export const contactLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes

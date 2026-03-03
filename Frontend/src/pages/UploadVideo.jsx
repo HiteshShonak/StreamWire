@@ -34,7 +34,7 @@ export default function UploadVideo() {
 
       // Track upload progress with ETA
       const startTime = Date.now();
-      console.log('🚀 Starting video upload...');
+      console.log('Starting video upload...');
       return await videoService.publishVideo(formDataToSend, (progressEvent) => {
         const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
         const elapsed = (Date.now() - startTime) / 1000; // seconds
@@ -42,7 +42,7 @@ export default function UploadVideo() {
         const remaining = progressEvent.total - progressEvent.loaded;
         const eta = remaining / uploadSpeed; // seconds
 
-        console.log(`📊 Upload Progress: ${percentCompleted}% (${progressEvent.loaded}/${progressEvent.total} bytes)`);
+        console.log(`Upload Progress: ${percentCompleted}% (${progressEvent.loaded}/${progressEvent.total} bytes)`);
 
         setUploadProgress({
           percent: percentCompleted,
@@ -62,7 +62,7 @@ export default function UploadVideo() {
       navigate('/dashboard');
     },
     onError: (error) => {
-      console.error('❌ Upload error:', error);
+      console.error('Upload error:', error);
       let errorMessage = error.message || 'Upload failed. Please try again.';
 
       // More specific error matching to avoid false positives

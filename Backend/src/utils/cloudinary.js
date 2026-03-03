@@ -81,12 +81,12 @@ const uploadOnCloudinary = async (localFilePath, fileType = "others", filename =
         }
 
         const response = await cloudinary.uploader.upload(localFilePath, options);
-        console.log(`✅ Cloudinary upload success: ${response.public_id}`);
+        console.log(`Cloudinary upload success: ${response.public_id}`);
         fs.unlinkSync(localFilePath); // Clean local temp file
         return response;
 
     } catch (error) {
-        console.error("❌ Cloudinary upload failed:");
+        console.error("Cloudinary upload failed:");
         console.error("   Error:", error.message);
         console.error("   File:", localFilePath);
         console.error("   Type:", fileType);
@@ -114,9 +114,9 @@ const deleteFromCloudinary = async (publicId, resourceType = "image") => {
 }
 
 /**
- * 🖼️ Generate auto-thumbnail URL from video
- * Cloudinary can extract a frame from any video automatically!
- * Just change the extension from .mp4 to .jpg
+ * Generate auto-thumbnail URL from video
+ * Cloudinary can grab a frame from any video automatically!
+ * Just swap the extension from .mp4 to .jpg
  * 
  * @param {string} videoPublicId - The public_id of the video (includes folder path)
  * @param {object} options - Optional transformations

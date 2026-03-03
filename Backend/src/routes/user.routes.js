@@ -58,9 +58,7 @@ const preventLoggedIn = (req, res, next) => {
     next();
 };
 
-/* ==========================================================================
-   🔓 PUBLIC AUTH ROUTES (With Rate Limiting)
-   ========================================================================== */
+// Public auth routes (with rate limiting)
 router.route("/register-request").post(authLimiter, validate(registerRequestSchema), preventLoggedIn, registerRequest);
 router.route("/verify-otp").post(authLimiter, validate(verifyOtpSchema), preventLoggedIn, verifyAndCreateUser);
 router.route("/resend-otp").post(otpResendLimiter, validate(resendOtpSchema), preventLoggedIn, resendOtp);
@@ -71,18 +69,12 @@ router.route("/refresh-token").post(refreshAccessToken);
 router.route("/forgot-password").post(passwordResetLimiter, validate(forgotPasswordSchema), preventLoggedIn, forgotPasswordRequest);
 router.route("/reset-password").post(authLimiter, validate(resetPasswordSchema), preventLoggedIn, resetPassword);
 
-/* ==========================================================================
-   🔓 PUBLIC PROFILE ROUTES
-   Req.user is already available here thanks to global middleware!
-   ========================================================================== */
+// Public profile routes (req.user already available via global middleware)
 router.route("/c/:username").get(getUserChannelProfile);
 router.route("/search").get(searchUsers);
 
 
-/* ==========================================================================
-   🔐 PROTECTED USER ROUTES
-   Global middleware populates user, restrictTo ensures they exist.
-   ========================================================================== */
+// Protected user routes (global middleware populates user, restrictTo ensures they exist)
 router.use(restrictTo(["USER", "ADMIN"]));
 
 router.route("/logout").post(logoutUser);
@@ -103,7 +95,7 @@ router.route("/update-profile").patch(
     updateProfile
 );
 
-// 🎯 Feed Routes
+// Feed Routes
 router.route("/feed/for-you").get(getForYouFeed);
 router.route("/feed/preferences").get(getFeedPreferences);
 router.route("/feed/preferences").patch(updateFeedPreferences);

@@ -30,12 +30,12 @@ const tweetSchema = new Schema({
         type: Boolean,
         default: false
     },
-    // 👁️ Views tracking (like videos)
+    // Views tracking (like videos)
     views: {
         type: Number,
         default: 0
     },
-    // 🔥 Trend Score - Calculated on engagement
+    // Trend Score - Calculated on engagement
     trendScore: {
         type: Number,
         default: 0,
@@ -43,9 +43,8 @@ const tweetSchema = new Schema({
     }
 }, { timestamps: true });
 
-// --- 🔎 SEARCH INDEX (The Missing Piece) ---
-// This allows the search bar to find words inside tweets
-tweetSchema.index({ content: "text" }); 
+// Search index (allows search bar to find words in tweets)
+tweetSchema.index({ content: "text" });
 
 // Performance Index
 tweetSchema.index({ owner: 1, createdAt: -1 });

@@ -23,7 +23,7 @@ export default function WireInput({ onSuccess }) {
     const MAX_CHARS = 500
     const MAX_IMAGES = 1
 
-    // ⚡ Mutation
+    // Mutation
     const createMutation = useMutation({
         mutationFn: (payload) => {
             const formData = new FormData()
@@ -50,7 +50,7 @@ export default function WireInput({ onSuccess }) {
             if (onSuccess) onSuccess()
         },
         onError: (err) => {
-            console.error('❌ WireInput - Mutation error:', err);
+            console.error('WireInput - Mutation error:', err);
             toast.error(err.message || "Transmission failed")
         }
     })
@@ -64,7 +64,7 @@ export default function WireInput({ onSuccess }) {
         setPollOptions(["", ""])
     }
 
-    // 🖼️ Image Handling
+    // Image Handling
     const handleImageUpload = async (e) => {
         const files = Array.from(e.target.files)
 
@@ -113,7 +113,7 @@ export default function WireInput({ onSuccess }) {
         setImages(prev => prev.filter((_, i) => i !== index))
     }
 
-    // 📊 Poll Handling
+    // Poll Handling
     const handleAddOption = () => {
         if (pollOptions.length >= 4) return toast.error("Max 4 options allowed")
         setPollOptions([...pollOptions, ""])
@@ -138,7 +138,7 @@ export default function WireInput({ onSuccess }) {
         setShowPoll(!showPoll)
     }
 
-    // 📝 Submission
+    // Submission
     const handleSubmit = () => {
         if (!content.trim()) return
 
@@ -194,7 +194,7 @@ export default function WireInput({ onSuccess }) {
                     className="w-full bg-transparent outline-none text-zinc-200 placeholder:text-zinc-600 resize-none min-h-[100px]"
                 />
 
-                {/* 📊 Poll Creator Interface */}
+                {/* Poll Creator Interface */}
                 <AnimatePresence>
                     {showPoll && (
                         <motion.div

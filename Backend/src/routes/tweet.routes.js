@@ -16,15 +16,11 @@ import { createTweetSchema, updateTweetSchema, voteOnPollSchema } from "../valid
 
 const router = Router();
 
-/* ==========================================================================
-   🌍 FEED ROUTES (View)
-   ========================================================================== */
+// Public routes
 router.route("/").get(getAllTweets);
 router.route("/user/:userId").get(getUserTweets);
 
-/* ==========================================================================
-   🔐 PROTECTED ROUTES (Create/Edit/Vote)
-   ========================================================================== */
+// Protected routes
 
 // Note: restrictTo checks for role, but verifyJWT (implicit in app.js or auth middleware) 
 // populates req.user. If you need this route open to public (unlogged users), 
@@ -32,7 +28,7 @@ router.route("/user/:userId").get(getUserTweets);
 
 router.route("/").post(restrictTo(["USER", "ADMIN"]), createContentLimiter, upload.single("image"), validate(createTweetSchema), createTweet);
 
-// ⚡ SINGLE TWEET OPERATIONS
+// Single tweet operations
 router.route("/:tweetId")
     .get(getTweetById)
     .patch(restrictTo(["USER", "ADMIN"]), validate(updateTweetSchema), updateTweet)

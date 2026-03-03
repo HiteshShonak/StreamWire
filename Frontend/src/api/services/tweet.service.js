@@ -1,51 +1,51 @@
 import api from '../axios';
 
 export const tweetService = {
-    // 🌍 GET FEED
+    // Get feed
     getAllTweets: async (params) => {
         return await api.get('/tweets', { params });
     },
 
-    // 🔎 GET SINGLE TWEET
+    // Get single tweet
     getTweetById: async (tweetId) => {
         return await api.get(`/tweets/${tweetId}`);
     },
 
-    // 👤 GET PROFILE FEED
+    // Get profile feed
     getUserTweets: async (userId, params) => {
         return await api.get(`/tweets/user/${userId}`, { params });
     },
 
-    // 🔥 Trending Tweets - sorted by trendScore
+    // Trending Tweets - sorted by trendScore
     getTrendingTweets: async (params = {}) => {
-        return await api.get('/tweets', { 
-            params: { 
-                limit: params.limit || 20, 
-                sortBy: 'trendScore', 
+        return await api.get('/tweets', {
+            params: {
+                limit: params.limit || 20,
+                sortBy: 'trendScore',
                 sortType: 'desc',
-                ...params 
-            } 
+                ...params
+            }
         });
     },
 
-    // 📝 CREATE TWEET / DROP
+    // Create tweet / drop
     createTweet: async (formData) => {
-        // 🚨 FIX: Do NOT manually set 'Content-Type': 'multipart/form-data'
+        // Fix: Do not manually set 'Content-Type': 'multipart/form-data'
         // Axios detects FormData and sets the correct header with the boundary automatically.
         return await api.post('/tweets', formData);
     },
 
-    // ✏️ UPDATE TWEET
+    // Update tweet
     updateTweet: async (tweetId, data) => {
         return await api.patch(`/tweets/${tweetId}`, data);
     },
 
-    // 🗑️ DELETE TWEET
+    // Delete tweet
     deleteTweet: async (tweetId) => {
         return await api.delete(`/tweets/${tweetId}`);
     },
 
-    // 🗳️ VOTE
+    // Vote
     voteOnPoll: async (tweetId, optionIndex) => {
         return await api.post(`/tweets/vote/${tweetId}`, { optionIndex });
     }

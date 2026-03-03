@@ -1,8 +1,6 @@
 import { z } from "zod";
 
-/* ==========================================================================
-   📂 PLAYLIST VALIDATION SCHEMAS
-   ========================================================================== */
+// Playlist validation schemas
 
 // Create Playlist Schema
 export const createPlaylistSchema = z.object({

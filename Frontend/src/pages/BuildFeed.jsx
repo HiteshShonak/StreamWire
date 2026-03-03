@@ -10,9 +10,6 @@ import Sidebar from '../Components/Sidebar'
 import { videoService } from '../api/services/video.service'
 import { TagGridSkeleton } from '../Components/Common/Skeleton'
 
-// ==========================================
-// 🎨 BUILD YOUR FEED - Cinema Style
-// ==========================================
 export default function BuildFeed() {
     const navigate = useNavigate()
     const queryClient = useQueryClient()

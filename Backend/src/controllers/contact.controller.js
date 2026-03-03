@@ -3,9 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { sendContactFormEmail } from "../utils/mail.js";
 
-/* ==========================================================================
-   CONTACT FORM
-   ========================================================================== */
+// Submit contact form
 
 export const sendContactMessage = asyncHandler(async (req, res) => {
     const { name, email, subject, message } = req.body;

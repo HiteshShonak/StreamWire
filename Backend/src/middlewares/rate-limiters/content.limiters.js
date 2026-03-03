@@ -1,9 +1,6 @@
 import rateLimit from "express-rate-limit";
 
-/* ==========================================================================
-   CONTENT CREATION RATE LIMITERS
-   Prevent spam uploads, tweets, comments, playlists
-   ========================================================================== */
+// Content creation rate limiters
 
 // Heavy uploads (videos) - stricter limit
 export const uploadLimiter = rateLimit({

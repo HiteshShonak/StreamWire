@@ -10,7 +10,7 @@ import './index.css'
 import App from './App.jsx'
 import AuthLayout from './Components/AuthLayout.jsx'
 
-// 📄 Pages
+// Pages
 import Landing from './pages/Landing.jsx'
 import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
@@ -25,7 +25,7 @@ import Search from './Components/Search.jsx'
 import WirePost from './Components/WirePost.jsx'
 import ShadowPost from './Components/ShadowPost.jsx'
 
-// 📄 Sidebar Pages
+// Sidebar Pages
 import Trending from './pages/Trending.jsx'
 import Following from './pages/Following.jsx'
 import History from './pages/History.jsx'
@@ -47,7 +47,7 @@ const queryClient = new QueryClient()
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <App />, 
+    element: <App />,
     children: [
       {
         path: '/',
@@ -238,13 +238,13 @@ createRoot(document.getElementById('root')).render(
               },
               success: {
                 iconTheme: {
-                  primary: '#10b981', 
+                  primary: '#10b981',
                   secondary: '#fff',
                 },
               },
               error: {
                 iconTheme: {
-                  primary: '#ef4444', 
+                  primary: '#ef4444',
                   secondary: '#fff',
                 },
               },

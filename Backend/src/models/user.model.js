@@ -44,8 +44,7 @@ const userSchema = new Schema(
       url: { type: String },
       public_id: { type: String },
     },
-    // --- 📺 Content Consumption ---
-    // (watchHistory, watchLater, and likes are now handled via separate Models)
+    // Content Consumption (watchHistory, watchLater, likes handled by separate models)
     feedPreferences: {
       type: [String],
       default: [],
@@ -76,13 +75,13 @@ const userSchema = new Schema(
       enum: ["USER", "ADMIN"],
       default: "USER",
     },
-    // --- ⚙️ StreamWire Status Management ---
+    // StreamWire Status Management
     accountStatus: {
       type: String,
       enum: ["ACTIVE", "DEACTIVATED", "DELETED_PENDING", "BANNED"],
       default: "ACTIVE",
     },
-    // --- 🛡️ Identity & Privacy Engine ---
+    // Identity & Privacy Engine
     isProfilePublic: {
       type: Boolean,
       default: true, // Controls library tab visibility (Likes, Playlists)
@@ -95,13 +94,13 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-// --- 🔎 SEARCH ENGINE INDEX ---
+// Search engine index
 userSchema.index(
   { username: "text", fullName: "text" },
   { weights: { username: 10, fullName: 5 }, name: "UserSearchIndex" }
 );
 
-// --- 🔐 MIDDLEWARE ---
+// Middleware
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
 
@@ -109,7 +108,7 @@ userSchema.pre("save", async function () {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-// --- 🛠️ INSTANCE METHODS ---
+// Instance methods
 userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };

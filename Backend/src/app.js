@@ -7,10 +7,10 @@ import { authenticate } from "./middlewares/auth.middleware.js";
 
 const app = express();
 
-// 🛡️ Security Headers (helmet)
+// Security Headers (helmet)
 app.use(helmet());
 
-// 📝 HTTP Request Logging (morgan)
+// HTTP Request Logging (morgan)
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 
 app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true }));
@@ -19,10 +19,20 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
 
-// 🔐 Global Auth Middleware
+// Global Auth Middleware
 app.use(authenticate);
 
-// --- 🚦 IMPORT ROUTES ---
+// Health check endpoint (no auth — safe for external monitors & cron jobs)
+app.get('/api/v1/health', (req, res) => {
+    res.status(200).json({
+        status: 'ok',
+        uptime: Math.floor(process.uptime()),
+        environment: process.env.NODE_ENV || 'development',
+        timestamp: new Date().toISOString()
+    });
+});
+
+// Import routes
 import userRoutes from './routes/user.routes.js';
 import videoRoutes from './routes/video.routes.js';
 import tweetRoutes from './routes/tweet.routes.js';
@@ -34,7 +44,7 @@ import dashboardRoutes from './routes/dashboard.routes.js';
 import libraryRoutes from './routes/library.routes.js';
 import contactRoutes from './routes/contact.routes.js';
 
-// --- 🔗 MOUNT ROUTES ---
+// Mount routes
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/videos', videoRoutes);
 app.use('/api/v1/tweets', tweetRoutes);
@@ -52,9 +62,9 @@ app.use((err, req, res, next) => {
     const message = err.message || "Internal Server Error";
 
     if (statusCode >= 500) {
-        console.error(`🔥 [SERVER ERROR]: ${err.stack}`);
+        console.error(`[SERVER ERROR]: ${err.stack}`);
     } else {
-        console.log(`ℹ️  [${statusCode}] ${message}`);
+        console.log(`[${statusCode}] ${message}`);
     }
 
     return res.status(statusCode).json({

@@ -11,9 +11,7 @@ import {
   Footer
 } from '../components/LandingPage'
 
-// ==========================================
-// 🧠 COMPONENT: Landing Header (Pill Style)
-// ==========================================
+
 const LandingHeader = ({ isStealth, isLoggedIn, userData }) => {
   return (
     <motion.header
@@ -104,9 +102,7 @@ const LandingHeader = ({ isStealth, isLoggedIn, userData }) => {
   )
 }
 
-// ==========================================
-// 🏠 MAIN PAGE COMPONENT
-// ==========================================
+
 export default function Landing() {
   const [isStealth, setIsStealth] = useState(false)
   const { scrollY } = useScroll();

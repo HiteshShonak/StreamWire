@@ -4,15 +4,15 @@ import Sidebar from './Sidebar'
 
 export default function Layout() {
   const location = useLocation()
-  
-  // 1. Check if we are on the Landing Page (root path) or Auth pages
+
+  // Check if we are on the Landing Page or Auth pages
   const isLanding = location.pathname === '/'
   const isAuthPage = location.pathname === '/login' || location.pathname === '/register'
-  
-  // 2. Hide Global Header/Sidebar on Landing & Auth pages
+
+  // Hide Global Header/Sidebar on Landing & Auth pages
   const showGlobalNav = !isLanding && !isAuthPage
 
-  // 3. Determine Header Variant based on route (for when we DO show it)
+  // Get header variant based on route
   const getVariant = () => {
     if (location.pathname.includes('/cinema')) return 'cinema'
     if (location.pathname.includes('/wire')) return 'wire'
@@ -22,10 +22,10 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen bg-[#050505] text-white">
-      
+
       {/* Only show Global Header if NOT on landing/auth */}
       {showGlobalNav && <Header variant={getVariant()} />}
-      
+
       {/* Only show Sidebar if NOT on landing/auth */}
       {showGlobalNav && <Sidebar />}
 

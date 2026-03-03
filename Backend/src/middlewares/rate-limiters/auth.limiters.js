@@ -1,9 +1,6 @@
 import rateLimit from "express-rate-limit";
 
-/* ==========================================================================
-   AUTHENTICATION RATE LIMITERS
-   Protect auth endpoints from brute force attacks
-   ========================================================================== */
+// Authentication rate limiters
 
 // Strict limiter for login attempts
 export const loginLimiter = rateLimit({

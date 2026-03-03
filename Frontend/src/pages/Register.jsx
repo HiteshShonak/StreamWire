@@ -8,9 +8,7 @@ import toast from "react-hot-toast"
 import { authService } from "../api/services/auth.service"
 import { login } from "../store/authSlice"
 
-// ==========================================
-// 🎨 BACKGROUND COMPONENTS
-// ==========================================
+// Background components
 const NoiseOverlay = () => (
     <div className="absolute inset-0 pointer-events-none z-10 opacity-[0.04] mix-blend-overlay">
         <svg className="w-full h-full">
@@ -29,9 +27,7 @@ const AmbientBackground = () => (
     </div>
 )
 
-// ==========================================
-// 🔢 DARK MODE OTP INPUT
-// ==========================================
+// Dark mode OTP input
 const OTPInput = ({ length = 6, onComplete }) => {
     const [otp, setOtp] = useState(new Array(length).fill(""))
 
@@ -71,9 +67,7 @@ const OTPInput = ({ length = 6, onComplete }) => {
     )
 }
 
-// ==========================================
-// 🔐 MAIN REGISTER COMPONENT
-// ==========================================
+// Register page
 export default function Register() {
     const [step, setStep] = useState("DETAILS") // "DETAILS" | "OTP"
     const [tempData, setTempData] = useState(null)
@@ -176,7 +170,7 @@ export default function Register() {
                 transition={{ duration: 0.5, ease: "circOut" }}
                 className="w-full max-w-md relative z-20"
             >
-                {/* 🔮 GLASS CARD */}
+                {/* Glass Card */}
                 <div className="bg-zinc-900/40 backdrop-blur-2xl border mt-8 border-white/10 p-8 rounded-[2rem] shadow-2xl shadow-black/50 overflow-hidden relative group">
 
                     {/* Header Section */}

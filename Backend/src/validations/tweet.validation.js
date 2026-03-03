@@ -1,8 +1,6 @@
 import { z } from "zod";
 
-/* ==========================================================================
-   💬 TWEET VALIDATION SCHEMAS
-   ========================================================================== */
+// Tweet validation schemas
 
 // Create Tweet Schema
 export const createTweetSchema = z.object({

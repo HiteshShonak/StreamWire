@@ -60,7 +60,7 @@ const VideoPlayerControls = React.memo(({
         if (isPlaying) togglePlay()
     }
 
-    // 🧠 DYNAMIC SOURCE GENERATION
+    // Dynamic source generation
     // Cloudinary allows on-the-fly transformations. We inject params into the URL.
     const videoSource = useMemo(() => {
         if (!video?.videoFile?.url) return null;
@@ -82,7 +82,7 @@ const VideoPlayerControls = React.memo(({
         return video.videoFile.url.replace('/upload/', `/upload/${params}/`);
     }, [video, quality]);
 
-    // Generate URL for a specific quality
+    // Get URL for a specific quality
     const getQualityUrl = (q) => {
         if (!video?.videoFile?.url) return null;
         if (q === 'auto') return video.videoFile.url;
@@ -196,10 +196,10 @@ const VideoPlayerControls = React.memo(({
         setShowPreview(false);
     };
 
-    // Generate Preview URL (Cloudinary)
+    // Get preview URL (Cloudinary)
     const previewUrl = useMemo(() => {
         if (!video?.videoFile?.url || !showPreview) return null;
-        // Construct frame URL: .../upload/w_160,so_{time}/... .jpg
+        // Build frame URL: .../upload/w_160,so_{time}/... .jpg
         // Note: Using 'q_auto:low' for faster preview loading
         const baseUrl = video.videoFile.url;
         const timeStr = Math.floor(hoverTime); // Use integer seconds for better cache hit rate
@@ -246,7 +246,7 @@ const VideoPlayerControls = React.memo(({
                 }}
             />
 
-            {/* 🔄 BUFFERING/LOADING OVERLAY */}
+            {/* Buffering/loading overlay */}
             <AnimatePresence>
                 {(isBuffering || isChangingQuality) && (
                     <motion.div
@@ -262,7 +262,7 @@ const VideoPlayerControls = React.memo(({
                 )}
             </AnimatePresence>
 
-            {/* 🌌 CINEMATIC GRADIENT OVERLAYS */}
+            {/* Cinematic gradient overlays */}
             {/* Top Shadow for visibility */}
             <div className={`absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/80 to-transparent pointer-events-none transition-opacity duration-500 ${showControls ? 'opacity-100' : 'opacity-0'}`} />
 
@@ -287,7 +287,7 @@ const VideoPlayerControls = React.memo(({
                 )}
             </AnimatePresence>
 
-            {/* 🎛️ CONTROLS BAR */}
+            {/* Controls bar */}
             <div className={`
                 absolute inset-x-0 bottom-0 px-4 md:px-6 pb-4 md:pb-6 pt-24
                 bg-gradient-to-t from-black/95 via-black/80 to-transparent 

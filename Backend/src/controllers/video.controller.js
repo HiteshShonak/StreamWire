@@ -3,7 +3,7 @@ import { Video } from "../models/video.model.js";
 import { User } from "../models/user.model.js";
 import { Like } from "../models/like.model.js";
 import { History } from "../models/history.model.js";
-import { VideoView } from "../models/videoView.model.js"; // 👈 View tracking
+import { VideoView } from "../models/videoView.model.js"; // View tracking
 import { Subscription } from "../models/subscription.model.js";
 import { Comment } from "../models/comment.model.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -18,16 +18,13 @@ import { updateFeedOnWatch } from "../utils/feedBuilder.js";
 import { compressVideo } from "../utils/compressVideo.js";
 import fs from "fs";
 
-/* ==========================================================================
-   🛠️ HELPER: COMMON VIDEO PIPELINE
-   ========================================================================== */
+// Helper: common video pipeline
 const getCommonVideoPipeline = (userId) => {
-    // 🛡️ FIX: Handle anonymous users safely.
-    // If we pass undefined to mongoose.Types.ObjectId(), it crashes the server.
+    // Handle anonymous users safely (undefined crashes mongoose)
     const userObjectId = userId ? new mongoose.Types.ObjectId(userId) : null;
 
     return [
-        // 1. 👤 POPULATE OWNER
+        // 1. Populate owner
         {
             $lookup: {
                 from: "users",
@@ -69,10 +66,10 @@ const getCommonVideoPipeline = (userId) => {
         },
         { $unwind: "$owner" },
 
-        // 2. 🎭 IDENTITY MASKING
+        // 2. Identity masking
         maskIdentityStage(),
 
-        // 3. ❤️ LIKES COUNT
+        // 3. Likes count
         {
             $lookup: {
                 from: "likes",
@@ -87,7 +84,7 @@ const getCommonVideoPipeline = (userId) => {
             }
         },
 
-        // 4. 💬 COMMENTS COUNT
+        // 4. Comments count
         {
             $lookup: {
                 from: "comments",
@@ -102,7 +99,7 @@ const getCommonVideoPipeline = (userId) => {
             }
         },
 
-        // 5. ❤️ LIKE STATUS (SAFE for Anonymous)
+        // 5. Like status (safe for anonymous)
         {
             $lookup: {
                 from: "likes",
@@ -113,7 +110,7 @@ const getCommonVideoPipeline = (userId) => {
                             $expr: {
                                 $and: [
                                     { $eq: ["$video", "$$videoId"] },
-                                    { $eq: ["$likedBy", userObjectId] } // 👈 Uses safe variable
+                                    { $eq: ["$likedBy", userObjectId] } // Uses safe variable
                                 ]
                             }
                         }
@@ -128,7 +125,7 @@ const getCommonVideoPipeline = (userId) => {
             }
         },
 
-        // 6. 🔔 SUBSCRIPTION STATUS (SAFE for Anonymous)
+        // 6. Subscription status (safe for anonymous)
         {
             $lookup: {
                 from: "subscriptions",
@@ -139,7 +136,7 @@ const getCommonVideoPipeline = (userId) => {
                             $expr: {
                                 $and: [
                                     { $eq: ["$channel", "$$channelId"] },
-                                    { $eq: ["$subscriber", userObjectId] }, // 👈 Uses safe variable
+                                    { $eq: ["$subscriber", userObjectId] }, // Uses safe variable
                                     { $eq: ["$status", "ACCEPTED"] }
                                 ]
                             }
@@ -156,7 +153,7 @@ const getCommonVideoPipeline = (userId) => {
             }
         },
 
-        // 7. 🧹 CLEANUP
+        // 7. Cleanup
         {
             $project: {
                 likes: 0,
@@ -166,9 +163,7 @@ const getCommonVideoPipeline = (userId) => {
     ];
 };
 
-/* ==========================================================================
-   🚀 PUBLISH VIDEO
-   ========================================================================== */
+// Publish video
 export const publishAVideo = asyncHandler(async (req, res) => {
     const { title, description, isStealthMode, tags } = req.body;
 
@@ -186,7 +181,7 @@ export const publishAVideo = asyncHandler(async (req, res) => {
     const videoLocalPath = req.files?.videoFile?.[0]?.path;
     const thumbnailLocalPath = req.files?.thumbnail?.[0]?.path;
 
-    console.log("📁 Video upload request received:");
+    console.log("Video upload request received:");
     console.log("   Title:", title);
     console.log("   Video path:", videoLocalPath);
     console.log("   Thumbnail path:", thumbnailLocalPath);
@@ -199,16 +194,16 @@ export const publishAVideo = asyncHandler(async (req, res) => {
     const videoFilename = `video_${sanitizedTitle}_${sanitizedUsername}_${timestamp}`;
     const thumbnailFilename = `thumbnail_${sanitizedTitle}_${sanitizedUsername}_${timestamp}`;
 
-    console.log("🔧 Compressing video if needed...");
+    console.log("Compressing video if needed...");
     let processedVideoPath;
     try {
         processedVideoPath = await compressVideo(videoLocalPath, 95);
     } catch (compressError) {
-        console.error("⚠️ Compression failed, using original file:", compressError.message);
+        console.error("Compression failed, using original file:", compressError.message);
         processedVideoPath = videoLocalPath;
     }
 
-    console.log("🚀 Uploading video to Cloudinary...");
+    console.log("Uploading video to Cloudinary...");
     const videoUpload = await uploadOnCloudinary(processedVideoPath, "video", videoFilename);
     if (!videoUpload) throw new ApiError(500, "Video upload failed. Please check your file and try again.");
 
@@ -229,8 +224,8 @@ export const publishAVideo = asyncHandler(async (req, res) => {
             public_id: null,
             isAutoGenerated: true
         };
-        console.log(`🖼️ Auto-generated thumbnail URL: ${autoThumbnailUrl}`);
-        console.log(`🖼️ Video public_id used: ${videoUpload.public_id}`);
+        console.log(`Auto-generated thumbnail URL: ${autoThumbnailUrl}`);
+        console.log(`Video public_id used: ${videoUpload.public_id}`);
     }
 
     // Stealth Logic: Force Stealth if User is Globally Cloaked
@@ -239,7 +234,7 @@ export const publishAVideo = asyncHandler(async (req, res) => {
         finalStealthMode = req.user.isIdentityCloaked || (isStealthMode === "true" || isStealthMode === true);
     }
 
-    // 📝 Description: use provided or mark for AI generation
+    // Description: use provided or mark for AI generation
     const videoDescription = description?.trim() || "";
     const needsAIDescription = !videoDescription;
 
@@ -256,10 +251,10 @@ export const publishAVideo = asyncHandler(async (req, res) => {
         transcript: ""
     });
 
-    // 🔥 Initialize trendScore (new videos get recency boost)
+    // Set trendScore (new videos get recency boost)
     updateVideoTrendScore(video._id);
 
-    // 🧠 AI: Generate transcript (and description if empty) from Cloudinary URL (runs in background)
+    // Generate transcript and description in background from Cloudinary URL
     generateVideoMetadataFromUrl(videoUpload.secure_url, video._id, { generateDescription: needsAIDescription });
 
     return res.status(201).json(new ApiResponse(201, video,
@@ -269,9 +264,7 @@ export const publishAVideo = asyncHandler(async (req, res) => {
     ));
 });
 
-/* ==========================================================================
-   📺 GET VIDEO BY ID
-   ========================================================================== */
+// Get video by ID
 export const getVideoById = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
     const userId = req.user?._id;
@@ -297,7 +290,7 @@ export const getVideoById = asyncHandler(async (req, res) => {
         }
         // If existingView exists, TTL will auto-delete it after 12 hours
 
-        // 🕰️ Update watch history (every view updates the timestamp)
+        // Update watch history (every view updates the timestamp)
         await History.findOneAndUpdate(
             { owner: userId, video: videoId },
             {
@@ -309,7 +302,7 @@ export const getVideoById = asyncHandler(async (req, res) => {
     } else {
         // Anonymous users still get views counted (no tracking)
         Video.findByIdAndUpdate(videoId, { $inc: { views: 1 } }).exec();
-        // 🔥 Update trendScore in background
+        // Update trendScore in background
         updateVideoTrendScore(videoId);
     }
 
@@ -328,26 +321,24 @@ export const getVideoById = asyncHandler(async (req, res) => {
         throw new ApiError(403, "This video is private. Subscribe to watch.");
     }
 
-    // 🎯 Update user's personalized feed based on watched video tags (async, don't block response)
+    // Update user's personalized feed based on watched video tags (async, don't block response)
     if (userId && video.tags && video.tags.length > 0) {
         updateFeedOnWatch(userId, video.tags).catch(err =>
-            console.error('Error updating feed on watch:', err)
+            console.error("Error updating feed on watch:", err)
         );
     }
 
     return res.status(200).json(new ApiResponse(200, video, "Video fetched"));
 });
 
-/* ==========================================================================
-   🌍 GET ALL VIDEOS (Feed & Search)
-   ========================================================================== */
+// Get all videos (feed & search)
 export const getAllVideos = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, query, sortBy, sortType, userId, isStealthMode } = req.query;
 
     const pipeline = [];
     const matchStage = { isPublished: true };
 
-    // 🔥 FIX: Use Regex for Partial Matching instead of strict Text Search
+    // Fix: Use Regex for partial matching instead of strict text search
     if (query) {
         matchStage.$or = [
             // "i" option means case-insensitive (ps5 matches Ps5)
@@ -399,9 +390,7 @@ export const getAllVideos = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, result, "Feed fetched"));
 });
 
-/* ==========================================================================
-   ✏️ UPDATE VIDEO
-   ========================================================================== */
+// Update video
 export const updateVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
     const { title, description, isStealthMode, tags } = req.body;
@@ -446,9 +435,7 @@ export const updateVideo = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, video, "Video updated"));
 });
 
-/* ==========================================================================
-   🗑️ DELETE VIDEO
-   ========================================================================== */
+// Delete video
 export const deleteVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
 
@@ -474,9 +461,7 @@ export const deleteVideo = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, {}, "Video deleted"));
 });
 
-/* ==========================================================================
-   🔘 TOGGLE PUBLISH STATUS
-   ========================================================================== */
+// Toggle publish status
 export const togglePublishStatus = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
     if (!isValidObjectId(videoId)) throw new ApiError(400, "Invalid video ID");
