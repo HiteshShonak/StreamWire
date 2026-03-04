@@ -17,11 +17,11 @@ import { commentService } from '../api/services/comment.service';
 import { libraryService } from '../api/services/library.service';
 
 // Modular Components
-import VideoPlayerControls from '../components/VideoPlayer/VideoPlayerControls';
-import VideoInfo from '../components/VideoPlayer/VideoInfo';
-import AIFeatures from '../components/VideoPlayer/AIFeatures';
-import CommentsSection from '../components/VideoPlayer/CommentsSection';
-import RelatedVideos from '../components/VideoPlayer/RelatedVideos';
+import VideoPlayerControls from '../Components/VideoPlayer/VideoPlayerControls';
+import VideoInfo from '../Components/VideoPlayer/VideoInfo';
+import AIFeatures from '../Components/VideoPlayer/AIFeatures';
+import CommentsSection from '../Components/VideoPlayer/CommentsSection';
+import RelatedVideos from '../Components/VideoPlayer/RelatedVideos';
 import { VideoPlayerSkeleton } from '../Components/Common/Skeleton';
 
 export default function VideoPlayer() {

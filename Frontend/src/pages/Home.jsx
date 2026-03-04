@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { motion, useMotionTemplate, useMotionValue, useSpring } from 'framer-motion'
 import { Film, MessageSquare, VenetianMask, ArrowRight, Zap } from 'lucide-react'
 import Header from '../Components/Header'
-import { Footer } from '../components/LandingPage'
+import { Footer } from '../Components/LandingPage'
 
 
 const SpotlightCard = ({ id, title, subtitle, icon: Icon, path, gradient, accent, iconColor, iconBg }) => {

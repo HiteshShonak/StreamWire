@@ -25,7 +25,7 @@ app.use(authenticate);
 // Health check endpoint (no auth — safe for external monitors & cron jobs)
 app.get('/api/v1/health', (req, res) => {
     res.status(200).json({
-        status: 'ok',
+        status: 'StreamWire Backend is Live',
         uptime: Math.floor(process.uptime()),
         environment: process.env.NODE_ENV || 'development',
         timestamp: new Date().toISOString()

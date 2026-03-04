@@ -15,11 +15,11 @@ import { tweetService } from '../api/services/tweet.service';
 import { dashboardService } from '../api/services/dashboard.service';
 
 // Modular Components
-import StatsOverview from '../components/Dashboard/StatsOverview';
-import RecentContent from '../components/Dashboard/RecentContent';
-import VideoList from '../components/Dashboard/VideoList';
-import WireList from '../components/Dashboard/WireList';
-import StealthSection from '../components/Dashboard/StealthSection';
+import StatsOverview from '../Components/Dashboard/StatsOverview';
+import RecentContent from '../Components/Dashboard/RecentContent';
+import VideoList from '../Components/Dashboard/VideoList';
+import WireList from '../Components/Dashboard/WireList';
+import StealthSection from '../Components/Dashboard/StealthSection';
 
 export default function Dashboard() {
   const navigate = useNavigate();

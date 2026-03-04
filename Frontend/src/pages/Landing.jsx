@@ -9,7 +9,7 @@ import {
   AIFeatures,
   BentoGrid,
   Footer
-} from '../components/LandingPage'
+} from '../Components/LandingPage'
 
 
 const LandingHeader = ({ isStealth, isLoggedIn, userData }) => {

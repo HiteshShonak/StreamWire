@@ -13,4 +13,4 @@ Disallow: /kill-switch
 Disallow: /build-feed
 
 # Sitemap Location
-Sitemap: https://streamwire.app/sitemap.xml
+Sitemap: https://streamwire.vercel.app/sitemap.xml
