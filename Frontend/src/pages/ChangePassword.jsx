@@ -3,7 +3,8 @@ import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
-import { Lock, Eye, EyeOff, ArrowLeft, Loader2, AlertCircle, CheckCircle2, Shield } from 'lucide-react'
+import { Lock, Eye, EyeOff, ArrowLeft, AlertCircle, CheckCircle2, Shield } from 'lucide-react'
+import { LoadingDots } from '../Components/Common/LoadingIndicator'
 import toast from 'react-hot-toast'
 import { authService } from '../api/services/auth.service'
 import { useDispatch } from 'react-redux'
@@ -219,7 +220,7 @@ export default function ChangePassword() {
                            >
                               {changePasswordMutation.isPending ? (
                                  <>
-                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                    <LoadingDots size="md" />
                                     Updating...
                                  </>
                               ) : (

@@ -4,9 +4,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import {
-   ArrowLeft, ArrowRight, Check, X, Loader2, Upload, Sparkles,
+   ArrowLeft, ArrowRight, Check, X, Upload, Sparkles,
    User, Palette, Image, Camera, CheckCircle2, AlertCircle, FileText
-} from 'lucide-react';
+} from 'lucide-react'
+import { LoadingDots } from '../Components/Common/LoadingIndicator';
 import toast from 'react-hot-toast';
 import confetti from 'canvas-confetti';
 import { authService } from '../api/services/auth.service';
@@ -415,7 +416,7 @@ export default function Customize() {
                                  />
                                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
                                     {usernameStatus.checking && (
-                                       <Loader2 className="w-5 h-5 text-zinc-500 animate-spin" />
+                                       <LoadingDots size="md" />
                                     )}
                                     {!usernameStatus.checking && usernameStatus.available === true && (
                                        <CheckCircle2 className="w-5 h-5 text-emerald-400" />
@@ -1044,7 +1045,7 @@ export default function Customize() {
                         >
                            {updateMutation.isPending ? (
                               <>
-                                 <Loader2 className="w-5 h-5 animate-spin" />
+                                 <LoadingDots size="md" />
                                  Saving...
                               </>
                            ) : (

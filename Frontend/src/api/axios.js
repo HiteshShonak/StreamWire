@@ -1,8 +1,7 @@
 import axios from 'axios';
 
-// Create the instance
+// axios setup
 const api = axios.create({
-    // Use the environment variable, but fallback to your local server for dev
     baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1',
     withCredentials: true, // Important: matches backend 'cors({ credentials: true })'
     headers: {
@@ -13,8 +12,7 @@ const api = axios.create({
 // Request interceptor (handle FormData properly)
 api.interceptors.request.use(
     (config) => {
-        // If the data is FormData, let axios set the Content-Type with boundary automatically
-        // Otherwise, set it to application/json
+        // formdata handles its own content-type, everything else is json
         if (!(config.data instanceof FormData)) {
             config.headers['Content-Type'] = 'application/json';
         }
@@ -42,13 +40,11 @@ const processQueue = (error, token = null) => {
 
 api.interceptors.response.use(
     (response) => {
-        // Success: Your backend wraps data in a 'data' field inside ApiResponse
-        // Format: { statusCode: 200, data: {...}, message: "..." }
+        // unwrap the nested data from our ApiResponse
         return response.data?.data || response.data;
     },
     async (error) => {
-        // Extract the specific error message from your backend's global error handler
-        // Backend returns: { success: false, statusCode: 4xx, message: "...", errors: [] }
+        // pull error message from backend
         const errorResponse = error.response?.data;
         const errorMessage = errorResponse?.message || "Something went wrong";
         const fieldErrors = errorResponse?.errors || [];
@@ -56,7 +52,6 @@ api.interceptors.response.use(
 
         // Handle 401 Unauthorized - Try Token Refresh
         if (error.response?.status === 401 && !originalRequest._retry) {
-            // Prevent refresh-token endpoint from triggering infinite loop
             if (originalRequest.url?.includes('/users/refresh-token')) {
                 // Refresh token itself expired - logout user
                 window.dispatchEvent(new Event("auth:unauthorized"));
@@ -64,7 +59,7 @@ api.interceptors.response.use(
             }
 
             if (isRefreshing) {
-                // Token refresh already in progress - queue this request
+                // refresh already in progress, queue this one
                 return new Promise((resolve, reject) => {
                     failedQueue.push({ resolve, reject });
                 })
@@ -80,21 +75,21 @@ api.interceptors.response.use(
             isRefreshing = true;
 
             try {
-                // Hit refresh token endpoint (cookies sent automatically via withCredentials)
+                // try refreshing the token
                 await axios.post(
                     `${api.defaults.baseURL}/users/refresh-token`,
                     {},
                     { withCredentials: true }
                 );
 
-                // Token refreshed successfully - process queued requests
+                // refresh worked, replay queued requests
                 processQueue(null);
                 isRefreshing = false;
 
                 // Retry the original request
                 return api(originalRequest);
             } catch (refreshError) {
-                // Refresh failed - logout user
+                // refresh failed, kick user out
                 processQueue(refreshError, null);
                 isRefreshing = false;
                 window.dispatchEvent(new Event("auth:unauthorized"));
@@ -102,10 +97,10 @@ api.interceptors.response.use(
             }
         }
 
-        // Create a custom error object to pass to the UI
+        // wrap error for the UI
         const customError = new Error(errorMessage);
         customError.statusCode = errorResponse?.statusCode || 500;
-        customError.fieldErrors = fieldErrors; // Attach validation errors (e.g., for forms)
+        customError.fieldErrors = fieldErrors;
 
         return Promise.reject(customError);
     }

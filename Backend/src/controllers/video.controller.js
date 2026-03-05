@@ -479,10 +479,7 @@ export const togglePublishStatus = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, { isPublished: video.isPublished }, "Status toggled"));
 });
 
-/**
- * 🤖 Generate AI summary of video
- * POST /api/v1/video/:videoId/summarize
- */
+// 🤖 Generate AI summary of video
 export const generateVideoSummary = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
 
@@ -497,11 +494,7 @@ export const generateVideoSummary = asyncHandler(async (req, res) => {
     );
 });
 
-/**
- * 💬 Ask question about video
- * POST /api/v1/video/:videoId/ask
- * Body: { question: string, conversationHistory?: Array }
- */
+// 💬 Ask question about video
 export const askQuestionAboutVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
     const { question, conversationHistory } = req.body;

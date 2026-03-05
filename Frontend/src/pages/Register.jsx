@@ -2,7 +2,8 @@ import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { useDispatch } from "react-redux"
 import { Link, useNavigate } from "react-router-dom"
-import { Loader2, Mail, User, Shield, ArrowRight, CheckCircle2, Radio, Lock, AtSign, Eye, EyeOff } from "lucide-react"
+import { Mail, User, Shield, ArrowRight, CheckCircle2, Radio, Lock, AtSign, Eye, EyeOff } from "lucide-react"
+import { LoadingDots } from '../Components/Common/LoadingIndicator'
 import { motion, AnimatePresence } from "framer-motion"
 import toast from "react-hot-toast"
 import { authService } from "../api/services/auth.service"
@@ -272,7 +273,7 @@ export default function Register() {
                                 >
                                     <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 via-white to-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mix-blend-screen" />
                                     <span className="relative z-10 flex items-center justify-center gap-2">
-                                        {isSubmitting ? <Loader2 className="animate-spin h-5 w-5" /> : (
+                                        {isSubmitting ? <LoadingDots size="md" /> : (
                                             <>
                                                 Proceed <ArrowRight className="w-4 h-4" />
                                             </>
@@ -297,7 +298,7 @@ export default function Register() {
 
                                 {isSubmitting && (
                                     <div className="flex justify-center text-indigo-400">
-                                        <Loader2 className="animate-spin h-8 w-8" />
+                                        <LoadingDots size="lg" />
                                     </div>
                                 )}
 

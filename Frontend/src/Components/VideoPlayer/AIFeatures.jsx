@@ -1,7 +1,8 @@
 import React, { useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
-import { FileText, Sparkles, ChevronUp, ChevronDown, Brain, Loader2, MessageSquare, User, Send } from 'lucide-react'
+import { FileText, Sparkles, ChevronUp, ChevronDown, Brain, MessageSquare, User, Send } from 'lucide-react'
+import { LoadingDots } from '../Common/LoadingIndicator'
 import toast from 'react-hot-toast'
 import AuthLock from '../../Components/Common/AuthLock'
 
@@ -120,7 +121,7 @@ const AIFeatures = React.memo(({
                                 )}
                             </div>
                             {summarizeMutation.isPending ? (
-                                <Loader2 className="w-5 h-5 text-purple-400 animate-spin" />
+                                <LoadingDots size="md" className="text-purple-400" />
                             ) : aiSummary ? (
                                 showAISummary ? <ChevronUp className="w-5 h-5 text-violet-400" /> : <ChevronDown className="w-5 h-5 text-violet-400" />
                             ) : null}
@@ -251,7 +252,7 @@ const AIFeatures = React.memo(({
                                                 {askQuestionMutation.isPending && (
                                                     <div className="p-3 rounded-lg bg-zinc-900/50 border border-zinc-800 mr-8">
                                                         <div className="flex items-center gap-2">
-                                                            <Loader2 className="w-4 h-4 text-purple-400 animate-spin" />
+                                                            <LoadingDots size="xs" className="text-purple-400" />
                                                             <span className="text-sm text-zinc-400">Thinking...</span>
                                                         </div>
                                                     </div>
@@ -277,7 +278,7 @@ const AIFeatures = React.memo(({
                                                 className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                                             >
                                                 {askQuestionMutation.isPending ? (
-                                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                                    <LoadingDots size="xs" />
                                                 ) : (
                                                     <Send className="w-4 h-4" />
                                                 )}

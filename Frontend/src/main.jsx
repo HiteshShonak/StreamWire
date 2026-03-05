@@ -1,4 +1,4 @@
-import { StrictMode } from 'react'
+import { StrictMode, lazy, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import { Provider } from 'react-redux'
@@ -10,37 +10,60 @@ import './index.css'
 import App from './App.jsx'
 import AuthLayout from './Components/AuthLayout.jsx'
 
-// Pages
-import Landing from './pages/Landing.jsx'
-import Login from './pages/Login.jsx'
-import Register from './pages/Register.jsx'
-import Home from './pages/Home.jsx'
-import CinemaFeed from './pages/CinemaFeed.jsx'
-import VideoPlayer from './pages/VideoPlayer.jsx'
-import WireFeed from './pages/WireFeed.jsx'
-import ShadowsFeed from './pages/ShadowsFeed.jsx'
-import Channel from './pages/Channel.jsx'
-import Dashboard from './pages/Dashboard.jsx'
-import Search from './Components/Search.jsx'
-import WirePost from './Components/WirePost.jsx'
-import ShadowPost from './Components/ShadowPost.jsx'
+// Skeleton fallbacks (eagerly loaded so they render instantly while lazy chunks load)
+import {
+  CinemaFeedSkeleton,
+  VideoPlayerSkeleton,
+  WireFeedSkeleton,
+  WirePostSkeleton,
+  ChannelPageSkeleton,
+  DashboardSkeleton,
+  TrendingPageSkeleton,
+  LibraryPageSkeleton,
+  SearchSkeleton,
+  ShadowsFeedSkeleton,
+  AuthFormSkeleton,
+  ChangePasswordSkeleton,
+  SettingsPageSkeleton,
+  ContentPageSkeleton,
+  ContactPageSkeleton,
+  AboutPageSkeleton,
+  KillSwitchSkeleton,
+  UploadPageSkeleton,
+  CustomizePageSkeleton,
+  HomePageSkeleton,
+  LandingPageSkeleton,
+} from './Components/Common/Skeleton'
 
-// Sidebar Pages
-import Trending from './pages/Trending.jsx'
-import Following from './pages/Following.jsx'
-import History from './pages/History.jsx'
-import Saved from './pages/Saved.jsx'
-import Settings from './pages/Settings.jsx'
-import Support from './pages/Support.jsx'
-import KillSwitch from './pages/KillSwitch.jsx'
-import UploadVideo from './pages/UploadVideo.jsx'
-import Customize from './pages/Customize.jsx'
-import BuildFeed from './pages/BuildFeed.jsx'
-import NotFound from './pages/NotFound.jsx'
-import ForgotPassword from './pages/ForgotPassword.jsx'
-import ChangePassword from './pages/ChangePassword.jsx'
-import Contact from './pages/Contact.jsx'
-import About from './pages/About.jsx'
+// Lazy-loaded pages (each becomes its own chunk, downloaded on demand)
+const Landing = lazy(() => import('./pages/Landing.jsx'))
+const Login = lazy(() => import('./pages/Login.jsx'))
+const Register = lazy(() => import('./pages/Register.jsx'))
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword.jsx'))
+const Home = lazy(() => import('./pages/Home.jsx'))
+const CinemaFeed = lazy(() => import('./pages/CinemaFeed.jsx'))
+const VideoPlayer = lazy(() => import('./pages/VideoPlayer.jsx'))
+const WireFeed = lazy(() => import('./pages/WireFeed.jsx'))
+const ShadowsFeed = lazy(() => import('./pages/ShadowsFeed.jsx'))
+const Channel = lazy(() => import('./pages/Channel.jsx'))
+const Dashboard = lazy(() => import('./pages/Dashboard.jsx'))
+const Search = lazy(() => import('./Components/Search.jsx'))
+const WirePost = lazy(() => import('./Components/WirePost.jsx'))
+const ShadowPost = lazy(() => import('./Components/ShadowPost.jsx'))
+const Trending = lazy(() => import('./pages/Trending.jsx'))
+const Following = lazy(() => import('./pages/Following.jsx'))
+const History = lazy(() => import('./pages/History.jsx'))
+const Saved = lazy(() => import('./pages/Saved.jsx'))
+const Settings = lazy(() => import('./pages/Settings.jsx'))
+const Support = lazy(() => import('./pages/Support.jsx'))
+const KillSwitch = lazy(() => import('./pages/KillSwitch.jsx'))
+const UploadVideo = lazy(() => import('./pages/UploadVideo.jsx'))
+const Customize = lazy(() => import('./pages/Customize.jsx'))
+const BuildFeed = lazy(() => import('./pages/BuildFeed.jsx'))
+const NotFound = lazy(() => import('./pages/NotFound.jsx'))
+const ChangePassword = lazy(() => import('./pages/ChangePassword.jsx'))
+const Contact = lazy(() => import('./pages/Contact.jsx'))
+const About = lazy(() => import('./pages/About.jsx'))
 
 const queryClient = new QueryClient()
 
@@ -51,14 +74,21 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <Landing />,
+        element: (
+          <Suspense fallback={<LandingPageSkeleton />}>
+            <Landing />
+          </Suspense>
+        ),
       },
 
+      // Auth pages (centered glass card layout)
       {
         path: '/login',
         element: (
           <AuthLayout authentication={false}>
-            <Login />
+            <Suspense fallback={<AuthFormSkeleton />}>
+              <Login />
+            </Suspense>
           </AuthLayout>
         ),
       },
@@ -66,7 +96,9 @@ const router = createBrowserRouter([
         path: '/register',
         element: (
           <AuthLayout authentication={false}>
-            <Register />
+            <Suspense fallback={<AuthFormSkeleton fieldCount={4} />}>
+              <Register />
+            </Suspense>
           </AuthLayout>
         ),
       },
@@ -74,66 +106,113 @@ const router = createBrowserRouter([
         path: '/forgot-password',
         element: (
           <AuthLayout authentication={false}>
-            <ForgotPassword />
+            <Suspense fallback={<AuthFormSkeleton />}>
+              <ForgotPassword />
+            </Suspense>
           </AuthLayout>
         ),
       },
 
+      // Main content feeds
       {
         path: '/home',
-        element: <Home />,
+        element: (
+          <Suspense fallback={<HomePageSkeleton />}>
+            <Home />
+          </Suspense>
+        ),
       },
       {
         path: '/cinema',
-        element: <CinemaFeed />,
+        element: (
+          <Suspense fallback={<CinemaFeedSkeleton />}>
+            <CinemaFeed />
+          </Suspense>
+        ),
       },
       {
         path: '/cinema/:videoId',
-        element: <VideoPlayer />,
+        element: (
+          <Suspense fallback={<VideoPlayerSkeleton />}>
+            <VideoPlayer />
+          </Suspense>
+        ),
       },
       {
         path: '/wire',
-        element: <WireFeed />,
+        element: (
+          <Suspense fallback={<WireFeedSkeleton />}>
+            <WireFeed />
+          </Suspense>
+        ),
       },
       {
         path: '/wire/:wireId',
-        element: <WirePost />,
+        element: (
+          <Suspense fallback={<WirePostSkeleton />}>
+            <WirePost />
+          </Suspense>
+        ),
       },
       {
         path: '/shadows',
-        element: <ShadowsFeed />,
+        element: (
+          <Suspense fallback={<ShadowsFeedSkeleton />}>
+            <ShadowsFeed />
+          </Suspense>
+        ),
       },
       {
         path: '/shadow/:shadowId',
-        element: <ShadowPost />,
+        element: (
+          <Suspense fallback={<WirePostSkeleton />}>
+            <ShadowPost />
+          </Suspense>
+        ),
       },
       {
         path: '/c/:username',
-        element: <Channel />,
+        element: (
+          <Suspense fallback={<ChannelPageSkeleton />}>
+            <Channel />
+          </Suspense>
+        ),
       },
       {
         path: '/dashboard',
         element: (
           <AuthLayout authentication>
-            <Dashboard />
+            <Suspense fallback={<DashboardSkeleton />}>
+              <Dashboard />
+            </Suspense>
           </AuthLayout>
         ),
       },
       {
         path: '/search',
-        element: <Search />,
+        element: (
+          <Suspense fallback={<SearchSkeleton />}>
+            <Search />
+          </Suspense>
+        ),
       },
 
-      //Sidebar Navigation Pages
+      // Sidebar pages
       {
         path: '/trending',
-        element: <Trending />,
+        element: (
+          <Suspense fallback={<TrendingPageSkeleton />}>
+            <Trending />
+          </Suspense>
+        ),
       },
       {
         path: '/following',
         element: (
           <AuthLayout authentication>
-            <Following />
+            <Suspense fallback={<LibraryPageSkeleton />}>
+              <Following />
+            </Suspense>
           </AuthLayout>
         ),
       },
@@ -141,7 +220,9 @@ const router = createBrowserRouter([
         path: '/history',
         element: (
           <AuthLayout authentication>
-            <History />
+            <Suspense fallback={<LibraryPageSkeleton />}>
+              <History />
+            </Suspense>
           </AuthLayout>
         ),
       },
@@ -149,35 +230,21 @@ const router = createBrowserRouter([
         path: '/saved',
         element: (
           <AuthLayout authentication>
-            <Saved />
+            <Suspense fallback={<LibraryPageSkeleton />}>
+              <Saved />
+            </Suspense>
           </AuthLayout>
         ),
       },
+
+      // Settings & account pages
       {
         path: '/settings',
         element: (
           <AuthLayout authentication>
-            <Settings />
-          </AuthLayout>
-        ),
-      },
-      {
-        path: '/support',
-        element: <Support />,
-      },
-      {
-        path: '/contact',
-        element: <Contact />,
-      },
-      {
-        path: '/about',
-        element: <About />,
-      },
-      {
-        path: '/upload',
-        element: (
-          <AuthLayout authentication>
-            <UploadVideo />
+            <Suspense fallback={<SettingsPageSkeleton />}>
+              <Settings />
+            </Suspense>
           </AuthLayout>
         ),
       },
@@ -185,7 +252,9 @@ const router = createBrowserRouter([
         path: '/customize',
         element: (
           <AuthLayout authentication>
-            <Customize />
+            <Suspense fallback={<CustomizePageSkeleton />}>
+              <Customize />
+            </Suspense>
           </AuthLayout>
         ),
       },
@@ -193,7 +262,9 @@ const router = createBrowserRouter([
         path: '/change-password',
         element: (
           <AuthLayout authentication>
-            <ChangePassword />
+            <Suspense fallback={<ChangePasswordSkeleton />}>
+              <ChangePassword />
+            </Suspense>
           </AuthLayout>
         ),
       },
@@ -201,7 +272,19 @@ const router = createBrowserRouter([
         path: '/kill-switch',
         element: (
           <AuthLayout authentication>
-            <KillSwitch />
+            <Suspense fallback={<KillSwitchSkeleton />}>
+              <KillSwitch />
+            </Suspense>
+          </AuthLayout>
+        ),
+      },
+      {
+        path: '/upload',
+        element: (
+          <AuthLayout authentication>
+            <Suspense fallback={<UploadPageSkeleton />}>
+              <UploadVideo />
+            </Suspense>
           </AuthLayout>
         ),
       },
@@ -209,14 +292,47 @@ const router = createBrowserRouter([
         path: '/build-feed',
         element: (
           <AuthLayout authentication>
-            <BuildFeed />
+            <Suspense fallback={<ContentPageSkeleton />}>
+              <BuildFeed />
+            </Suspense>
           </AuthLayout>
         ),
       },
 
+      // Info pages
+      {
+        path: '/support',
+        element: (
+          <Suspense fallback={<ContentPageSkeleton />}>
+            <Support />
+          </Suspense>
+        ),
+      },
+      {
+        path: '/contact',
+        element: (
+          <Suspense fallback={<ContactPageSkeleton />}>
+            <Contact />
+          </Suspense>
+        ),
+      },
+      {
+        path: '/about',
+        element: (
+          <Suspense fallback={<AboutPageSkeleton />}>
+            <About />
+          </Suspense>
+        ),
+      },
+
+      // Catch-all
       {
         path: '*',
-        element: <NotFound />,
+        element: (
+          <Suspense fallback={<HomePageSkeleton />}>
+            <NotFound />
+          </Suspense>
+        ),
       }
     ],
   },

@@ -4,9 +4,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useSelector } from 'react-redux'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  Heart, MessageSquare, ArrowLeft, Send, Loader2,
+  Heart, MessageSquare, ArrowLeft, Send,
   Trash2, Ghost, BadgeCheck, ShieldCheck, MoreHorizontal, Eye, EyeOff, Share, Check, BarChart2
 } from 'lucide-react'
+import { LoadingDots } from './Common/LoadingIndicator'
 import { formatDistanceToNow } from 'date-fns'
 import toast from 'react-hot-toast'
 
@@ -540,7 +541,7 @@ export default function ShadowPost() {
                         className="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:bg-zinc-800 disabled:text-zinc-600 text-white text-sm font-bold rounded-lg transition-colors"
                       >
                         {addCommentMutation.isPending ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <LoadingDots size="xs" />
                         ) : (
                           <Send className="w-4 h-4" />
                         )}
@@ -567,7 +568,7 @@ export default function ShadowPost() {
 
             {commentsLoading ? (
               <div className="flex justify-center py-12">
-                <Loader2 className="w-8 h-8 text-emerald-500 animate-spin" />
+                <LoadingDots size="md" className="text-emerald-500" />
               </div>
             ) : commentsData?.docs?.length > 0 ? (
               <AnimatePresence>

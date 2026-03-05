@@ -2,7 +2,8 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { useDispatch } from "react-redux"
 import { Link, useNavigate } from "react-router-dom"
-import { Loader2, Lock, Mail, AlertCircle, ArrowRight, Radio, Eye, EyeOff } from "lucide-react"
+import { Mail, User, Shield, ArrowRight, CheckCircle2, Radio, Lock, AtSign, Eye, EyeOff } from "lucide-react"
+import { LoadingDots } from '../Components/Common/LoadingIndicator'
 import { motion } from "framer-motion"
 import { login as authLogin } from "../store/authSlice"
 import { authService } from "../api/services/auth.service"
@@ -167,7 +168,7 @@ export default function Login() {
                         >
                             <div className="absolute inset-0 bg-gradient-to-r from-indigo-400 via-white to-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mix-blend-screen" />
                             <span className="relative z-10 flex items-center justify-center gap-2">
-                                {isSubmitting ? <Loader2 className="animate-spin h-5 w-5" /> : (
+                                {isSubmitting ? <LoadingDots size="md" /> : (
                                     <>
                                         Enter Gateway <ArrowRight className="w-4 h-4" />
                                     </>

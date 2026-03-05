@@ -381,7 +381,7 @@ export default function BuildFeed() {
                         className="flex items-center gap-2 sm:gap-3 px-6 sm:px-8 py-3 sm:py-4 bg-indigo-600 hover:bg-indigo-500 rounded-full text-white font-bold text-sm sm:text-base shadow-lg shadow-indigo-500/20 transition-all disabled:opacity-50"
                     >
                         {saveMutation.isPending ? (
-                            <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
+                            <LoadingDots size="md" />
                         ) : (
                             <Save className="w-4 h-4 sm:w-5 sm:h-5" />
                         )}

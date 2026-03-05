@@ -104,17 +104,7 @@ const executeBackgroundTask = async (taskName, resourcesToCleanup, taskLogic) =>
     }
 };
 
-/**
- * Generate metadata from Cloudinary URL
- * Downloads video → Extracts audio with FFmpeg → Transcribes with Groq Whisper
- * Can also generate description if user didn't provide one
- * This saves bandwidth and processing time!
- * 
- * @param {string} cloudinaryUrl - The Cloudinary URL of the video
- * @param {string} videoId - The MongoDB video ID
- * @param {object} options - Optional settings
- * @param {boolean} options.generateDescription - Whether to AI-generate description
- */
+// generate metadata from Cloudinary URL
 export const generateVideoMetadataFromUrl = async (cloudinaryUrl, videoId, options = {}) => {
     const { generateDescription = false } = options;
     const tempDir = path.join(process.cwd(), 'public', 'temp');

@@ -1,7 +1,8 @@
 import { useState, useRef } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { tweetService } from '../api/services/tweet.service'
-import { Image as ImageIcon, Send, X, Loader2, BarChart2, Ghost, Plus, ShieldCheck } from 'lucide-react'
+import { Image as ImageIcon, Send, X, BarChart2, Ghost, Plus, ShieldCheck } from 'lucide-react'
+import { LoadingDots } from './Common/LoadingIndicator'
 import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
 import { compressImage, isValidImage } from '../utils/imageCompressor'
@@ -213,7 +214,7 @@ export default function ShadowInput({ onSuccess }) {
                                                 type="text"
                                                 value={opt}
                                                 onChange={(e) => handleOptionChange(i, e.target.value)}
-                                                placeholder={`Option ${i + 1}`}
+                                                placeholder={`Option ${i + 1} `}
                                                 className="flex-1 bg-zinc-900/50 rounded-lg px-3 py-1.5 text-sm text-zinc-200 outline-none focus:ring-1 focus:ring-emerald-900"
                                             />
                                             {pollOptions.length > 2 && (
@@ -269,7 +270,7 @@ export default function ShadowInput({ onSuccess }) {
                     {/* Image Button */}
                     <button
                         onClick={() => fileInputRef.current?.click()}
-                        className={`transition-colors ${images.length >= MAX_IMAGES || showPoll ? 'text-zinc-800 cursor-not-allowed' : 'text-zinc-600 hover:text-emerald-400'}`}
+                        className={`transition - colors ${images.length >= MAX_IMAGES || showPoll ? 'text-zinc-800 cursor-not-allowed' : 'text-zinc-600 hover:text-emerald-400'} `}
                         disabled={images.length >= MAX_IMAGES || showPoll}
                         title={showPoll ? "Cannot add image with poll" : "Add Image"}
                     >
@@ -286,7 +287,7 @@ export default function ShadowInput({ onSuccess }) {
                     {/* Poll Button */}
                     <button
                         onClick={togglePoll}
-                        className={`transition-colors ${images.length > 0 ? 'text-zinc-800 cursor-not-allowed' : showPoll ? 'text-emerald-500' : 'text-zinc-600 hover:text-emerald-400'}`}
+                        className={`transition - colors ${images.length > 0 ? 'text-zinc-800 cursor-not-allowed' : showPoll ? 'text-emerald-500' : 'text-zinc-600 hover:text-emerald-400'} `}
                         disabled={images.length > 0}
                         title={images.length > 0 ? "Cannot add poll with image" : "Create Anonymous Poll"}
                     >
@@ -306,15 +307,15 @@ export default function ShadowInput({ onSuccess }) {
                     onClick={handleSubmit}
                     disabled={!content.trim() || createMutation.isPending || isUploadingImage}
                     className={`
-                        flex items-center gap-2 px-4 py-2 text-sm font-bold rounded-lg transition-all
+                        flex items - center gap - 2 px - 4 py - 2 text - sm font - bold rounded - lg transition - all
                         ${!content.trim() || isUploadingImage
                             ? 'bg-zinc-900 text-zinc-700 cursor-not-allowed'
                             : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-900/30'
                         }
-                    `}
+`}
                 >
                     {createMutation.isPending || isUploadingImage ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <LoadingDots size="xs" />
                     ) : (
                         <>
                             <Ghost className="w-4 h-4" />

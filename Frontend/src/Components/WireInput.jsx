@@ -1,7 +1,8 @@
 import { useState, useRef } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { tweetService } from '../api/services/tweet.service'
-import { Image as ImageIcon, Send, X, Loader2, BarChart2, Ghost, Plus } from 'lucide-react'
+import { Image as ImageIcon, Send, X, BarChart2, Ghost, Plus } from 'lucide-react'
+import { LoadingDots } from './Common/LoadingIndicator'
 import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
 import { compressImage, isValidImage } from '../utils/imageCompressor'
@@ -321,7 +322,7 @@ export default function WireInput({ onSuccess }) {
                     `}
                 >
                     {createMutation.isPending ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <LoadingDots size="xs" />
                     ) : (
                         <>
                             {isStealth ? <Ghost className="w-4 h-4" /> : <Send className="w-4 h-4" />}

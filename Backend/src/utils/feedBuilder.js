@@ -3,12 +3,7 @@ import { History } from "../models/history.model.js";
 import { Video } from "../models/video.model.js";
 import { User } from "../models/user.model.js";
 
-/**
- * Build User Feed from Watch History
- * Looks at user's watch history and grabs top 20 tags
- * @param {string} userId - User ID
- * @returns {Promise<string[]>} Array of top 20 tags
- */
+// build User Feed from Watch History
 export const buildUserFeed = async (userId) => {
     try {
         console.log('Building feed for user:', userId);
@@ -60,11 +55,7 @@ export const buildUserFeed = async (userId) => {
     }
 };
 
-/**
- * Update Feed Incrementally on Video Watch
- * @param {string} userId - User ID
- * @param {string[]} videoTags - Tags from the watched video
- */
+// update Feed Incrementally on Video Watch
 export const updateFeedOnWatch = async (userId, videoTags) => {
     try {
         if (!videoTags || !Array.isArray(videoTags) || videoTags.length === 0) {
@@ -102,13 +93,7 @@ export const updateFeedOnWatch = async (userId, videoTags) => {
     }
 };
 
-/**
- * Get Recommended Videos for User
- * Get videos that match user's feed tags
- * @param {string} userId - User ID
- * @param {number} limit - Number of videos to fetch
- * @returns {Promise<Array>} Array of recommended videos
- */
+// get Recommended Videos for User
 export const getRecommendedVideos = async (userId, limit = 20) => {
     try {
         const user = await User.findById(userId);
@@ -147,11 +132,7 @@ export const getRecommendedVideos = async (userId, limit = 20) => {
     }
 };
 
-/**
- * Get All Available Tags
- * Get all unique tags from published videos
- * @returns {Promise<string[]>} Array of all tags
- */
+// get All Available Tags
 export const getAllTags = async () => {
     try {
         const tags = await Video.distinct('tags', { isPublished: true });
@@ -162,13 +143,7 @@ export const getAllTags = async () => {
     }
 };
 
-/**
- * Get Popular Tags
- * Grabs unique tags from the top 10 trending videos (max 2 tags per video)
- * This way popular tags come from content people actually watch
- * @param {number} limit - Max number of tags to return
- * @returns {Promise<Array>} Array of {tag, count}
- */
+// get Popular Tags
 export const getPopularTags = async (limit = 20) => {
     try {
         // Get top 10 trending videos

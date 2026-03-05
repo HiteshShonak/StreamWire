@@ -23,7 +23,7 @@ import { tweetService } from '../api/services/tweet.service';
 import { subscriptionService } from '../api/services/subscription.service';
 import VideoCard from '../Components/VideoCard';
 import WireCard from '../Components/WireCard';
-import { ChannelPageSkeleton } from '../Components/Common/Skeleton';
+import { ChannelPageSkeleton, VideoGridSkeleton, WireListSkeleton } from '../Components/Common/Skeleton';
 
 export default function Channel() {
   const { username } = useParams();
@@ -263,9 +263,7 @@ export default function Channel() {
                 transition={{ duration: 0.2 }}
               >
                 {videosLoading ? (
-                  <div className="flex justify-center py-12">
-                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-500"></div>
-                  </div>
+                  <VideoGridSkeleton count={8} />
                 ) : videos?.videos?.length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {videos.videos.map((video) => (
@@ -291,9 +289,7 @@ export default function Channel() {
                 transition={{ duration: 0.2 }}
               >
                 {tweetsLoading ? (
-                  <div className="flex justify-center py-12">
-                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-500"></div>
-                  </div>
+                  <WireListSkeleton count={4} />
                 ) : tweets?.docs?.length > 0 ? (
                   <div className="max-w-2xl mx-auto space-y-4">
                     {tweets.docs.map((tweet) => (

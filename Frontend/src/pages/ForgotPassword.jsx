@@ -1,7 +1,8 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { Link, useNavigate } from "react-router-dom"
-import { Loader2, Mail, AlertCircle, ArrowRight, Radio, Eye, EyeOff, Lock, Key } from "lucide-react"
+import { Mail, AlertCircle, ArrowRight, Radio, Eye, EyeOff, Lock, Key } from "lucide-react"
+import { LoadingDots } from '../Components/Common/LoadingIndicator'
 import { motion, AnimatePresence } from "framer-motion"
 import { authService } from "../api/services/auth.service"
 import toast from "react-hot-toast"
@@ -244,7 +245,7 @@ export default function ForgotPassword() {
                                 >
                                     <div className="absolute inset-0 bg-gradient-to-r from-indigo-400 via-white to-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mix-blend-screen" />
                                     <span className="relative z-10 flex items-center justify-center gap-2">
-                                        {isSubmitting ? <Loader2 className="animate-spin h-5 w-5" /> : (
+                                        {isSubmitting ? <LoadingDots size="md" /> : (
                                             <>
                                                 Send OTP <ArrowRight className="w-4 h-4" />
                                             </>
@@ -282,7 +283,7 @@ export default function ForgotPassword() {
 
                                 {isSubmitting && (
                                     <div className="flex justify-center text-indigo-400">
-                                        <Loader2 className="animate-spin h-8 w-8" />
+                                        <LoadingDots size="lg" />
                                     </div>
                                 )}
 
@@ -370,7 +371,7 @@ export default function ForgotPassword() {
                                 >
                                     <div className="absolute inset-0 bg-gradient-to-r from-indigo-400 via-white to-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mix-blend-screen" />
                                     <span className="relative z-10 flex items-center justify-center gap-2">
-                                        {isSubmitting ? <Loader2 className="animate-spin h-5 w-5" /> : (
+                                        {isSubmitting ? <LoadingDots size="md" /> : (
                                             <>
                                                 Reset Password <ArrowRight className="w-4 h-4" />
                                             </>

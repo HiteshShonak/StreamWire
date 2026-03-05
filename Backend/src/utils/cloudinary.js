@@ -113,17 +113,7 @@ const deleteFromCloudinary = async (publicId, resourceType = "image") => {
     }
 }
 
-/**
- * Generate auto-thumbnail URL from video
- * Cloudinary can grab a frame from any video automatically!
- * Just swap the extension from .mp4 to .jpg
- * 
- * @param {string} videoPublicId - The public_id of the video (includes folder path)
- * @param {object} options - Optional transformations
- * @returns {string} - The auto-generated thumbnail URL
- * 
- * Docs: https://cloudinary.com/documentation/video_effects_and_enhancements#video_thumbnails
- */
+// generate auto-thumbnail URL from video
 const generateAutoThumbnail = (videoPublicId, options = {}) => {
     const {
         time = "1",  // Time offset in seconds (e.g., "5" for 5 seconds in)

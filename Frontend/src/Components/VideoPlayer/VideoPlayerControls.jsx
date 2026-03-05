@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
     Play, Pause, Volume2, VolumeX, Maximize, Minimize,
     SkipBack, SkipForward, PictureInPicture, Gauge, Check, Settings,
-    Highlighter, Loader2, Music
+    Highlighter, Music
 } from 'lucide-react'
+import { LoadingDots } from '../Common/LoadingIndicator'
 import { formatDuration } from '../../utils/formatters'
 
 const QUALITY_OPTIONS = [
@@ -256,7 +257,7 @@ const VideoPlayerControls = React.memo(({
                         className="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none z-20"
                     >
                         <div className="bg-white/10 p-5 rounded-full backdrop-blur-xl border border-white/20 shadow-2xl">
-                            <Loader2 className="w-10 h-10 text-white animate-spin" />
+                            <LoadingDots size="lg" className="text-white" />
                         </div>
                     </motion.div>
                 )}
@@ -324,7 +325,7 @@ const VideoPlayerControls = React.memo(({
                                         />
                                     ) : (
                                         <div className="w-full h-full bg-zinc-900 flex items-center justify-center">
-                                            <Loader2 className="w-5 h-5 text-white/40 animate-spin" />
+                                            <LoadingDots size="sm" className="text-white/40" />
                                         </div>
                                     )}
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
@@ -455,7 +456,7 @@ const VideoPlayerControls = React.memo(({
                                                                 {opt.label}
                                                             </span>
                                                             {quality === opt.value && <Check className="w-4 h-4" />}
-                                                            {pendingQuality === opt.value && <Loader2 className="w-4 h-4 animate-spin" />}
+                                                            {pendingQuality === opt.value && <LoadingDots size="xs" />}
                                                         </button>
                                                     ))}
                                                     <p className="text-[10px] text-zinc-600 px-3 mt-2 text-center">

@@ -1,9 +1,6 @@
 import { z } from "zod";
 
-/**
- * Generic Zod validation middleware
- * Validates req.body against the provided schema
- */
+// generic Zod validation middleware
 export const validate = (schema) => {
     return (req, res, next) => {
         try {

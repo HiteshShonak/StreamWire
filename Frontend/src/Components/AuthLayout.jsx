@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { Loader2 } from 'lucide-react'
+import { LoadingPulse } from './Common/LoadingIndicator'
 
 export default function AuthLayout({ children, authentication = true }) {
     const navigate = useNavigate()
@@ -24,7 +24,7 @@ export default function AuthLayout({ children, authentication = true }) {
 
     return loader ? (
         <div className="w-full h-[50vh] flex justify-center items-center">
-            <Loader2 className="animate-spin text-indigo-600 h-10 w-10" />
+            <LoadingPulse size="md" />
         </div>
     ) : <>{children}</>
 }

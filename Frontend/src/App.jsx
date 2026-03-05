@@ -1,7 +1,7 @@
 import { useEffect, useCallback, useMemo } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { Loader2 } from 'lucide-react'
+import { LoadingPulse } from './Components/Common/LoadingIndicator'
 import { authService } from './api/services/auth.service'
 import { login, logout, setLoading } from './store/authSlice'
 
@@ -19,7 +19,7 @@ function App() {
   const { isLanding, isAuthPage, isGateway, showHeader, showSidebar } = useMemo(() => {
     const isLanding = path === '/'
     const isAuthPage = ['/login', '/register', '/forgot-password'].includes(path)
-    const isGateway = path === '/home' 
+    const isGateway = path === '/home'
 
     return {
       isLanding,
@@ -65,7 +65,7 @@ function App() {
   if (loading) {
     return (
       <div className="h-screen w-screen flex items-center justify-center bg-[#050505]">
-        <Loader2 className="w-10 h-10 text-indigo-500 animate-spin" />
+        <LoadingPulse size="md" />
       </div>
     )
   }

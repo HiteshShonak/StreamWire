@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { motion } from 'framer-motion'
-import { Mail, Send, Loader2, AlertCircle, CheckCircle2, User, MessageSquare, Radio } from 'lucide-react'
+import { Mail, Send, AlertCircle, CheckCircle2, User, MessageSquare, Radio } from 'lucide-react'
+import { LoadingDots } from '../Components/Common/LoadingIndicator'
 import toast from 'react-hot-toast'
 import api from '../api/axios'
 import Header from '../Components/Header'
@@ -253,7 +254,7 @@ export default function Contact() {
                                  <span className="relative z-10 flex items-center justify-center gap-2">
                                     {isSubmitting ? (
                                        <>
-                                          <Loader2 className="animate-spin h-5 w-5" />
+                                          <LoadingDots size="md" />
                                           Sending...
                                        </>
                                     ) : (

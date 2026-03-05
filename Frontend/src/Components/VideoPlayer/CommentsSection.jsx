@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { MessageSquare, Ghost, Send, Loader2, Pin, BadgeCheck, Trash2, Eye, EyeOff } from 'lucide-react'
+import { MessageSquare, Ghost, Send, Pin, BadgeCheck, Trash2, Eye, EyeOff } from 'lucide-react'
+import { LoadingDots } from '../Common/LoadingIndicator'
 import { formatDistanceToNow } from 'date-fns'
 import AuthLock from '../../Components/Common/AuthLock'
 import { CommentListSkeleton } from '../../Components/Common/Skeleton'
@@ -101,7 +102,7 @@ const CommentsSection = React.memo(({
                                     className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-zinc-800 disabled:text-zinc-600 text-white rounded-lg text-sm font-bold transition-colors disabled:cursor-not-allowed"
                                 >
                                     {addCommentMutation.isPending ? (
-                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                        <LoadingDots size="xs" />
                                     ) : (
                                         <Send className="w-4 h-4" />
                                     )}
@@ -287,7 +288,7 @@ const CommentsSection = React.memo(({
                         >
                             {isFetchingNextPage ? (
                                 <>
-                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    <LoadingDots size="xs" />
                                     Loading more...
                                 </>
                             ) : (

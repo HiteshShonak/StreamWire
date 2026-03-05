@@ -4,8 +4,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import {
    Settings as SettingsIcon, User,
-   Shield, Lock, LogOut, Loader2, AlertTriangle, HelpCircle, Mail, Info
+   Shield, Lock, LogOut, AlertTriangle, HelpCircle, Mail, Info
 } from 'lucide-react'
+import { LoadingDots } from '../Components/Common/LoadingIndicator'
 import toast from 'react-hot-toast'
 import { authService } from '../api/services/auth.service'
 import { logout } from '../store/authSlice'
@@ -222,7 +223,7 @@ export default function Settings() {
                               </div>
                            </div>
                            {logoutMutation.isPending && (
-                              <Loader2 className="w-5 h-5 text-amber-400 animate-spin" />
+                              <LoadingDots size="md" />
                            )}
                         </button>
 
@@ -246,7 +247,7 @@ export default function Settings() {
                               </div>
                            </div>
                            {logoutAllMutation.isPending && (
-                              <Loader2 className="w-5 h-5 text-red-400 animate-spin" />
+                              <LoadingDots size="md" />
                            )}
                         </button>
                      </div>

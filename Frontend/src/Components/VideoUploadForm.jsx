@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Upload, Film, FileText, Tag, Loader2, Sparkles, Check } from 'lucide-react';
+import { X, Upload, Film, FileText, Tag, Sparkles, Check } from 'lucide-react';
+import { LoadingDots } from './Common/LoadingIndicator';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { videoService } from '../api/services/video.service';
@@ -304,7 +305,7 @@ export default function VideoUploadForm({ isOpen, onClose }) {
                 >
                   {uploadMutation.isPending ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <LoadingDots size="xs" />
                       Uploading...
                     </>
                   ) : (

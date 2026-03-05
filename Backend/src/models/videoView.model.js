@@ -1,9 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-/**
- * VideoView Model - Tracks unique views per user per 12 hours
- * This ensures view count isn't inflated by repeated page refreshes
- */
+// videoView Model - Tracks unique views per user per 12 hours
 const videoViewSchema = new Schema({
     video: {
         type: Schema.Types.ObjectId,

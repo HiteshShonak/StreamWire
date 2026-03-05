@@ -11,9 +11,7 @@ const getGroq = () => {
     return groq;
 };
 
-/**
- * Smart AI Request with Fallback Strategy
- */
+// smart AI Request with Fallback Strategy
 const generateWithFallback = async (messages, maxTokens = 500) => {
     const SMART_MODEL = "llama-3.3-70b-versatile";
     const FAST_MODEL = "llama-3.1-8b-instant";
@@ -48,9 +46,7 @@ const generateWithFallback = async (messages, maxTokens = 500) => {
     }
 };
 
-/**
- * Summarize video transcript
- */
+// summarize video transcript
 export const summarizeVideo = async (videoId) => {
     try {
         const video = await Video.findById(videoId).select('transcript title description');
@@ -91,9 +87,7 @@ export const summarizeVideo = async (videoId) => {
     }
 };
 
-/**
- * Contextual Q&A with Video
- */
+// contextual Q&A with Video
 export const askVideoQuestion = async (videoId, question, conversationHistory = []) => {
     try {
         const video = await Video.findById(videoId).select('transcript title description');

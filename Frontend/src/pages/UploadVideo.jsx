@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Upload, Film, FileText, Tag, Loader2, Sparkles, Check, Image, Video, X } from 'lucide-react';
+import { ArrowLeft, Upload, Film, FileText, Tag, Sparkles, Check, Image, Video, X } from 'lucide-react';
+import { LoadingDots } from '../Components/Common/LoadingIndicator';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { videoService } from '../api/services/video.service';
@@ -426,7 +427,7 @@ export default function UploadVideo() {
               >
                 {uploadMutation.isPending ? (
                   <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <LoadingDots size="md" />
                     {uploadProgress.percent > 0 ? `Uploading ${uploadProgress.percent}%` : 'Preparing...'}
                   </>
                 ) : (

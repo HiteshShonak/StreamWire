@@ -1,15 +1,6 @@
-/**
- * IMAGE COMPRESSION UTILITY
- */
+// image compression helpers
 
-/**
- * Compresses an image file to WebP format
- * @param {File} file - The image file to compress
- * @param {Object} options - Compression options
- * @param {number} options.maxWidth - Maximum width (default: 1800px for 3x 600px display)
- * @param {number} options.quality - WebP quality 0-1 (default: 0.85)
- * @returns {Promise<File>} - Compressed WebP file
- */
+// compress single image to webp
 export const compressImage = async (file, options = {}) => {
     const {
         maxWidth = 1800, // 3x of 600px base width for retina displays
@@ -17,13 +8,13 @@ export const compressImage = async (file, options = {}) => {
     } = options;
 
     return new Promise((resolve, reject) => {
-        // Check if file is an image
+        
         if (!file.type.startsWith('image/')) {
             reject(new Error('File is not an image'));
             return;
         }
 
-        // Create an image element
+        
         const img = new Image();
         const reader = new FileReader();
 
@@ -37,7 +28,7 @@ export const compressImage = async (file, options = {}) => {
 
         img.onload = () => {
             try {
-                // Calculate new dimensions maintaining aspect ratio
+                // scale down if needed
                 let width = img.width;
                 let height = img.height;
 
@@ -46,21 +37,21 @@ export const compressImage = async (file, options = {}) => {
                     width = maxWidth;
                 }
 
-                // Create canvas
+                
                 const canvas = document.createElement('canvas');
                 canvas.width = width;
                 canvas.height = height;
 
-                // Draw image on canvas
+                
                 const ctx = canvas.getContext('2d');
 
-                // Enable image smoothing for better quality
+                
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'high';
 
                 ctx.drawImage(img, 0, 0, width, height);
 
-                // Convert to WebP blob
+                // convert to webp
                 canvas.toBlob(
                     (blob) => {
                         if (!blob) {
@@ -68,7 +59,7 @@ export const compressImage = async (file, options = {}) => {
                             return;
                         }
 
-                        // Create a new File object from the blob
+                        
                         const compressedFile = new File(
                             [blob],
                             file.name.replace(/\.[^.]+$/, '.webp'), // Replace extension with .webp
@@ -98,37 +89,24 @@ export const compressImage = async (file, options = {}) => {
             reject(new Error('Failed to load image'));
         };
 
-        // Read the file
+        
         reader.readAsDataURL(file);
     });
 };
 
-/**
- * Compresses multiple images
- * @param {File[]} files - Array of image files
- * @param {Object} options - Compression options
- * @returns {Promise<File[]>} - Array of compressed files
- */
+// compress multiple images
 export const compressImages = async (files, options = {}) => {
     const promises = files.map(file => compressImage(file, options));
     return Promise.all(promises);
 };
 
-/**
- * Validates if a file is an acceptable image type
- * @param {File} file - The file to validate
- * @returns {boolean} - True if valid image
- */
+// check if file is a valid image type
 export const isValidImage = (file) => {
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
     return validTypes.includes(file.type);
 };
 
-/**
- * Gets a preview URL for an image file
- * @param {File} file - The image file
- * @returns {string} - Data URL for preview
- */
+// get preview url for an image
 export const getImagePreview = (file) => {
     return URL.createObjectURL(file);
 };

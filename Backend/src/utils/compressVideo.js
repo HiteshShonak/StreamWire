@@ -8,13 +8,7 @@ import fs from 'fs';
 ffmpeg.setFfmpegPath(ffmpegStatic);
 ffmpeg.setFfprobePath(ffprobeStatic.path);
 
-/**
- * Compress video to target size using FFmpeg
- * Uses CRF compression with aggressive settings to guarantee it fits
- * @param {string} inputPath - Path to input video file
- * @param {number} targetSizeMB - Target file size in MB (default: 90MB for safety margin)
- * @returns {Promise<string>} - Path to compressed video
- */
+// compress video to target size using FFmpeg
 export const compressVideo = async (inputPath, targetSizeMB = 90) => {
     return new Promise((resolve, reject) => {
         const inputDir = path.dirname(inputPath);

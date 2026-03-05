@@ -1,10 +1,11 @@
 import React, { useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-    Eye, Clock, BadgeCheck, Ghost, UserPlus, UserCheck, Loader2,
+    Eye, Clock, BadgeCheck, Ghost, UserPlus, UserCheck,
     ThumbsUp, MessageSquare, Share2, Check, AlertTriangle, Trash2,
     ChevronUp, ChevronDown, EyeOff
 } from 'lucide-react'
+import { LoadingDots } from '../Common/LoadingIndicator'
 import { formatDistanceToNow } from 'date-fns'
 import { formatViews } from '../../utils/formatters'
 
@@ -102,7 +103,7 @@ const VideoInfo = React.memo(({
             `}
                     >
                         {subscribeMutation.isPending ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
+                            <LoadingDots size="xs" />
                         ) : video.isSubscribed ? (
                             <><UserCheck className="w-4 h-4" /> Subscribed</>
                         ) : (
@@ -149,7 +150,7 @@ const VideoInfo = React.memo(({
                     title={watchLaterStatus?.isInWatchLater ? 'Remove from Watch Later' : 'Add to Watch Later'}
                 >
                     {watchLaterMutation.isPending ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <LoadingDots size="xs" />
                     ) : (
                         <Clock className={`w-4 h-4 ${watchLaterStatus?.isInWatchLater ? 'fill-current' : ''}`} />
                     )}
@@ -244,7 +245,7 @@ const VideoInfo = React.memo(({
                                     className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                                 >
                                     {deleteVideoMutation.isPending ? (
-                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                        <LoadingDots size="xs" />
                                     ) : (
                                         <Trash2 className="w-4 h-4" />
                                     )}
