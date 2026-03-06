@@ -84,13 +84,22 @@ export default function Register() {
     const onRequestOTP = async (data) => {
         setIsSubmitting(true)
         try {
-            await authService.registerRequest({
+            const response = await authService.registerRequest({
                 fullName: data.fullName,
                 username: data.username,
                 email: data.email,
                 password: data.password
             })
 
+            // SMTP was blocked — user already created & logged in by backend
+            if (response?.smtpBypassed) {
+                dispatch(login(response))
+                toast.success("Account created successfully!")
+                navigate("/customize?onboarding=true")
+                return
+            }
+
+            // Normal flow — SMTP worked, show OTP screen
             setTempData(data)
             setStep("OTP")
             toast.success(`Verification code sent to ${data.email}`)

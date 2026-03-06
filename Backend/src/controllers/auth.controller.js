@@ -44,12 +44,58 @@ export const registerRequest = asyncHandler(async (req, res) => {
         otp
     });
 
-    // 4. Send Verification Email
-    await sendEmail(cleanEmail, otp, "VERIFY");
+    // 4. Try sending OTP email — if SMTP is blocked (like on Render free tier), bypass OTP entirely
+    try {
+        await sendEmail(cleanEmail, otp, "VERIFY");
 
-    return res.status(200).json(
-        new ApiResponse(200, { email: cleanEmail }, "OTP sent successfully. Please verify to complete registration.")
-    );
+        return res.status(200).json(
+            new ApiResponse(200, { email: cleanEmail, smtpBypassed: false }, "OTP sent successfully. Please verify to complete registration.")
+        );
+    } catch (smtpError) {
+        // SMTP blocked — skip OTP and create the user directly
+        console.error("SMTP blocked, bypassing OTP verification:", smtpError.message);
+
+        const avatar = await resolveIdentityMedia({
+            type: "avatar",
+            username: cleanUsername,
+            fullName
+        });
+
+        const coverImage = await resolveIdentityMedia({
+            type: "cover",
+            username: cleanUsername
+        });
+
+        const user = await User.create({
+            fullName,
+            username: cleanUsername,
+            email: cleanEmail,
+            password,
+            avatar,
+            coverImage
+        });
+
+        deleteTempUser(cleanEmail);
+
+        // Auto-login
+        const accessToken = user.generateAccessToken();
+        const refreshToken = user.generateRefreshToken();
+        await user.addRefreshToken(refreshToken);
+
+        const createdUser = sanitizeUser(user);
+
+        return res
+            .status(201)
+            .cookie("accessToken", accessToken, COOKIE_OPTIONS)
+            .cookie("refreshToken", refreshToken, COOKIE_OPTIONS)
+            .json(
+                new ApiResponse(
+                    201,
+                    { user: createdUser, accessToken, refreshToken, smtpBypassed: true },
+                    "Account created successfully (email verification skipped)."
+                )
+            );
+    }
 });
 
 export const verifyAndCreateUser = asyncHandler(async (req, res) => {
