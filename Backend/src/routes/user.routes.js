@@ -49,11 +49,13 @@ import {
 
 const router = Router();
 
-// Middleware to prevent authenticated users from accessing auth routes
+// Middleware to handle authenticated users accessing auth routes
 const preventLoggedIn = (req, res, next) => {
-    // Check global req.user (populated by your global middleware)
+    // If a user is already logged in but accesses an auth route (like login/register),
+    // we clear req.user to treat it as a fresh request. The specific auth 
+    // controllers will then overwrite the old cookies with new ones.
     if (req.user) {
-        throw new ApiError(403, "Forbidden: You are already logged in.");
+        req.user = null;
     }
     next();
 };

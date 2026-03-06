@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { useDispatch } from "react-redux"
 import { Link, useNavigate } from "react-router-dom"
-import { Mail, User, Shield, ArrowRight, CheckCircle2, Radio, Lock, AtSign, Eye, EyeOff } from "lucide-react"
+import { Mail, User, Shield, ArrowRight, CheckCircle2, Radio, Lock, AtSign, Eye, EyeOff, AlertCircle } from "lucide-react"
 import { LoadingDots } from '../Components/Common/LoadingIndicator'
 import { motion } from "framer-motion"
 import { login as authLogin } from "../store/authSlice"
