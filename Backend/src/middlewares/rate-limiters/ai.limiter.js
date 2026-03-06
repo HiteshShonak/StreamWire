@@ -4,7 +4,7 @@ import rateLimit from "express-rate-limit";
 
 export const aiLimiter = rateLimit({
     windowMs: 1 * 60 * 1000, // 1 minute
-    max: 50, // 50 requests per minute
+    max: 150, // 150 requests per minute
     message: {
         success: false,
         message: "Too many AI requests. Please wait a moment before trying again."

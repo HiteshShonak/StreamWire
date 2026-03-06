@@ -39,16 +39,15 @@ export default function Login() {
     const onSubmit = async (data) => {
         setServerError("")
         try {
-            await authService.login({
+            const response = await authService.login({
                 identifier: data.identifier,
                 password: data.password
             })
 
-            // Fetch complete user data with avatar and all profile info
-            const userData = await authService.getCurrentUser()
-
-            if (userData) {
-                dispatch(authLogin(userData))
+            // Use the user data from the login response directly — 
+            // avoids a second cross-origin cookie request that fails on prod
+            if (response?.user) {
+                dispatch(authLogin(response.user))
                 toast.success("Identity Verified. Access Granted.")
                 navigate("/")
             }

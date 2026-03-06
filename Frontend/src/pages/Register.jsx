@@ -93,7 +93,7 @@ export default function Register() {
 
             // SMTP was blocked — user already created & logged in by backend
             if (response?.smtpBypassed) {
-                dispatch(login(response))
+                dispatch(login(response.user))
                 toast.success("Account created successfully!")
                 navigate("/customize?onboarding=true")
                 return
@@ -128,8 +128,8 @@ export default function Register() {
                 otp
             })
 
-            if (response) {
-                dispatch(login(response))
+            if (response?.user) {
+                dispatch(login(response.user))
                 toast.success("Identity Verified. Account Created.")
                 navigate("/customize?onboarding=true")
             }

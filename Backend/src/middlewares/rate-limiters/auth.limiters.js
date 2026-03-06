@@ -5,7 +5,7 @@ import rateLimit from "express-rate-limit";
 // Strict limiter for login attempts
 export const loginLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5, // 5 attempts per window
+    max: 15, // 15 attempts per window
     message: {
         success: false,
         message: "Too many login attempts. Please try again after 15 minutes."
@@ -17,7 +17,7 @@ export const loginLimiter = rateLimit({
 // General limiter for auth operations (register, verify-otp, reset-password)
 export const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5, // 5 attempts per window
+    max: 15, // 15 attempts per window
     message: {
         success: false,
         message: "Too many attempts. Please try again after 15 minutes."
@@ -29,7 +29,7 @@ export const authLimiter = rateLimit({
 // Stricter limiter for OTP resend (prevent spam)
 export const otpResendLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 3, // Only 3 resends per window
+    max: 9, // Only 9 resends per window
     message: {
         success: false,
         message: "Too many OTP requests. Please try again after 15 minutes."
@@ -41,7 +41,7 @@ export const otpResendLimiter = rateLimit({
 // Password reset request limiter
 export const passwordResetLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 3, // 3 attempts per window
+    max: 9, // 9 attempts per window
     message: {
         success: false,
         message: "Too many password reset attempts. Please try again after 15 minutes."
