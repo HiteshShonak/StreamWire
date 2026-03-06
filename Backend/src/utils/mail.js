@@ -1,13 +1,15 @@
 import nodemailer from "nodemailer";
 
 export const sendEmail = async (email, otp, type = "VERIFY") => {
-    // Gmail Transporter
+    // Gmail Transporter (5s timeout so it fails fast if SMTP is blocked)
     const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
-            user: process.env.MAIL_USER, // Your Gmail
-            pass: process.env.MAIL_PASS, // Your App Password
+            user: process.env.MAIL_USER,
+            pass: process.env.MAIL_PASS,
         },
+        connectionTimeout: 5000,
+        socketTimeout: 5000,
     });
 
     const emailOptions = {
@@ -80,6 +82,8 @@ export const sendContactFormEmail = async (formData) => {
             user: process.env.MAIL_USER,
             pass: process.env.MAIL_PASS,
         },
+        connectionTimeout: 5000,
+        socketTimeout: 5000,
     });
 
     const htmlContent = `
