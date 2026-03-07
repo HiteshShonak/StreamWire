@@ -23,7 +23,8 @@ export const authService = {
     },
 
     logout: async () => {
-        return await api.post('/users/logout');
+        const refreshToken = localStorage.getItem("refreshToken");
+        return await api.post('/users/logout', { refreshToken });
     },
 
     logoutAll: async () => {

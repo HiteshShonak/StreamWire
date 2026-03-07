@@ -29,28 +29,34 @@ const authSlice = createSlice({
     initialState,
     reducers: {
         login: (state, action) => {
+            const { user, accessToken, refreshToken } = action.payload;
+
             state.status = true;
-            state.userData = action.payload; 
+            state.userData = user;
             state.loading = false;
-            
+
             localStorage.setItem("authStatus", "true");
-            localStorage.setItem("userData", JSON.stringify(action.payload));
+            localStorage.setItem("userData", JSON.stringify(user));
+            if (accessToken) localStorage.setItem("accessToken", accessToken);
+            if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
         },
 
         logout: (state) => {
             state.status = false;
             state.userData = null;
             state.loading = false;
-            
+
             localStorage.removeItem("authStatus");
             localStorage.removeItem("userData");
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
         },
 
         setLoading: (state, action) => {
             state.loading = action.payload;
         },
 
-        
+
         updateIdentity: (state, action) => {
             if (state.userData) {
                 state.userData = { ...state.userData, ...action.payload };
@@ -66,6 +72,12 @@ const authSlice = createSlice({
         }
     }
 });
+
+// token helpers (used by axios interceptor)
+export const getAccessToken = () => localStorage.getItem("accessToken");
+export const getRefreshToken = () => localStorage.getItem("refreshToken");
+export const setAccessToken = (token) => localStorage.setItem("accessToken", token);
+export const setRefreshToken = (token) => localStorage.setItem("refreshToken", token);
 
 export const { login, logout, setLoading, updateIdentity, updateProfile } = authSlice.actions;
 

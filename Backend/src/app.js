@@ -7,7 +7,7 @@ import { authenticate } from "./middlewares/auth.middleware.js";
 
 const app = express();
 
-// Trust proxy (required for rate limiting behind a reverse proxy like Render)
+// needed for rate limiting behind render's proxy
 app.set('trust proxy', 1);
 
 // Security Headers (helmet)

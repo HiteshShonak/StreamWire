@@ -49,14 +49,9 @@ import {
 
 const router = Router();
 
-// Middleware to handle authenticated users accessing auth routes
+// if user has stale cookies, just clear and let them re-auth
 const preventLoggedIn = (req, res, next) => {
-    // If a user is already logged in but accesses an auth route (like login/register),
-    // we clear req.user to treat it as a fresh request. The specific auth 
-    // controllers will then overwrite the old cookies with new ones.
-    if (req.user) {
-        req.user = null;
-    }
+    if (req.user) req.user = null;
     next();
 };
 

@@ -44,10 +44,9 @@ export default function Login() {
                 password: data.password
             })
 
-            // Use the user data from the login response directly — 
-            // avoids a second cross-origin cookie request that fails on prod
+            // response has user + tokens, authSlice stores both
             if (response?.user) {
-                dispatch(authLogin(response.user))
+                dispatch(authLogin(response))
                 toast.success("Identity Verified. Access Granted.")
                 navigate("/")
             }

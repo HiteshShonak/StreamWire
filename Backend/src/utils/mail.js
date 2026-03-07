@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 
 export const sendEmail = async (email, otp, type = "VERIFY") => {
-    // Gmail Transporter (5s timeout so it fails fast if SMTP is blocked)
+    // 5s timeout so SMTP fails fast if blocked
     const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
