@@ -167,7 +167,7 @@ export default function Customize() {
       onSuccess: async (response) => {
          // Refresh user data
          const userData = await authService.getCurrentUser();
-         dispatch(login(userData));
+         dispatch(login({ user: userData }));
          queryClient.invalidateQueries(['user']);
 
          // Enhanced success message

@@ -40,9 +40,11 @@ function App() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const user = await authService.getCurrentUser()
-        if (user) {
-          dispatch(login(user))
+        const userData = await authService.getCurrentUser()
+        if (userData) {
+          // wrap in { user } so authSlice can destructure it
+          // tokens stay in localStorage from original login
+          dispatch(login({ user: userData }))
         } else {
           dispatch(logout())
         }

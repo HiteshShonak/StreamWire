@@ -7,14 +7,9 @@ import { Lock, Eye, EyeOff, ArrowLeft, AlertCircle, CheckCircle2, Shield } from 
 import { LoadingDots } from '../Components/Common/LoadingIndicator'
 import toast from 'react-hot-toast'
 import { authService } from '../api/services/auth.service'
-import { useDispatch } from 'react-redux'
-import { login as authLogin } from '../store/authSlice'
-import Header from '../Components/Header'
-import Sidebar from '../Components/Sidebar'
 
 export default function ChangePassword() {
    const navigate = useNavigate()
-   const dispatch = useDispatch()
    const [serverError, setServerError] = useState("")
    const [showOldPassword, setShowOldPassword] = useState(false)
    const [showNewPassword, setShowNewPassword] = useState(false)
@@ -29,10 +24,10 @@ export default function ChangePassword() {
          newPassword: data.newPassword
       }),
       onSuccess: (response) => {
-         // Update user in store with new tokens
-         if (response.user) {
-            dispatch(authLogin(response))
-         }
+         // backend returns { accessToken, refreshToken } (no user object)
+         // old tokens were revoked, save the new ones
+         if (response.accessToken) localStorage.setItem("accessToken", response.accessToken);
+         if (response.refreshToken) localStorage.setItem("refreshToken", response.refreshToken);
          toast.success("Password changed successfully!")
          navigate('/settings')
       },
