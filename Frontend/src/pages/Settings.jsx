@@ -98,7 +98,7 @@ export default function Settings() {
    if (!user) {
       return (
          <div className="relative min-h-screen bg-[#050505] text-white">
-            <div className="relative z-10 lg:pl-72 lg:pr-72 pt-24 pb-20 px-6">
+            <div className="relative z-10 px-4 sm:px-6 lg:pl-72 lg:pr-72 pt-20 sm:pt-24 pb-20">
                <div className="max-w-4xl mx-auto">
                   <motion.div
                      initial={{ opacity: 0 }} animate={{ opacity: 1 }}
@@ -122,7 +122,7 @@ export default function Settings() {
          {/* Background Glow */}
          <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-indigo-500 opacity-5 blur-[120px] pointer-events-none" />
 
-         <div className="relative z-10 lg:pl-72 lg:pr-72 pt-24 pb-20 px-6">
+         <div className="relative z-10 px-4 sm:px-6 lg:pl-72 lg:pr-72 pt-20 sm:pt-24 pb-20">
             <div className="max-w-4xl mx-auto">
 
                {/* Header Section */}
@@ -130,12 +130,12 @@ export default function Settings() {
                   <motion.h1
                      initial={{ opacity: 0, y: -10 }}
                      animate={{ opacity: 1, y: 0 }}
-                     className="text-4xl md:text-5xl font-black tracking-tight flex items-center justify-center gap-3 text-white"
+                     className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight flex items-center justify-center gap-2 sm:gap-3 text-white"
                   >
-                     <SettingsIcon className="w-10 h-10 text-indigo-400" />
+                     <SettingsIcon className="w-8 h-8 sm:w-10 sm:h-10 text-indigo-400" />
                      Settings
                   </motion.h1>
-                  <p className="text-zinc-500 mt-3 font-medium text-lg">
+                  <p className="text-zinc-500 mt-2 sm:mt-3 font-medium text-sm sm:text-lg">
                      Manage your account and preferences.
                   </p>
                </div>
@@ -148,10 +148,10 @@ export default function Settings() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: idx * 0.1 }}
-                        className="rounded-2xl border border-zinc-800 bg-zinc-900/30 overflow-hidden"
+                        className="rounded-xl sm:rounded-2xl border border-zinc-800 bg-zinc-900/30 overflow-hidden"
                      >
                         {/* Section Header */}
-                        <div className="px-6 py-4 border-b border-zinc-800 flex items-center gap-3">
+                        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-zinc-800 flex items-center gap-3">
                            <section.icon className={`w-5 h-5 ${section.color}`} />
                            <h2 className="font-bold text-white">{section.title}</h2>
                         </div>
@@ -166,7 +166,7 @@ export default function Settings() {
                                  <Wrapper
                                     key={item.label}
                                     {...wrapperProps}
-                                    className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/5 transition-colors group"
+                                    className="w-full px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between hover:bg-white/5 transition-colors group"
                                  >
                                     <div className="flex items-center gap-4">
                                        <div className="w-10 h-10 rounded-xl bg-zinc-800/50 flex items-center justify-center group-hover:bg-zinc-700/50 transition-colors">
@@ -193,10 +193,10 @@ export default function Settings() {
                      initial={{ opacity: 0, y: 20 }}
                      animate={{ opacity: 1, y: 0 }}
                      transition={{ delay: 0.2 }}
-                     className="rounded-2xl border border-zinc-800 bg-zinc-900/30 overflow-hidden"
+                     className="rounded-xl sm:rounded-2xl border border-zinc-800 bg-zinc-900/30 overflow-hidden"
                   >
                      {/* Section Header */}
-                     <div className="px-6 py-4 border-b border-zinc-800 flex items-center gap-3">
+                     <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-zinc-800 flex items-center gap-3">
                         <Shield className="w-5 h-5 text-red-400" />
                         <h2 className="font-bold text-white">Session Management</h2>
                      </div>
@@ -207,7 +207,7 @@ export default function Settings() {
                         <button
                            onClick={() => logoutMutation.mutate()}
                            disabled={logoutMutation.isPending || logoutAllMutation.isPending}
-                           className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/5 transition-colors group disabled:opacity-50"
+                           className="w-full px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between hover:bg-white/5 transition-colors group disabled:opacity-50"
                         >
                            <div className="flex items-center gap-4">
                               <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center group-hover:bg-amber-500/20 transition-colors">
@@ -231,7 +231,7 @@ export default function Settings() {
                         <button
                            onClick={() => logoutAllMutation.mutate()}
                            disabled={logoutMutation.isPending || logoutAllMutation.isPending}
-                           className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/5 transition-colors group disabled:opacity-50"
+                           className="w-full px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between hover:bg-white/5 transition-colors group disabled:opacity-50"
                         >
                            <div className="flex items-center gap-4">
                               <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center group-hover:bg-red-500/20 transition-colors">
@@ -259,12 +259,12 @@ export default function Settings() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
-                  className="mt-12 p-6 rounded-2xl border border-zinc-800 bg-zinc-900/30 text-center"
+                  className="mt-8 sm:mt-12 p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-zinc-800 bg-zinc-900/30 text-center"
                >
                   <img
                      src={user?.avatar?.url || user?.avatar}
                      alt={user?.username}
-                     className="w-20 h-20 rounded-full mx-auto mb-4 border-2 border-zinc-700 object-cover"
+                     className="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto mb-3 sm:mb-4 border-2 border-zinc-700 object-cover"
                   />
                   <h3 className="font-bold text-white text-lg">{user?.fullName}</h3>
                   <p className="text-zinc-500">@{user?.username}</p>

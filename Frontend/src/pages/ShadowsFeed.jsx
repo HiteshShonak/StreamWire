@@ -108,16 +108,16 @@ export default function ShadowsFeed() {
             {/* Background Glow - Emerald theme for Shadows */}
             <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-emerald-500 opacity-[0.03] blur-[120px] pointer-events-none" />
 
-            <div className="relative z-10 px-6 md:px-12 lg:pl-6 pt-28 pb-20 lg:px-6">
+            <div className="relative z-10 px-3 sm:px-6 lg:pl-6 pt-24 sm:pt-28 pb-20 lg:px-6">
                 <div className="max-w-2xl mx-auto">
 
                     {/* Header */}
-                    <div className="mb-8 text-center">
-                        <div className="flex items-center justify-center gap-3 mb-2">
-                            <Ghost className="w-6 h-6 text-emerald-500/70" />
-                            <h1 className="text-3xl font-bold text-white tracking-tight">The Shadows</h1>
+                    <div className="mb-6 sm:mb-8 text-center">
+                        <div className="flex items-center justify-center gap-2 sm:gap-3 mb-2">
+                            <Ghost className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-500/70" />
+                            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">The Shadows</h1>
                         </div>
-                        <p className="text-zinc-500 text-sm">Anonymous thoughts from the void</p>
+                        <p className="text-zinc-500 text-xs sm:text-sm">Anonymous thoughts from the void</p>
                     </div>
 
                     {/* Shadow Input */}

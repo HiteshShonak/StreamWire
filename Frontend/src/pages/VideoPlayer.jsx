@@ -226,9 +226,9 @@ export default function VideoPlayer() {
       await queryClient.cancelQueries(['videoComments', videoId]);
       const previousComments = queryClient.getQueryData(['videoComments', videoId]);
 
-      // Optimistic update
+      // Optimistic update — infinite query stores data as { pages: [...], pageParams: [...] }
       queryClient.setQueryData(['videoComments', videoId], (old) => {
-        if (!old) return old;
+        if (!old?.pages?.length) return old;
         const optimisticComment = {
           _id: 'temp-' + Date.now(),
           content: newComment.content,
@@ -246,7 +246,11 @@ export default function VideoPlayer() {
         };
         return {
           ...old,
-          docs: [optimisticComment, ...old.docs]
+          pages: old.pages.map((page, index) =>
+            index === 0
+              ? { ...page, docs: [optimisticComment, ...(page.docs || [])] }
+              : page
+          )
         };
       });
 

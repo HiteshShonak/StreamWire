@@ -284,7 +284,7 @@ export default function ShadowPost() {
     return (
       <div className="min-h-screen bg-[#050505] text-white">
         <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-emerald-500 opacity-5 blur-[120px] pointer-events-none" />
-        <div className="relative z-10 px-6 md:px-12 lg:pl-6 pt-28 pb-20 lg:px-6">
+        <div className="relative z-10 px-3 sm:px-6 lg:pl-6 pt-24 sm:pt-28 pb-20 lg:px-6">
           <WirePostSkeleton />
         </div>
       </div>
@@ -316,7 +316,7 @@ export default function ShadowPost() {
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-emerald-500 opacity-[0.03] blur-[120px] pointer-events-none" />
 
       {/* Main Content */}
-      <div className="relative z-10 px-6 md:px-12 lg:pl-6 pt-28 pb-20 lg:px-6">
+      <div className="relative z-10 px-3 sm:px-6 lg:pl-6 pt-24 sm:pt-28 pb-20 lg:px-6">
         <div className="max-w-2xl mx-auto">
 
           {/* Back Button */}
@@ -332,7 +332,7 @@ export default function ShadowPost() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-[#09090b] border border-zinc-900 rounded-2xl p-4 mb-6 border-l-2 border-l-emerald-900/40"
+            className="bg-[#09090b] border border-zinc-900 rounded-xl sm:rounded-2xl p-3 sm:p-4 mb-6 border-l-2 border-l-emerald-900/40"
           >
             <div className="flex gap-4">
               {/* Avatar - Ghost Icon */}
@@ -502,7 +502,7 @@ export default function ShadowPost() {
           {/* Comment Input - Can be anonymous or public */}
           <div className="mb-8">
             {userData ? (
-              <div className="bg-[#09090b] border border-zinc-900 rounded-2xl p-6">
+              <div className="bg-[#09090b] border border-zinc-900 rounded-xl sm:rounded-2xl p-4 sm:p-6">
                 <h3 className="text-lg font-bold mb-4 text-white flex items-center gap-2">
                   <Ghost className="w-4 h-4 text-emerald-500/70" />
                   Add a Comment
@@ -511,17 +511,17 @@ export default function ShadowPost() {
                   <img
                     src={isStealthComment ? "https://ui-avatars.com/api/?name=S&background=18181b&color=22c55e" : (userData?.avatar?.url || `https://ui-avatars.com/api/?name=${userData?.fullName}`)}
                     alt="Your avatar"
-                    className={`w-12 h-12 rounded-full object-cover flex-shrink-0 ${isStealthComment ? "border border-green-500/50" : ""}`}
+                    className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover flex-shrink-0 ${isStealthComment ? "border border-green-500/50" : ""}`}
                   />
                   <div className="flex-1">
                     <textarea
                       value={commentText}
                       onChange={(e) => setCommentText(e.target.value)}
                       placeholder={isStealthComment ? "Reply anonymously..." : "Share your thoughts..."}
-                      className="w-full bg-zinc-950/50 border border-zinc-800 rounded-lg px-4 py-3 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/50 resize-none"
-                      rows={4}
+                      className="w-full bg-zinc-950/50 border border-zinc-800 rounded-lg px-3 sm:px-4 py-2.5 sm:py-3 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/50 resize-none"
+                      rows={3}
                     />
-                    <div className="flex items-center justify-between mt-4">
+                    <div className="flex items-center justify-between mt-3 sm:mt-4">
                       {/* Stealth Toggle */}
                       <button
                         onClick={() => setIsStealthComment(!isStealthComment)}
@@ -562,7 +562,7 @@ export default function ShadowPost() {
 
           {/* Comments List */}
           <div className="space-y-5">
-            <h3 className="text-2xl font-bold text-white mb-6">
+            <h3 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6">
               Comments ({commentsData?.docs?.length || 0})
             </h3>
 
@@ -587,7 +587,7 @@ export default function ShadowPost() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className={`bg-[#09090b] border border-zinc-900 rounded-2xl p-6 ${commentIsStealth ? "border-l-4 border-l-emerald-950/40" : ""
+                      className={`bg-[#09090b] border border-zinc-900 rounded-xl sm:rounded-2xl p-4 sm:p-6 ${commentIsStealth ? "border-l-4 border-l-emerald-950/40" : ""
                         }`}
                     >
                       <div className="flex gap-4">

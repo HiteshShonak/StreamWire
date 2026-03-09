@@ -65,8 +65,8 @@ export default function KillSwitch() {
    if (!user) {
       return (
          <div className="relative min-h-screen bg-[#050505] text-white">
-            <div className="relative z-10 lg:pl-72 lg:pr-72 pt-24 pb-20">
-               <div className="max-w-4xl mx-auto px-6">
+            <div className="relative z-10 px-4 sm:px-6 lg:pl-72 lg:pr-72 pt-20 sm:pt-24 pb-20">
+               <div className="max-w-4xl mx-auto">
                   <motion.div
                      initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                      className="text-center py-32 border border-dashed border-zinc-800 rounded-3xl bg-zinc-900/20"
@@ -89,24 +89,24 @@ export default function KillSwitch() {
          {/* Background Glow */}
          <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-red-500 opacity-5 blur-[120px] pointer-events-none" />
 
-         <div className="relative z-10 lg:pl-72 lg:pr-72 pt-24 pb-20">
-            <div className="max-w-3xl mx-auto px-6">
+         <div className="relative z-10 px-4 sm:px-6 lg:pl-72 lg:pr-72 pt-20 sm:pt-24 pb-20">
+            <div className="max-w-3xl mx-auto">
 
                {/* Header */}
-               <div className="text-center mb-16">
+               <div className="text-center mb-10 sm:mb-16">
                   <motion.div
                      initial={{ scale: 0.8, opacity: 0 }}
                      animate={{ scale: 1, opacity: 1 }}
-                     className="w-24 h-24 mx-auto mb-6 rounded-3xl bg-gradient-to-br from-emerald-500/20 to-green-500/20 border border-emerald-500/30 flex items-center justify-center shadow-xl shadow-emerald-900/20"
+                     className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 mx-auto mb-4 sm:mb-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-emerald-500/20 to-green-500/20 border border-emerald-500/30 flex items-center justify-center shadow-xl shadow-emerald-900/20"
                   >
-                     <Ghost className="w-12 h-12 text-emerald-400" />
+                     <Ghost className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 text-emerald-400" />
                   </motion.div>
 
                   <motion.h1
                      initial={{ opacity: 0, y: 10 }}
                      animate={{ opacity: 1, y: 0 }}
                      transition={{ delay: 0.1 }}
-                     className="text-5xl font-black tracking-tight text-white mb-4"
+                     className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white mb-3 sm:mb-4"
                   >
                      Ghost Mode
                   </motion.h1>
@@ -115,7 +115,7 @@ export default function KillSwitch() {
                      initial={{ opacity: 0 }}
                      animate={{ opacity: 1 }}
                      transition={{ delay: 0.2 }}
-                     className="text-zinc-400 mt-4 text-lg max-w-2xl mx-auto leading-relaxed"
+                     className="text-zinc-400 mt-3 sm:mt-4 text-sm sm:text-base lg:text-lg max-w-2xl mx-auto leading-relaxed px-2 sm:px-0"
                   >
                      Your ultimate privacy control. Hide your identity across StreamWire with one click.
                      When enabled, you appear as "Anonymous" on all your content.
@@ -141,15 +141,15 @@ export default function KillSwitch() {
                   <button
                      onClick={handleAction}
                      disabled={isLoading}
-                     className="w-full group p-8 rounded-2xl bg-zinc-900/50 border border-zinc-800 hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all text-left disabled:opacity-50"
+                     className="w-full group p-5 sm:p-6 lg:p-8 rounded-2xl bg-zinc-900/50 border border-zinc-800 hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all text-left disabled:opacity-50"
                   >
-                     <div className="flex items-start gap-6">
-                        <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0 group-hover:bg-emerald-500/20 transition-colors">
-                           <Eye className="w-8 h-8 text-emerald-400" />
+                     <div className="flex items-start gap-4 sm:gap-6">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-xl sm:rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0 group-hover:bg-emerald-500/20 transition-colors">
+                           <Eye className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-emerald-400" />
                         </div>
                         <div className="flex-1">
                            <div className="flex items-center gap-3 mb-2">
-                              <h3 className="text-2xl font-bold text-white group-hover:text-emerald-400 transition-colors">
+                              <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-white group-hover:text-emerald-400 transition-colors">
                                  Anonymous Identity
                               </h3>
                               {user?.isIdentityCloaked && (
@@ -159,7 +159,7 @@ export default function KillSwitch() {
                                  </span>
                               )}
                            </div>
-                           <p className="text-zinc-400 leading-relaxed text-base">
+                           <p className="text-zinc-400 leading-relaxed text-sm sm:text-base">
                               {user?.isIdentityCloaked
                                  ? "Your identity is currently hidden. All your content displays 'Anonymous' instead of your name. Disable to reveal your profile on all posts, videos, and wires."
                                  : "Cloak your identity across the entire platform. Your name will appear as 'Anonymous' on all your content. This affects videos, wires, shadows, and comments."
@@ -186,9 +186,9 @@ export default function KillSwitch() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.5 }}
-                  className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4"
+                  className="mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"
                >
-                  <div className="p-6 rounded-xl border border-zinc-800 bg-zinc-900/30">
+                  <div className="p-4 sm:p-5 lg:p-6 rounded-xl border border-zinc-800 bg-zinc-900/30">
                      <div className="flex items-center gap-3 mb-3">
                         <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
                            <Ghost className="w-5 h-5 text-emerald-400" />
@@ -211,7 +211,7 @@ export default function KillSwitch() {
                      </ul>
                   </div>
 
-                  <div className="p-6 rounded-xl border border-zinc-800 bg-zinc-900/30">
+                  <div className="p-4 sm:p-5 lg:p-6 rounded-xl border border-zinc-800 bg-zinc-900/30">
                      <div className="flex items-center gap-3 mb-3">
                         <div className="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center">
                            <Shield className="w-5 h-5 text-indigo-400" />
@@ -240,10 +240,10 @@ export default function KillSwitch() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.6 }}
-                  className="mt-16"
+                  className="mt-10 sm:mt-16"
                >
                   <div className="text-center mb-6">
-                     <h3 className="text-xl font-bold text-white mb-2">Preview</h3>
+                     <h3 className="text-lg sm:text-xl font-bold text-white mb-2">Preview</h3>
                      <p className="text-zinc-500 text-sm">
                         {user?.isIdentityCloaked
                            ? "This is how you currently appear on all your content"
@@ -252,7 +252,7 @@ export default function KillSwitch() {
                      </p>
                   </div>
 
-                  <div className="p-8 rounded-2xl border-2 border-zinc-800 bg-zinc-900/50 text-center relative overflow-hidden">
+                  <div className="p-5 sm:p-6 lg:p-8 rounded-2xl border-2 border-zinc-800 bg-zinc-900/50 text-center relative overflow-hidden">
                      {/* Animated background indicator */}
                      {user?.isIdentityCloaked && (
                         <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-green-500/5" />
@@ -262,11 +262,11 @@ export default function KillSwitch() {
                         {user?.isIdentityCloaked ? (
                            <>
                               {/* Anonymous Avatar */}
-                              <div className="w-24 h-24 rounded-full mx-auto mb-4 border-2 border-emerald-500/30 bg-emerald-950/30 flex items-center justify-center">
-                                 <Ghost className="w-12 h-12 text-emerald-400" />
+                              <div className="w-18 h-18 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-full mx-auto mb-4 border-2 border-emerald-500/30 bg-emerald-950/30 flex items-center justify-center">
+                                 <Ghost className="w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 text-emerald-400" />
                               </div>
                               <div className="flex items-center justify-center gap-2 mb-1">
-                                 <p className="text-white font-bold text-xl">Anonymous</p>
+                                 <p className="text-white font-bold text-lg sm:text-xl">Anonymous</p>
                                  <span className="px-2 py-0.5 text-xs font-bold bg-emerald-500/20 text-emerald-400 rounded-full border border-emerald-500/30">
                                     CLOAKED
                                  </span>
@@ -279,9 +279,9 @@ export default function KillSwitch() {
                               <img
                                  src={user?.avatar?.url || user?.avatar}
                                  alt={user?.username}
-                                 className="w-24 h-24 rounded-full mx-auto mb-4 border-2 border-zinc-700 object-cover"
+                                 className="w-18 h-18 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-full mx-auto mb-4 border-2 border-zinc-700 object-cover"
                               />
-                              <p className="text-white font-bold text-xl">{user?.fullName}</p>
+                              <p className="text-white font-bold text-lg sm:text-xl">{user?.fullName}</p>
                               <p className="text-zinc-500 text-sm mt-1">@{user?.username}</p>
                               <p className="text-zinc-600 text-xs mt-2">Your identity is visible</p>
                            </>
@@ -306,7 +306,7 @@ export default function KillSwitch() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-6"
+                  className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 sm:p-6"
                   onClick={() => !isLoading && setConfirmingAction(false)}
                >
                   <motion.div
@@ -314,18 +314,18 @@ export default function KillSwitch() {
                      animate={{ scale: 1, opacity: 1 }}
                      exit={{ scale: 0.9, opacity: 0 }}
                      onClick={(e) => e.stopPropagation()}
-                     className="w-full max-w-md p-8 rounded-3xl border border-zinc-800 bg-zinc-900"
+                     className="w-full max-w-md p-5 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl border border-zinc-800 bg-zinc-900"
                   >
                      <div className="text-center">
                         <div className="w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center bg-emerald-500/20 border border-emerald-500/30">
                            <Eye className="w-8 h-8 text-emerald-400" />
                         </div>
 
-                        <h3 className="text-2xl font-black text-white mb-3">
+                        <h3 className="text-xl sm:text-2xl font-black text-white mb-3">
                            {user?.isIdentityCloaked ? 'Reveal Your Identity?' : 'Go Anonymous?'}
                         </h3>
 
-                        <p className="text-zinc-400 mb-8 leading-relaxed">
+                        <p className="text-zinc-400 mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base">
                            {user?.isIdentityCloaked
                               ? 'Your real name will be visible on all your content across StreamWire. You can enable cloaking again at any time.'
                               : 'Your identity will be hidden across StreamWire. You will appear as "Anonymous" on all your content.'
