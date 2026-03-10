@@ -280,8 +280,9 @@ export const logoutAllSessions = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user?._id);
     if (!user) throw new ApiError(404, "User not found");
 
-    // Security: clears all tokens from DB
+    // Security: clears all tokens and bumps version so existing JWTs are instantly invalid
     user.refreshTokens = [];
+    user.tokenVersion = (user.tokenVersion || 0) + 1;
     await user.save({ validateBeforeSave: false });
 
     return res
@@ -410,9 +411,9 @@ export const resetPassword = asyncHandler(async (req, res) => {
 
     user.password = newPassword;
 
-    // Security: Revoke all existing sessions 
-    // User must log in again with new password.
+    // Security: Revoke all existing sessions + invalidate JWTs instantly
     user.refreshTokens = [];
+    user.tokenVersion = (user.tokenVersion || 0) + 1;
 
     await user.save({ validateBeforeSave: false });
 

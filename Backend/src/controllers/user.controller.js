@@ -354,7 +354,8 @@ export const changeCurrentPassword = asyncHandler(async (req, res) => {
     }
 
     user.password = newPassword;
-    user.refreshTokens = []; // Revoke sessions
+    user.refreshTokens = [];
+    user.tokenVersion = (user.tokenVersion || 0) + 1; // invalidate all existing JWTs
 
     const accessToken = user.generateAccessToken();
     const newRefreshToken = user.generateRefreshToken();
@@ -383,6 +384,7 @@ export const deactivateAccount = asyncHandler(async (req, res) => {
     user.accountStatus = "DEACTIVATED";
     user.isIdentityCloaked = false; // Reset stealth so they don't get stuck if reactivated
     user.refreshTokens = [];
+    user.tokenVersion = (user.tokenVersion || 0) + 1;
 
     await user.save({ validateBeforeSave: false });
 

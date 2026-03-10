@@ -4,7 +4,7 @@ class JwtService {
   constructor() {
     this.accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
     this.accessTokenExpiry = process.env.ACCESS_TOKEN_EXPIRY;
-    
+
     this.refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
     this.refreshTokenExpiry = process.env.REFRESH_TOKEN_EXPIRY;
 
@@ -17,6 +17,7 @@ class JwtService {
         email: user.email,
         username: user.username,
         role: user.role,
+        tokenVersion: user.tokenVersion ?? 0,
       },
       this.accessTokenSecret,
       { expiresIn: this.accessTokenExpiry }
@@ -24,12 +25,12 @@ class JwtService {
   }
 
   generateRefreshToken(userId) {
-    const rotationWindow = 10 * 24 * 60 * 60 * 1000; 
-    
+    const rotationWindow = 10 * 24 * 60 * 60 * 1000;
+
     return jwt.sign(
       {
         _id: userId,
-        rotateAt: Date.now() + rotationWindow 
+        rotateAt: Date.now() + rotationWindow
       },
       this.refreshTokenSecret,
       { expiresIn: this.refreshTokenExpiry }

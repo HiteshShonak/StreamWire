@@ -2,7 +2,7 @@ import { ANONYMOUS_USER_NAME } from "../constants.js";
 
 export const sanitizeUser = (user) => {
     const userObj = user.toObject();
-    const sensitiveFields = ['password', 'refreshTokens', 'otp', 'otpExpiry', '__v'];
+    const sensitiveFields = ['password', 'refreshTokens', 'tokenVersion', 'otp', 'otpExpiry', '__v'];
     sensitiveFields.forEach(field => delete userObj[field]);
     return userObj;
 };

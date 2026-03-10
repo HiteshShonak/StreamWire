@@ -90,6 +90,11 @@ const userSchema = new Schema(
       type: Boolean,
       default: false, // The "Global Switch" for retroactive anonymity
     },
+    // bumped on logout-all / password-reset to instantly invalidate every existing JWT
+    tokenVersion: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );

@@ -18,6 +18,13 @@ export const authenticate = asyncHandler(async (req, _, next) => {
     }
 
     const user = await User.findById(decodedToken._id).select("-password -refreshTokens");
+
+    // token was issued before a logout-all or password reset — reject it
+    if (user && decodedToken.tokenVersion !== undefined && decodedToken.tokenVersion !== user.tokenVersion) {
+        req.user = null;
+        return next();
+    }
+
     req.user = user || null;
     next();
 });
