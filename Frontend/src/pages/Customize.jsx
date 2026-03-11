@@ -199,7 +199,7 @@ export default function Customize() {
          // Reset progress
          setUploadProgress({ avatar: 0, cover: 0 });
 
-         navigate(isOnboarding ? '/' : '/settings');
+         navigate(isOnboarding ? '/home' : '/settings');
       },
       onError: (error) => {
          let errorMessage = error.message || 'Failed to update profile';
@@ -282,7 +282,7 @@ export default function Customize() {
 
    const handleSkip = () => {
       if (isOnboarding) {
-         navigate('/');
+         navigate('/home');
       } else {
          navigate('/settings');
       }
@@ -296,15 +296,19 @@ export default function Customize() {
 
    return (
       <div className="min-h-screen bg-[#050505]">
-         <Header />
-         <Sidebar />
+         {!isOnboarding && (
+            <>
+               <Header />
+               <Sidebar />
+            </>
+         )}
 
          {/* Background Effects */}
          <div className="fixed inset-0 pointer-events-none">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-indigo-500 opacity-5 blur-[120px]" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-indigo-500 opacity-5 blur-[120px] gpu-layer" />
          </div>
 
-         <div className="lg:pl-72 lg:pr-72 pt-24 pb-20 px-4 md:px-8">
+         <div className={`${isOnboarding ? 'pt-20 md:pt-24' : 'lg:pl-72 lg:pr-72 pt-24'} pb-20 px-4 md:px-8`}>
             <div className="max-w-3xl mx-auto relative z-10">
 
                {/* Header */}
@@ -1000,7 +1004,7 @@ export default function Customize() {
                </AnimatePresence>
 
                {/* Navigation Buttons */}
-               <div className="flex items-center justify-between mt-8">
+               <div className="flex flex-wrap items-center justify-between gap-4 mt-8">
                   <div>
                      {step > 1 ? (
                         <button
@@ -1038,28 +1042,51 @@ export default function Customize() {
                            <ArrowRight className="w-4 h-4" />
                         </button>
                      ) : (
-                        <button
-                           onClick={handleSubmit}
-                           disabled={updateMutation.isPending}
-                           className="flex items-center gap-2 px-8 py-3.5 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold transition-all disabled:opacity-50 shadow-lg shadow-emerald-900/30"
-                        >
-                           {updateMutation.isPending ? (
-                              <>
-                                 <LoadingDots size="md" />
-                                 Saving...
-                              </>
-                           ) : (
-                              <>
-                                 <Check className="w-5 h-5" />
-                                 Save Profile
-                              </>
+                        <>
+                           {isOnboarding && (
+                              <button
+                                 onClick={handleSkip}
+                                 disabled={updateMutation.isPending}
+                                 className="px-6 py-3.5 text-zinc-400 hover:text-white font-medium transition-colors"
+                              >
+                                 Skip & use defaults
+                              </button>
                            )}
-                        </button>
+                           <button
+                              onClick={handleSubmit}
+                              disabled={updateMutation.isPending}
+                              className="flex items-center gap-2 px-8 py-3.5 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold transition-all disabled:opacity-50 shadow-lg shadow-emerald-900/30"
+                           >
+                              {updateMutation.isPending ? (
+                                 <>
+                                    <LoadingDots size="md" />
+                                    Saving...
+                                 </>
+                              ) : (
+                                 <>
+                                    <Check className="w-5 h-5" />
+                                    Save Profile
+                                 </>
+                              )}
+                           </button>
+                        </>
                      )}
                   </div>
-               </div>
 
+               </div>
             </div>
+
+            {/* Persistent Onboarding Skip Button (Repositioned to bottom) */}
+            {isOnboarding && (
+               <div className="flex justify-center mt-8">
+                  <button
+                     onClick={handleSkip}
+                     className="px-6 py-3 rounded-full text-zinc-400 hover:text-white bg-zinc-900/40 hover:bg-zinc-800/80 border border-zinc-800 transition-all font-bold flex items-center gap-2"
+                  >
+                     Skip for now <ArrowRight className="w-4 h-4" />
+                  </button>
+               </div>
+            )}
          </div>
       </div>
    );

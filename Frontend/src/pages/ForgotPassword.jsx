@@ -21,8 +21,8 @@ const NoiseOverlay = () => (
 
 const AmbientBackground = () => (
     <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse" style={{ animationDuration: '4s' }} />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse" style={{ animationDuration: '7s' }} />
+        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse gpu-layer" style={{ animationDuration: '4s' }} />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse gpu-layer" style={{ animationDuration: '7s' }} />
     </div>
 )
 
@@ -53,6 +53,7 @@ const OTPInput = ({ length = 6, onComplete, disabled = false }) => {
                     type="text"
                     maxLength="1"
                     disabled={disabled}
+                    autoFocus={index === 0}
                     className="w-10 h-12 sm:w-12 sm:h-14 bg-black/20 border border-white/10 rounded-xl text-center text-xl font-bold text-white focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all focus:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed"
                     value={otp[index]}
                     onChange={(e) => handleChange(e, index)}
@@ -90,7 +91,9 @@ export default function ForgotPassword() {
         } catch (error) {
             let errorMessage = error.message || "Failed to send recovery code"
 
-            if (error.message?.includes("No account")) {
+            if (error?.fieldErrors && error.fieldErrors.length > 0) {
+                errorMessage = error.fieldErrors[0].message || "Please check your input."
+            } else if (error.message?.includes("No account")) {
                 errorMessage = "No account found with this username or email."
             } else if (error.message?.includes("required")) {
                 errorMessage = "Please enter your username or email."
@@ -127,7 +130,9 @@ export default function ForgotPassword() {
         } catch (error) {
             let errorMessage = error.message || "Failed to reset password"
 
-            if (error.message?.includes("Invalid or expired OTP")) {
+            if (error?.fieldErrors && error.fieldErrors.length > 0) {
+                errorMessage = error.fieldErrors[0].message || "Please check your password requirements."
+            } else if (error.message?.includes("Invalid or expired OTP")) {
                 errorMessage = "Invalid or expired code. Please go back and request a new one."
             } else if (error.message?.includes("no longer exists")) {
                 errorMessage = "Account not found. Please contact support."
@@ -340,7 +345,7 @@ export default function ForgotPassword() {
                                             type={showPassword ? "text" : "password"}
                                             {...register("newPassword", {
                                                 required: "New password is required",
-                                                minLength: { value: 6, message: "Password must be at least 6 characters" }
+                                                minLength: { value: 8, message: "At least 8 characters, 1 uppercase, 1 lowercase & 1 number" }
                                             })}
                                             className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-12 pr-12 text-white placeholder:text-zinc-600 focus:bg-black/40 focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 outline-none transition-all shadow-inner"
                                             placeholder="••••••••"
@@ -359,7 +364,7 @@ export default function ForgotPassword() {
                                 {/* Password Requirements */}
                                 <div className="p-3 bg-zinc-800/50 border border-zinc-700/50 rounded-xl">
                                     <p className="text-xs text-zinc-400">
-                                        <strong>Requirements:</strong> At least 6 characters long
+                                        <strong>Requirements:</strong> At least 8 characters, 1 uppercase, 1 lowercase & 1 number
                                     </p>
                                 </div>
 

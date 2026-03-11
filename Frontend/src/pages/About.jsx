@@ -142,8 +142,8 @@ export default function About() {
             <NoiseOverlay />
 
             {/* Background Effects */}
-            <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-indigo-500 opacity-5 blur-[120px] pointer-events-none" />
-            <div className="fixed bottom-0 right-0 w-[800px] h-[500px] bg-indigo-500 opacity-5 blur-[120px] pointer-events-none" />
+            <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-indigo-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
+            <div className="fixed bottom-0 right-0 w-[800px] h-[500px] bg-indigo-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
 
             <div className="relative z-10 lg:pl-72 lg:pr-72 pt-24 pb-20 px-6">
                <div className="max-w-7xl mx-auto">

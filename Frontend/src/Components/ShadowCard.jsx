@@ -61,7 +61,7 @@ const ShadowCard = memo(function ShadowCard({ shadow, onLike, onDelete }) {
             animate={{ opacity: 1, y: 0 }}
             layout
             onClick={handleCardClick}
-            className="relative border-b border-zinc-900 bg-[#09090b] hover:bg-zinc-950/60 transition-colors cursor-pointer p-3 sm:p-4 border-l-2 border-l-emerald-900/40"
+            className="relative border-b border-zinc-900 bg-[#09090b] hover:bg-zinc-950/60 transition-colors cursor-pointer p-3 sm:p-4 border-l-2 border-l-emerald-900/40 contain-content"
         >
             <div className="flex gap-3 sm:gap-4">
                 {/* Avatar Column - Anonymous Icon */}

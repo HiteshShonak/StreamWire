@@ -161,3 +161,25 @@
     transform: scale(1.05);
   }
 }
+
+/* ⚡ Performance: GPU Acceleration & Containment */
+
+/* Forces element onto its own GPU compositing layer — use on fixed/animated elements */
+.gpu-layer {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Isolates layout/paint so child changes don't trigger parent reflows */
+.contain-content {
+  contain: content;
+}
+
+/* Combined: GPU + containment for feed cards */
+.perf-card {
+  contain: content;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}

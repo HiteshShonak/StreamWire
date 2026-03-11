@@ -135,7 +135,7 @@ export default function Header({ variant = 'gateway', onUploadClick }) {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: "circOut" }}
-      className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 pt-4 pointer-events-none"
+      className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 pt-4 pointer-events-none gpu-layer will-change-transform"
     >
       <div className={`
         pointer-events-auto w-full max-w-[1400px] rounded-full transition-all duration-500 ease-out

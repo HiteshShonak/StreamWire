@@ -23,8 +23,8 @@ const NoiseOverlay = () => (
 
 const AmbientBackground = () => (
     <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse" style={{ animationDuration: '4s' }} />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse" style={{ animationDuration: '7s' }} />
+        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse gpu-layer" style={{ animationDuration: '4s' }} />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse gpu-layer" style={{ animationDuration: '7s' }} />
     </div>
 )
 
@@ -48,7 +48,7 @@ export default function Login() {
             if (response?.user) {
                 dispatch(authLogin(response))
                 toast.success("Identity Verified. Access Granted.")
-                navigate("/")
+                navigate("/home")
             }
         } catch (error) {
             // Map backend errors to user-friendly messages

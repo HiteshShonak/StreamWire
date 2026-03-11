@@ -60,7 +60,7 @@ export default function ChangePassword() {
       <div className="relative min-h-screen bg-[#050505] text-white">
 
          {/* Background Glow */}
-         <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-indigo-500 opacity-5 blur-[120px] pointer-events-none" />
+         <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-indigo-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
 
          <div className="relative z-10 px-4 sm:px-6 lg:pl-72 lg:pr-72 pt-20 sm:pt-24 pb-20">
             <div className="max-w-2xl mx-auto">

@@ -114,7 +114,7 @@ export default function Trending() {
       <div className="relative min-h-screen bg-[#050505] text-white">
 
          {/* Background Glow */}
-         <div className={`fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] ${activeBg} opacity-5 blur-[120px] pointer-events-none transition-colors duration-700`} />
+         <div className={`fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] ${activeBg} opacity-5 blur-[120px] pointer-events-none transition-colors duration-700 gpu-layer`} />
 
          <div className="relative z-10 lg:pl-72 pt-32 px-6 pb-20 max-w-7xl mx-auto">
 

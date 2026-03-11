@@ -106,7 +106,7 @@ export default function ShadowsFeed() {
     return (
         <div className="min-h-screen bg-[#050505] text-white">
             {/* Background Glow - Emerald theme for Shadows */}
-            <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-emerald-500 opacity-[0.03] blur-[120px] pointer-events-none" />
+            <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-emerald-500 opacity-[0.03] blur-[120px] pointer-events-none gpu-layer" />
 
             <div className="relative z-10 px-3 sm:px-6 lg:pl-6 pt-24 sm:pt-28 pb-20 lg:px-6">
                 <div className="max-w-2xl mx-auto">

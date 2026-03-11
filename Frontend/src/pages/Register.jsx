@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux"
 import { Link, useNavigate } from "react-router-dom"
 import { Mail, User, Shield, ArrowRight, CheckCircle2, Radio, Lock, AtSign, Eye, EyeOff } from "lucide-react"
 import { LoadingDots } from '../Components/Common/LoadingIndicator'
+import favicon from '../assets/favicon.webp'
 import { motion, AnimatePresence } from "framer-motion"
 import toast from "react-hot-toast"
 import { authService } from "../api/services/auth.service"
@@ -23,8 +24,8 @@ const NoiseOverlay = () => (
 
 const AmbientBackground = () => (
     <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-emerald-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse" style={{ animationDuration: '6s' }} />
-        <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse" style={{ animationDuration: '4s' }} />
+        <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-emerald-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse gpu-layer" style={{ animationDuration: '6s' }} />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse gpu-layer" style={{ animationDuration: '4s' }} />
     </div>
 )
 
@@ -54,6 +55,7 @@ const OTPInput = ({ length = 6, onComplete }) => {
                     key={index}
                     type="text"
                     maxLength="1"
+                    autoFocus={index === 0}
                     className="w-10 h-12 sm:w-12 sm:h-14 bg-black/20 border border-white/10 rounded-xl text-center text-xl font-bold text-white focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all focus:-translate-y-1"
                     value={otp[index]}
                     onChange={(e) => handleChange(e, index)}
@@ -91,9 +93,12 @@ export default function Register() {
                 password: data.password
             })
 
+            const isBypassed = response?.smtpBypassed || response?.data?.smtpBypassed || response?.data?.data?.smtpBypassed;
+
             // SMTP was blocked — user already created & logged in by backend
-            if (response?.smtpBypassed) {
-                dispatch(login(response))
+            if (isBypassed) {
+                sessionStorage.setItem('pendingRedirect', 'true')
+                dispatch(login(response?.data || response))
                 toast.success("Account created successfully!")
                 navigate("/customize?onboarding=true")
                 return
@@ -107,9 +112,14 @@ export default function Register() {
             // Map backend errors to user-friendly messages
             let errorMessage = error.message || "Registration failed"
 
-            if (error.message?.includes("already exists")) {
+            // If backend returned specific Zod validation errors, show the first one
+            if (error?.fieldErrors && error.fieldErrors.length > 0) {
+                // e.g. "password: Password must be at least 8 characters"
+                const firstError = error.fieldErrors[0]
+                errorMessage = firstError.message || `${firstError.field} is invalid`
+            } else if (error.message?.includes("already exists")) {
                 errorMessage = "Username or email is already registered. Try logging in instead."
-            } else if (error.message?.includes("fields") && error.message?.includes("required")) {
+            } else if (error.message?.includes("fields") || error.message?.includes("required")) {
                 errorMessage = "All fields are required. Please fill in the form completely."
             }
 
@@ -128,10 +138,12 @@ export default function Register() {
                 otp
             })
 
-            if (response?.user) {
-                dispatch(login(response))
-                toast.success("Identity Verified. Account Created.")
-                navigate("/customize?onboarding=true")
+            // Axios interceptors might return the unwrapped object or the full response
+            if (response?.user || response?.data?.user || response) {
+                sessionStorage.setItem('pendingRedirect', 'true')
+                dispatch(login(response?.data || response));
+                toast.success("Identity Verified. Account Created.");
+                navigate("/customize?onboarding=true");
             }
         } catch (error) {
             // Map backend errors to user-friendly messages
@@ -186,8 +198,14 @@ export default function Register() {
                     {/* Header Section */}
                     <div className="text-center mb-8 relative z-10">
                         <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/5 border border-white/10 mb-6 shadow-inner text-white relative overflow-hidden group-hover:border-white/20 transition-colors">
-                            <div className="absolute inset-0 bg-emerald-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                            <Radio className="w-7 h-7 relative z-10" />
+                            <div className={`absolute inset-0 blur-xl opacity-0 group-hover:opacity-100 transition-opacity ${step === "DETAILS" ? "bg-emerald-500/20" : "bg-indigo-500/20"}`} />
+                            {step === "DETAILS" ? (
+                                <Radio className="w-7 h-7 relative z-10" />
+                            ) : (
+                                <div className="relative z-10">
+                                    <img src={favicon} alt="StreamWire" className="w-8 h-8 object-contain" />
+                                </div>
+                            )}
                         </div>
                         <h1 className="text-3xl font-black text-white tracking-tight mb-2">
                             {step === "DETAILS" ? "Initialize Account" : "Verify Identity"}
@@ -259,7 +277,7 @@ export default function Register() {
                                         <Shield className="absolute left-4 top-3.5 h-5 w-5 text-zinc-500 group-focus-within/input:text-white transition-colors" />
                                         <input
                                             type={showPassword ? "text" : "password"}
-                                            {...register("password", { required: "Required", minLength: { value: 6, message: "Min 6 chars" } })}
+                                            {...register("password", { required: "Required", minLength: { value: 8, message: "At least 8 characters, 1 uppercase, 1 lowercase & 1 number" } })}
                                             autoComplete="new-password"
                                             className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-12 pr-12 text-white placeholder:text-zinc-600 focus:bg-black/40 focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 outline-none transition-all shadow-inner"
                                             placeholder="••••••••"

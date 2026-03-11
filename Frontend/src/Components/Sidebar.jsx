@@ -144,7 +144,7 @@ export default function Sidebar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsExpanded(false)}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden gpu-layer"
           />
         )}
       </AnimatePresence>
@@ -154,7 +154,7 @@ export default function Sidebar() {
         initial={{ x: -50, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.2, ease: "circOut" }}
-        className="fixed left-4 top-28 bottom-6 w-64 hidden lg:flex flex-col z-40"
+        className="fixed left-4 top-28 bottom-6 w-64 hidden lg:flex flex-col z-40 gpu-layer will-change-transform"
       >
         <div className="flex-1 flex flex-col justify-between bg-[#0A0A0A]/60 backdrop-blur-2xl border border-white/10 rounded-3xl p-4 shadow-2xl shadow-black/50 overflow-y-auto custom-scrollbar">
 
@@ -208,7 +208,7 @@ export default function Sidebar() {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -280, opacity: 0 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed left-0 top-0 bottom-0 w-72 flex flex-col z-50 lg:hidden"
+            className="fixed left-0 top-0 bottom-0 w-72 flex flex-col z-50 lg:hidden gpu-layer will-change-transform"
           >
             <div className="flex-1 flex flex-col bg-[#0A0A0A]/95 backdrop-blur-2xl border-r border-white/10 p-4 pt-6 shadow-2xl shadow-black/50 overflow-y-auto custom-scrollbar">
 

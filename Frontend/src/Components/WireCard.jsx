@@ -84,7 +84,7 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
             layout
             onClick={handleCardClick}
             className={`
-                relative border-b border-zinc-800 bg-[#0a0a0c] hover:bg-zinc-900/40 transition-colors cursor-pointer p-3 sm:p-4
+                relative border-b border-zinc-800 bg-[#0a0a0c] hover:bg-zinc-900/40 transition-colors cursor-pointer p-3 sm:p-4 contain-content
                 ${isStealth ? "border-l-2 border-l-green-500/30 pl-[14px]" : ""} 
             `}
         >
@@ -98,6 +98,7 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
                     <img
                         src={avatarUrl}
                         alt="Avatar"
+                        loading="lazy"
                         className={`w-10 h-10 rounded-full object-cover hover:ring-2 hover:ring-sky-500/50 transition-all ${isStealth ? "border border-green-500/30" : ""}`}
                     />
                 </Link>

@@ -27,12 +27,13 @@ const VideoCard = memo(function VideoCard({ video }) {
     : video.owner?.avatar?.url
 
   return (
-    <div className="group relative">
+    <div className="group relative contain-content">
       {/* Thumbnail Container */}
       <Link to={`/cinema/${video._id}`} className="block relative rounded-xl overflow-hidden aspect-video bg-zinc-900">
         <img
           src={video.thumbnail?.url}
           alt={video.title}
+          loading="lazy"
           className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${isStealth ? "opacity-80 grayscale-[0.5]" : ""}`}
         />
 
@@ -67,6 +68,7 @@ const VideoCard = memo(function VideoCard({ video }) {
           <img
             src={avatarUrl}
             alt={ownerName}
+            loading="lazy"
             className="w-9 h-9 rounded-full object-cover border border-zinc-800 hover:ring-2 hover:ring-indigo-500/50 transition-all"
           />
         </Link>

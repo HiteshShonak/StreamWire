@@ -9,13 +9,19 @@ export default function AuthLayout({ children, authentication = true }) {
     const authStatus = useSelector((state) => state.auth.status)
 
     useEffect(() => {
-        // Logic:
-        // If page requires Auth AND user is NOT logged in -> Go to Login
-        // If page is Guest Only AND user IS logged in -> Go to Dashboard
+        // if another page (e.g. Register) is handling its own redirect, don't interfere
+        const pendingRedirect = sessionStorage.getItem('pendingRedirect')
+        if (pendingRedirect) {
+            sessionStorage.removeItem('pendingRedirect')
+            setLoader(false)
+            return
+        }
 
+        // if page needs auth and user isn't logged in -> login
         if (authentication && authStatus !== authentication) {
             navigate("/login")
         } else if (!authentication && authStatus !== authentication) {
+            // guest-only page but user is logged in -> send to home
             navigate("/home")
         }
 

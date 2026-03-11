@@ -14,7 +14,7 @@ export const validate = (schema) => {
         } catch (error) {
             if (error instanceof z.ZodError) {
                 // Format Zod errors into user-friendly messages
-                const errors = error.errors.map(err => ({
+                const errors = (error.issues || error.errors || []).map(err => ({
                     field: err.path.join('.'),
                     message: err.message
                 }));
