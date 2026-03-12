@@ -20,15 +20,16 @@ function App() {
     const isLanding = path === '/'
     const isAuthPage = ['/login', '/register', '/forgot-password'].includes(path)
     const isGateway = path === '/home'
+    const isOnboarding = path === '/customize' && location.search.includes('onboarding=true')
 
     return {
       isLanding,
       isAuthPage,
       isGateway,
-      showHeader: !isLanding,
-      showSidebar: !isLanding && !isAuthPage && !isGateway
+      showHeader: !isLanding && !isOnboarding,
+      showSidebar: !isLanding && !isAuthPage && !isGateway && !isOnboarding
     }
-  }, [path])
+  }, [path, location.search])
 
   const getHeaderVariant = useCallback(() => {
     if (path.startsWith('/cinema')) return 'cinema'

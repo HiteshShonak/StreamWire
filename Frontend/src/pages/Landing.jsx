@@ -129,9 +129,7 @@ export default function Landing() {
 
       <LandingHeader isStealth={isStealth} isLoggedIn={isLoggedIn} userData={userData} />
 
-      <div className="pt-20">
-        <HeroSection isStealth={isStealth} setIsStealth={setIsStealth} />
-      </div>
+      <HeroSection isStealth={isStealth} setIsStealth={setIsStealth} />
 
       <AIFeatures isStealth={isStealth} />
 

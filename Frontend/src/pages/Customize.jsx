@@ -12,8 +12,7 @@ import toast from 'react-hot-toast';
 import confetti from 'canvas-confetti';
 import { authService } from '../api/services/auth.service';
 import { login } from '../store/authSlice';
-import Header from '../Components/Header';
-import Sidebar from '../Components/Sidebar';
+
 
 // Color palette options
 const AVATAR_COLORS = [
@@ -296,19 +295,13 @@ export default function Customize() {
 
    return (
       <div className="min-h-screen bg-[#050505]">
-         {!isOnboarding && (
-            <>
-               <Header />
-               <Sidebar />
-            </>
-         )}
 
          {/* Background Effects */}
          <div className="fixed inset-0 pointer-events-none">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-indigo-500 opacity-5 blur-[120px] gpu-layer" />
          </div>
 
-         <div className={`${isOnboarding ? 'pt-20 md:pt-24' : 'lg:pl-72 lg:pr-72 pt-24'} pb-20 px-4 md:px-8`}>
+         <div className="pt-20 md:pt-24 pb-20 px-4 md:px-8">
             <div className="max-w-3xl mx-auto relative z-10">
 
                {/* Header */}
@@ -1006,29 +999,43 @@ export default function Customize() {
                {/* Navigation Buttons */}
                <div className="flex flex-wrap items-center justify-between gap-4 mt-8">
                   <div>
-                     {step > 1 ? (
-                        <button
-                           onClick={handleBack}
-                           className="flex items-center gap-2 px-6 py-3 text-zinc-400 hover:text-white transition-colors"
-                        >
-                           <ArrowLeft className="w-4 h-4" />
-                           Back
-                        </button>
-                     ) : isOnboarding ? (
-                        <button
-                           onClick={handleSkip}
-                           className="px-6 py-3 text-zinc-500 hover:text-zinc-300 transition-colors"
-                        >
-                           Skip for now
-                        </button>
-                     ) : (
-                        <button
-                           onClick={() => navigate('/settings')}
-                           className="px-6 py-3 text-zinc-500 hover:text-zinc-300 transition-colors"
-                        >
-                           Cancel
-                        </button>
-                     )}
+                     <AnimatePresence mode="popLayout">
+                        {step > 1 ? (
+                           <motion.button
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              exit={{ opacity: 0, x: -20 }}
+                              key="back-btn"
+                              onClick={handleBack}
+                              className="flex items-center gap-2 px-6 py-3 text-zinc-400 hover:text-white transition-colors"
+                           >
+                              <ArrowLeft className="w-4 h-4" />
+                              Back
+                           </motion.button>
+                        ) : isOnboarding ? (
+                           <motion.button
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              exit={{ opacity: 0, x: -20 }}
+                              key="skip-btn-1"
+                              onClick={handleSkip}
+                              className="flex items-center gap-2 px-6 py-3 text-zinc-500 hover:text-zinc-300 transition-colors font-semibold"
+                           >
+                              Skip for now <ArrowRight className="w-4 h-4" />
+                           </motion.button>
+                        ) : (
+                           <motion.button
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              exit={{ opacity: 0, x: -20 }}
+                              key="cancel-btn"
+                              onClick={() => navigate('/settings')}
+                              className="px-6 py-3 text-zinc-500 hover:text-zinc-300 transition-colors"
+                           >
+                              Cancel
+                           </motion.button>
+                        )}
+                     </AnimatePresence>
                   </div>
 
                   <div className="flex items-center gap-3">
@@ -1076,16 +1083,20 @@ export default function Customize() {
                </div>
             </div>
 
-            {/* Persistent Onboarding Skip Button (Repositioned to bottom) */}
-            {isOnboarding && (
-               <div className="flex justify-center mt-8">
+            {/* Persistent Onboarding Skip Button (Repositioned to bottom for steps 2+) */}
+            {isOnboarding && step > 1 && (
+               <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex justify-center mt-8"
+               >
                   <button
                      onClick={handleSkip}
                      className="px-6 py-3 rounded-full text-zinc-400 hover:text-white bg-zinc-900/40 hover:bg-zinc-800/80 border border-zinc-800 transition-all font-bold flex items-center gap-2"
                   >
                      Skip for now <ArrowRight className="w-4 h-4" />
                   </button>
-               </div>
+               </motion.div>
             )}
          </div>
       </div>
