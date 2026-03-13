@@ -173,18 +173,18 @@ const ShadowCard = memo(function ShadowCard({ shadow, onLike, onDelete }) {
                     )}
 
                     {/* Action Buttons Footer */}
-                    <div className="flex items-center justify-between max-w-sm mt-1 -ml-2">
+                    <div className="flex items-center justify-between w-full mt-2 -ml-2 text-zinc-600">
 
                         {/* Comments */}
                         <button
-                            className="group/btn flex items-center gap-1.5 p-2 rounded-full transition-colors hover:bg-emerald-500/10"
+                            className="group/btn flex items-center gap-1.5 p-2 rounded-full transition-colors hover:bg-emerald-500/10 hover:text-emerald-500"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 navigate(`/shadow/${shadow._id}`);
                             }}
                         >
-                            <MessageSquare className="w-4.5 h-4.5 text-zinc-600 group-hover/btn:text-emerald-500 transition-colors" />
-                            <span className="text-xs font-medium text-zinc-600 group-hover/btn:text-emerald-400">
+                            <MessageSquare className="w-[18px] h-[18px] transition-colors" />
+                            <span className="text-xs font-medium">
                                 {shadow.commentsCount || 0}
                             </span>
                         </button>
@@ -199,17 +199,17 @@ const ShadowCard = memo(function ShadowCard({ shadow, onLike, onDelete }) {
                                 }
                                 onLike(shadow._id)
                             }}
-                            className="group/btn flex items-center gap-1.5 p-2 rounded-full transition-colors hover:bg-emerald-500/10"
+                            className={`group/btn flex items-center gap-1.5 p-2 rounded-full transition-colors hover:bg-emerald-500/10 hover:text-emerald-500 ${shadow.isLiked ? 'text-emerald-500' : ''}`}
                         >
-                            <Heart className={`w-4.5 h-4.5 transition-colors ${shadow.isLiked ? "fill-emerald-500 text-emerald-500" : "text-zinc-600 group-hover/btn:text-emerald-500"}`} />
-                            <span className={`text-xs font-medium transition-colors ${shadow.isLiked ? "text-emerald-400" : "text-zinc-600 group-hover/btn:text-emerald-400"}`}>
+                            <Heart className={`w-[18px] h-[18px] transition-colors ${shadow.isLiked ? "fill-emerald-500" : ""}`} />
+                            <span className="text-xs font-medium">
                                 {shadow.likesCount || 0}
                             </span>
                         </button>
 
                         {/* Views */}
-                        <div className="flex items-center gap-1.5 p-2 text-zinc-600">
-                            <BarChart2 className="w-4 h-4" />
+                        <div className="flex items-center gap-1.5 p-2">
+                            <BarChart2 className="w-[18px] h-[18px]" />
                             <span className="text-xs font-medium">
                                 {shadow.views || 0}
                             </span>
@@ -218,12 +218,12 @@ const ShadowCard = memo(function ShadowCard({ shadow, onLike, onDelete }) {
                         {/* Share */}
                         <button
                             onClick={handleShare}
-                            className="group/btn flex items-center gap-1.5 p-2 rounded-full transition-colors hover:bg-emerald-500/10"
+                            className="group/btn flex items-center gap-1.5 p-2 rounded-full transition-colors hover:bg-emerald-500/10 hover:text-emerald-500"
                         >
                             {copied ? (
-                                <Check className="w-4.5 h-4.5 text-emerald-500" />
+                                <Check className="w-[18px] h-[18px] text-emerald-500" />
                             ) : (
-                                <Share className="w-4.5 h-4.5 text-zinc-600 group-hover/btn:text-emerald-500 transition-colors" />
+                                <Share className="w-[18px] h-[18px] transition-colors" />
                             )}
                         </button>
                     </div>

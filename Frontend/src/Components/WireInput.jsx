@@ -312,13 +312,10 @@ export default function WireInput({ onSuccess }) {
                     onClick={handleSubmit}
                     disabled={!content.trim() || createMutation.isPending || isUploadingImage}
                     className={`
-                        flex items-center gap-2 px-4 py-2 text-sm font-bold rounded-lg transition-all
-                        ${!content.trim() || isUploadingImage
-                            ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed'
-                            : isStealth
-                                ? 'bg-green-600 hover:bg-green-500 text-white shadow-lg shadow-green-900/20'
-                                : 'bg-sky-500 hover:bg-sky-600 text-white'
-                        }
+                        flex items-center justify-center gap-2 px-4 py-1.5 text-sm rounded-full font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed
+                        ${isStealth
+                            ? 'bg-green-600 hover:bg-green-500 text-white shadow-[0_0_15px_rgba(22,163,74,0.3)]'
+                            : 'bg-zinc-100 hover:bg-white text-black shadow-sm'}
                     `}
                 >
                     {createMutation.isPending ? (
@@ -326,7 +323,7 @@ export default function WireInput({ onSuccess }) {
                     ) : (
                         <>
                             {isStealth ? <Ghost className="w-4 h-4" /> : <Send className="w-4 h-4" />}
-                            {isStealth ? "Whisper" : "Post"}
+                            <span>{isStealth ? "Whisper" : "Post"}</span>
                         </>
                     )}
                 </button>

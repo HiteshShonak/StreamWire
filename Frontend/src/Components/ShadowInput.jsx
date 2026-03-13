@@ -307,19 +307,16 @@ export default function ShadowInput({ onSuccess }) {
                     onClick={handleSubmit}
                     disabled={!content.trim() || createMutation.isPending || isUploadingImage}
                     className={`
-                        flex items - center gap - 2 px - 4 py - 2 text - sm font - bold rounded - lg transition - all
-                        ${!content.trim() || isUploadingImage
-                            ? 'bg-zinc-900 text-zinc-700 cursor-not-allowed'
-                            : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-900/30'
-                        }
-`}
+                        flex items-center justify-center gap-2 px-4 py-1.5 text-sm rounded-full font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed
+                        bg-emerald-600 hover:bg-emerald-500 text-black shadow-[0_0_15px_rgba(5,150,105,0.4)]
+                    `}
                 >
                     {createMutation.isPending || isUploadingImage ? (
-                        <LoadingDots size="xs" />
+                        <LoadingDots size="xs" color="black" />
                     ) : (
                         <>
                             <Ghost className="w-4 h-4" />
-                            Cast Shadow
+                            <span>Post</span>
                         </>
                     )}
                 </button>

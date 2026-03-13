@@ -232,18 +232,18 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
                     )}
 
                     {/* Action Buttons Footer */}
-                    <div className="flex items-center justify-between max-w-md mt-1 -ml-2">
+                    <div className="flex items-center justify-between w-full mt-2 -ml-2 text-zinc-500">
 
                         {/* Comments */}
                         <button
-                            className="group/btn flex items-center gap-1.5 p-2 rounded-full transition-colors hover:bg-sky-500/10"
+                            className="group/btn flex items-center gap-1.5 p-2 rounded-full transition-colors hover:bg-sky-500/10 hover:text-sky-500"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 navigate(`/wire/${wire._id}`);
                             }}
                         >
-                            <MessageSquare className="w-4.5 h-4.5 text-zinc-500 group-hover/btn:text-sky-500 transition-colors" />
-                            <span className="text-xs font-medium text-zinc-500 group-hover/btn:text-sky-500">
+                            <MessageSquare className="w-[18px] h-[18px] transition-colors" />
+                            <span className="text-xs font-medium">
                                 {wire.commentsCount || 0}
                             </span>
                         </button>
@@ -258,17 +258,17 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
                                 }
                                 onLike(wire._id)
                             }}
-                            className="group/btn flex items-center gap-1.5 p-2 rounded-full transition-colors hover:bg-pink-500/10"
+                            className={`group/btn flex items-center gap-1.5 p-2 rounded-full transition-colors hover:bg-pink-500/10 hover:text-pink-500 ${wire.isLiked ? 'text-pink-500' : ''}`}
                         >
-                            <Heart className={`w-4.5 h-4.5 transition-colors ${wire.isLiked ? "fill-pink-500 text-pink-500" : "text-zinc-500 group-hover/btn:text-pink-500"}`} />
-                            <span className={`text-xs font-medium transition-colors ${wire.isLiked ? "text-pink-500" : "text-zinc-500 group-hover/btn:text-pink-500"}`}>
+                            <Heart className={`w-[18px] h-[18px] transition-colors ${wire.isLiked ? "fill-pink-500" : ""}`} />
+                            <span className="text-xs font-medium">
                                 {wire.likesCount || 0}
                             </span>
                         </button>
 
-                        {/* Views (Analytics icon like Twitter/X) */}
-                        <div className="flex items-center gap-1.5 p-2 text-zinc-500">
-                            <BarChart2 className="w-4 h-4" />
+                        {/* Views */}
+                        <div className="flex items-center gap-1.5 p-2">
+                            <BarChart2 className="w-[18px] h-[18px]" />
                             <span className="text-xs font-medium">
                                 {wire.views || 0}
                             </span>
@@ -277,12 +277,12 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
                         {/* Share */}
                         <button
                             onClick={handleShare}
-                            className="group/btn flex items-center gap-1.5 p-2 rounded-full transition-colors hover:bg-indigo-500/10"
+                            className="group/btn flex items-center gap-1.5 p-2 rounded-full transition-colors hover:bg-indigo-500/10 hover:text-indigo-500"
                         >
                             {copied ? (
-                                <Check className="w-4.5 h-4.5 text-indigo-500" />
+                                <Check className="w-[18px] h-[18px] text-indigo-500" />
                             ) : (
-                                <Share className="w-4.5 h-4.5 text-zinc-500 group-hover/btn:text-indigo-500 transition-colors" />
+                                <Share className="w-[18px] h-[18px] transition-colors" />
                             )}
                         </button>
                     </div>
