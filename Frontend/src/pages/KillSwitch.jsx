@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-   Power, Shield, Eye, Check, Ghost, Sparkles
+   Power, Shield, Eye, EyeOff, Check, Ghost, Sparkles
 } from 'lucide-react'
 import { LoadingDots } from '../Components/Common/LoadingIndicator'
 import toast from 'react-hot-toast'
@@ -87,7 +87,7 @@ export default function KillSwitch() {
       <div className="relative min-h-screen bg-[#050505] text-white">
 
          {/* Background Glow */}
-         <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-red-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
+         <div className={`fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] opacity-5 blur-[120px] pointer-events-none gpu-layer transition-colors duration-700 ${user?.isIdentityCloaked ? 'bg-emerald-500' : 'bg-red-500'}`} />
 
          <div className="relative z-10 px-4 sm:px-6 lg:pl-72 lg:pr-72 pt-20 sm:pt-24 pb-20">
             <div className="max-w-3xl mx-auto">
@@ -144,9 +144,12 @@ export default function KillSwitch() {
                      className="w-full group p-5 sm:p-6 lg:p-8 rounded-2xl bg-zinc-900/50 border border-zinc-800 hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all text-left disabled:opacity-50"
                   >
                      <div className="flex items-start gap-4 sm:gap-6">
-                        <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-xl sm:rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0 group-hover:bg-emerald-500/20 transition-colors">
-                           <Eye className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-emerald-400" />
-                        </div>
+                         <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-xl sm:rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0 group-hover:bg-emerald-500/20 transition-colors">
+                            {user?.isIdentityCloaked
+                               ? <Eye className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-emerald-400" />
+                               : <EyeOff className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-emerald-400" />
+                            }
+                         </div>
                         <div className="flex-1">
                            <div className="flex items-center gap-3 mb-2">
                               <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-white group-hover:text-emerald-400 transition-colors">
@@ -262,7 +265,7 @@ export default function KillSwitch() {
                         {user?.isIdentityCloaked ? (
                            <>
                               {/* Anonymous Avatar */}
-                              <div className="w-18 h-18 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-full mx-auto mb-4 border-2 border-emerald-500/30 bg-emerald-950/30 flex items-center justify-center">
+                               <div className="w-20 h-20 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-full mx-auto mb-4 border-2 border-emerald-500/30 bg-emerald-950/30 flex items-center justify-center">
                                  <Ghost className="w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 text-emerald-400" />
                               </div>
                               <div className="flex items-center justify-center gap-2 mb-1">
@@ -279,7 +282,7 @@ export default function KillSwitch() {
                               <img
                                  src={user?.avatar?.url || user?.avatar}
                                  alt={user?.username}
-                                 className="w-18 h-18 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-full mx-auto mb-4 border-2 border-zinc-700 object-cover"
+                                 className="w-20 h-20 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-full mx-auto mb-4 border-2 border-zinc-700 object-cover"
                               />
                               <p className="text-white font-bold text-lg sm:text-xl">{user?.fullName}</p>
                               <p className="text-zinc-500 text-sm mt-1">@{user?.username}</p>
@@ -289,12 +292,6 @@ export default function KillSwitch() {
                      </div>
                   </div>
 
-                  {/* Toggle hint */}
-                  <div className="mt-4 text-center">
-                     <p className="text-xs text-zinc-600">
-                        Click the card above to {user?.isIdentityCloaked ? 'reveal' : 'hide'} your identity
-                     </p>
-                  </div>
                </motion.div>
             </div>
          </div>
@@ -317,9 +314,12 @@ export default function KillSwitch() {
                      className="w-full max-w-md p-5 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl border border-zinc-800 bg-zinc-900"
                   >
                      <div className="text-center">
-                        <div className="w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center bg-emerald-500/20 border border-emerald-500/30">
-                           <Eye className="w-8 h-8 text-emerald-400" />
-                        </div>
+                         <div className="w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center bg-emerald-500/20 border border-emerald-500/30">
+                            {user?.isIdentityCloaked
+                               ? <Eye className="w-8 h-8 text-emerald-400" />
+                               : <EyeOff className="w-8 h-8 text-emerald-400" />
+                            }
+                         </div>
 
                         <h3 className="text-xl sm:text-2xl font-black text-white mb-3">
                            {user?.isIdentityCloaked ? 'Reveal Your Identity?' : 'Go Anonymous?'}

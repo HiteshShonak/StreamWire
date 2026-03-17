@@ -1083,8 +1083,7 @@ export default function Customize() {
                </div>
             </div>
 
-            {/* Persistent Onboarding Skip Button (Repositioned to bottom for steps 2+) */}
-            {isOnboarding && step > 1 && (
+            {isOnboarding && step > 1 && step < 5 && (
                <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
