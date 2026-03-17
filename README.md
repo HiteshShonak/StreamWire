@@ -186,32 +186,32 @@ StreamWire/
 
 <table>
   <tr>
-    <td><strong>🏠 Home</strong><br/><img src="screenshots/home.png" alt="Home"/></td>
-    <td><strong>🛬 Landing Page</strong><br/><img src="screenshots/landing.png" alt="Landing Page"/></td>
+    <td><strong>🏠 Home</strong><br/><img src="./Screenshots/home.png" alt="Home"/></td>
+    <td><strong>🛬 Landing Page</strong><br/><img src="./Screenshots/landing.png" alt="Landing Page"/></td>
   </tr>
   <tr>
-    <td><strong>⚡ The Wire — Public Feed</strong><br/><img src="screenshots/wire_feed.png" alt="Wire Feed"/></td>
-    <td><strong>👻 The Shadows — Anonymous Feed</strong><br/><img src="screenshots/shadow_feed.png" alt="Shadows Feed"/></td>
+    <td><strong>⚡ The Wire — Public Feed</strong><br/><img src="./Screenshots/wire_feed.png" alt="Wire Feed"/></td>
+    <td><strong>👻 The Shadows — Anonymous Feed</strong><br/><img src="./Screenshots/shadow_feed.png" alt="Shadows Feed"/></td>
   </tr>
   <tr>
-    <td><strong>🎬 Cinema — Video Discovery</strong><br/><img src="screenshots/cinema_feed.png" alt="Cinema Feed"/></td>
-    <td><strong>▶️ Video Player</strong><br/><img src="screenshots/video_player.png" alt="Video Player"/></td>
+    <td><strong>🎬 Cinema — Video Discovery</strong><br/><img src="./Screenshots/cinema_feed.png" alt="Cinema Feed"/></td>
+    <td><strong>▶️ Video Player</strong><br/><img src="./Screenshots/video_player.png" alt="Video Player"/></td>
   </tr>
   <tr>
-    <td><strong>🤖 AI Features — Summarization & Q&A</strong><br/><img src="screenshots/ai_features.png" alt="AI Features"/></td>
-    <td><strong>📊 Creator Studio — Dashboard</strong><br/><img src="screenshots/dashboard.png" alt="Dashboard"/></td>
+    <td><strong>🤖 AI Features — Summarization & Q&A</strong><br/><img src="./Screenshots/ai_features.png" alt="AI Features"/></td>
+    <td><strong>📊 Creator Studio — Dashboard</strong><br/><img src="./Screenshots/dashboard.png" alt="Dashboard"/></td>
   </tr>
   <tr>
-    <td><strong>🔥 Trending — Cross-Platform</strong><br/><img src="screenshots/trending.png" alt="Trending"/></td>
-    <td><strong>👤 Channel Page</strong><br/><img src="screenshots/channel.png" alt="Channel Page"/></td>
+    <td><strong>🔥 Trending — Cross-Platform</strong><br/><img src="./Screenshots/trending.png" alt="Trending"/></td>
+    <td><strong>👤 Channel Page</strong><br/><img src="./Screenshots/channel.png" alt="Channel Page"/></td>
   </tr>
   <tr>
-    <td><strong>🔐 Login</strong><br/><img src="screenshots/login.png" alt="Login"/></td>
-    <td><strong>📝 Register</strong><br/><img src="screenshots/register.png" alt="Register"/></td>
+    <td><strong>🔐 Login</strong><br/><img src="./Screenshots/login.png" alt="Login"/></td>
+    <td><strong>📝 Register</strong><br/><img src="./Screenshots/register.png" alt="Register"/></td>
   </tr>
   <tr>
-    <td><strong>🎨 Customize / Onboarding</strong><br/><img src="screenshots/customize.png" alt="Customize"/></td>
-    <td><strong>⚙️ Settings</strong><br/><img src="screenshots/settings.png" alt="Settings"/></td>
+    <td><strong>🎨 Customize / Onboarding</strong><br/><img src="./Screenshots/customize.png" alt="Customize"/></td>
+    <td><strong>⚙️ Settings</strong><br/><img src="./Screenshots/settings.png" alt="Settings"/></td>
   </tr>
 </table>
 

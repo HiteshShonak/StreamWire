@@ -113,7 +113,7 @@ export default function Landing() {
   const { status: isLoggedIn, userData } = useSelector((state) => state.auth)
 
   return (
-    <div className={`min-h-screen w-full relative transition-colors duration-1000 ${isStealth ? 'bg-[#0a0a0a]' : 'bg-[#FDFDFD]'}`}>
+    <div className={`min-h-screen w-full relative transition-colors duration-1000 ${isStealth ? 'bg-[#0a0a0a] text-white selection:bg-green-500/40 selection:text-white' : 'bg-[#FDFDFD] text-zinc-900 selection:bg-indigo-500/40 selection:text-white'}`}>
 
       <div className="fixed inset-0 pointer-events-none z-50 opacity-[0.04] mix-blend-overlay">
         <svg className="w-full h-full">
