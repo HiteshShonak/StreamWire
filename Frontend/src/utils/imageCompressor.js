@@ -1,6 +1,6 @@
 // image compression helpers
 
-// compress single image to webp
+// compress single image to webp (GIFs are passed through to preserve animation)
 export const compressImage = async (file, options = {}) => {
     const {
         maxWidth = 1800, // 3x of 600px base width for retina displays
@@ -8,13 +8,18 @@ export const compressImage = async (file, options = {}) => {
     } = options;
 
     return new Promise((resolve, reject) => {
-        
+
         if (!file.type.startsWith('image/')) {
             reject(new Error('File is not an image'));
             return;
         }
 
-        
+        // Pass GIFs through unchanged — canvas would strip animation
+        if (file.type === 'image/gif') {
+            resolve(file);
+            return;
+        }
+
         const img = new Image();
         const reader = new FileReader();
 
@@ -37,15 +42,12 @@ export const compressImage = async (file, options = {}) => {
                     width = maxWidth;
                 }
 
-                
                 const canvas = document.createElement('canvas');
                 canvas.width = width;
                 canvas.height = height;
 
-                
                 const ctx = canvas.getContext('2d');
 
-                
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'high';
 
@@ -59,21 +61,14 @@ export const compressImage = async (file, options = {}) => {
                             return;
                         }
 
-                        
                         const compressedFile = new File(
                             [blob],
-                            file.name.replace(/\.[^.]+$/, '.webp'), // Replace extension with .webp
+                            file.name.replace(/\.[^.]+$/, '.webp'),
                             {
                                 type: 'image/webp',
                                 lastModified: Date.now()
                             }
                         );
-
-                        console.log('Image Compression Stats:');
-                        console.log(`  Original: ${(file.size / 1024).toFixed(2)} KB`);
-                        console.log(`  Compressed: ${(compressedFile.size / 1024).toFixed(2)} KB`);
-                        console.log(`  Saved: ${(((file.size - compressedFile.size) / file.size) * 100).toFixed(1)}%`);
-                        console.log(`  Dimensions: ${width}x${height}`);
 
                         resolve(compressedFile);
                     },
@@ -89,7 +84,6 @@ export const compressImage = async (file, options = {}) => {
             reject(new Error('Failed to load image'));
         };
 
-        
         reader.readAsDataURL(file);
     });
 };
@@ -110,3 +104,4 @@ export const isValidImage = (file) => {
 export const getImagePreview = (file) => {
     return URL.createObjectURL(file);
 };
+

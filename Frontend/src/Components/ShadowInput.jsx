@@ -11,6 +11,7 @@ export default function ShadowInput({ onSuccess }) {
     const [content, setContent] = useState("")
     const [images, setImages] = useState([])
     const [isUploadingImage, setIsUploadingImage] = useState(false)
+    const [isDragging, setIsDragging] = useState(false)
 
     // Poll State
     const [showPoll, setShowPoll] = useState(false)
@@ -30,9 +31,9 @@ export default function ShadowInput({ onSuccess }) {
             formData.append('content', payload.content)
             formData.append('isStealthMode', payload.isStealthMode)
 
-            // Append image if present (single file only)
+            // Append image file if present (single file only)
             if (payload.images && payload.images.length > 0) {
-                formData.append('image', payload.images[0])
+                formData.append('image', payload.images[0].file)
             }
 
             // Append poll data if present
@@ -57,49 +58,55 @@ export default function ShadowInput({ onSuccess }) {
 
     const resetForm = () => {
         setContent("")
-        setImages([])
+        // Revoke all blob URLs to free memory before clearing
+        setImages(prev => { prev.forEach(img => URL.revokeObjectURL(img.url)); return [] })
         setShowPoll(false)
         setPollQuestion("")
         setPollOptions(["", ""])
     }
 
-    // Image Handling
-    const handleImageUpload = async (e) => {
-        const files = Array.from(e.target.files)
+    // Core file processing — shared by file picker and drag-and-drop
+    const processFiles = async (rawFiles) => {
+        const files = Array.from(rawFiles)
 
         if (images.length + files.length > MAX_IMAGES) {
             toast.error(`Maximum ${MAX_IMAGES} image allowed`)
             return
         }
 
-        // Validate and compress images
         try {
             const validFiles = files.filter(file => {
                 if (!isValidImage(file)) {
                     toast.error(`${file.name} is not a valid image type`)
                     return false
                 }
+                if (file.size > 10 * 1024 * 1024) {
+                    toast.error(`${file.name} exceeds 10MB limit`)
+                    return false
+                }
                 return true
-            });
+            })
 
-            if (validFiles.length === 0) return;
+            if (validFiles.length === 0) return
 
-            // Show upload in progress
             setIsUploadingImage(true)
-            const uploadToast = toast.loading('Uploading...')
+            const uploadToast = toast.loading('Processing image...')
 
-            // Compress images (max width 1800px for 3x retina @ 600px base)
             const compressedFiles = await Promise.all(
                 validFiles.map(file => compressImage(file, { maxWidth: 1800, quality: 0.85 }))
-            );
+            )
 
             setIsUploadingImage(false)
             toast.dismiss(uploadToast)
-            toast.success('Uploaded')
+            toast.success('Image ready')
 
-            setImages(prev => [...prev, ...compressedFiles])
+            // Store file + pre-computed URL (created once, not per-render)
+            const newEntries = compressedFiles.map(file => ({
+                file,
+                url: URL.createObjectURL(file)
+            }))
+            setImages(prev => [...prev, ...newEntries])
 
-            // Can't have image and poll together
             if (showPoll) setShowPoll(false)
         } catch (error) {
             setIsUploadingImage(false)
@@ -108,8 +115,47 @@ export default function ShadowInput({ onSuccess }) {
         }
     }
 
+    // File picker onChange
+    const handleImageUpload = async (e) => {
+        await processFiles(e.target.files)
+        e.target.value = ''
+    }
+
+    // Drag-and-drop handlers
+    const handleDragEnter = (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        if (images.length < MAX_IMAGES && !showPoll) setIsDragging(true)
+    }
+    const handleDragOver = (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+    }
+    const handleDragLeave = (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        if (!e.currentTarget.contains(e.relatedTarget)) setIsDragging(false)
+    }
+    const handleDrop = async (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        setIsDragging(false)
+        if (showPoll) {
+            toast.error('Cannot add image with poll')
+            return
+        }
+        const dropped = e.dataTransfer.files
+        if (dropped?.length) await processFiles(dropped)
+    }
+
     const removeImage = (index) => {
-        setImages(prev => prev.filter((_, i) => i !== index))
+        setImages(prev => {
+            // Revoke URL for the removed entry to free memory
+            if (prev[index]) URL.revokeObjectURL(prev[index].url)
+            return prev.filter((_, i) => i !== index)
+        })
+        // Reset the file input so the same file can be re-selected
+        if (fileInputRef.current) fileInputRef.current.value = ''
     }
 
     // Poll Handling
@@ -161,7 +207,7 @@ export default function ShadowInput({ onSuccess }) {
     }
 
     return (
-        <div className="bg-[#09090b] border border-emerald-900/30 rounded-2xl overflow-hidden shadow-lg shadow-emerald-950/20">
+        <div className="relative bg-[#09090b] border border-emerald-900/30 rounded-2xl overflow-hidden shadow-lg shadow-emerald-950/20">
 
             {/* Header - Always shows as anonymous */}
             <div className="px-4 py-3 border-b bg-emerald-950/20 border-emerald-900/30">
@@ -177,8 +223,63 @@ export default function ShadowInput({ onSuccess }) {
                 </div>
             </div>
 
-            {/* Input Area */}
-            <div className="p-4">
+            {/* Input Area — accepts drag-and-drop */}
+            <div
+                className={`p-4 transition-colors duration-200 ${isDragging ? 'bg-emerald-900/10 ring-1 ring-emerald-500/30 rounded-xl' : ''}`}
+                onDragEnter={handleDragEnter}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+            >
+                {isDragging && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="absolute inset-0 z-20 flex items-center justify-center rounded-2xl pointer-events-none
+                            bg-[#09090b]/92 border-2 border-dashed border-emerald-500/50"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.85, y: 8 }}
+                            animate={{ scale: 1, y: 0 }}
+                            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                            className="flex flex-col items-center gap-3 select-none"
+                        >
+                            {/* Animated icon with pulse ring */}
+                            <div className="relative">
+                                <motion.div
+                                    animate={{ scale: [1, 1.35, 1], opacity: [0.3, 0, 0.3] }}
+                                    transition={{ repeat: Infinity, duration: 1.8, ease: 'easeInOut' }}
+                                    className="absolute inset-0 rounded-full bg-emerald-500/25"
+                                />
+                                <div className="relative w-14 h-14 rounded-full flex items-center justify-center
+                                    bg-emerald-500/10 border border-emerald-500/30">
+                                    <ImageIcon className="w-6 h-6 text-emerald-400" />
+                                </div>
+                            </div>
+
+                            {/* Headline */}
+                            <motion.p
+                                initial={{ opacity: 0, y: 4 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.06 }}
+                                className="text-lg font-black tracking-tight leading-none text-emerald-300"
+                            >
+                                Cast your shadow
+                            </motion.p>
+
+                            {/* Sub-hint */}
+                            <motion.p
+                                initial={{ opacity: 0, y: 4 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.12 }}
+                                className="text-xs font-medium text-zinc-600"
+                            >
+                                JPEG · PNG · WebP · GIF &nbsp;·&nbsp; max 10 MB
+                            </motion.p>
+                        </motion.div>
+                    </motion.div>
+                )}
                 <textarea
                     value={content}
                     onChange={(e) => {
@@ -250,13 +351,17 @@ export default function ShadowInput({ onSuccess }) {
                                     exit={{ opacity: 0, scale: 0.8 }}
                                     className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 group border border-zinc-900"
                                 >
-                                    <img src={URL.createObjectURL(img)} alt="preview" className="w-full h-full object-cover opacity-90" />
+                                    <img src={img.url} alt="preview" className="w-full h-full object-cover opacity-90" />
                                     <button
                                         onClick={() => removeImage(i)}
                                         className="absolute inset-0 bg-black/70 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                                     >
                                         <X className="w-4 h-4 text-white" />
                                     </button>
+                                    {/* Compressed size badge */}
+                                    <span className="absolute bottom-0.5 left-0.5 text-[9px] font-bold bg-black/60 text-emerald-400 px-1 rounded">
+                                        {(img.file.size / 1024).toFixed(0)}KB
+                                    </span>
                                 </motion.div>
                             ))}
                         </AnimatePresence>
@@ -270,7 +375,7 @@ export default function ShadowInput({ onSuccess }) {
                     {/* Image Button */}
                     <button
                         onClick={() => fileInputRef.current?.click()}
-                        className={`transition - colors ${images.length >= MAX_IMAGES || showPoll ? 'text-zinc-800 cursor-not-allowed' : 'text-zinc-600 hover:text-emerald-400'} `}
+                        className={`transition-colors ${images.length >= MAX_IMAGES || showPoll ? 'text-zinc-800 cursor-not-allowed' : 'text-zinc-600 hover:text-emerald-400'}`}
                         disabled={images.length >= MAX_IMAGES || showPoll}
                         title={showPoll ? "Cannot add image with poll" : "Add Image"}
                     >
@@ -287,7 +392,7 @@ export default function ShadowInput({ onSuccess }) {
                     {/* Poll Button */}
                     <button
                         onClick={togglePoll}
-                        className={`transition - colors ${images.length > 0 ? 'text-zinc-800 cursor-not-allowed' : showPoll ? 'text-emerald-500' : 'text-zinc-600 hover:text-emerald-400'} `}
+                        className={`transition-colors ${images.length > 0 ? 'text-zinc-800 cursor-not-allowed' : showPoll ? 'text-emerald-500' : 'text-zinc-600 hover:text-emerald-400'}`}
                         disabled={images.length > 0}
                         title={images.length > 0 ? "Cannot add poll with image" : "Create Anonymous Poll"}
                     >

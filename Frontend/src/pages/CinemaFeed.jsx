@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
@@ -7,7 +7,6 @@ import { Check, Film, Sparkles } from 'lucide-react'
 import toast from 'react-hot-toast'
 import Header from '../Components/Header'
 import Sidebar from '../Components/Sidebar'
-import VideoUploadForm from '../Components/VideoUploadForm'
 import { videoService } from '../api/services/video.service'
 
 // New Modular Components
@@ -35,8 +34,6 @@ export default function CinemaFeed() {
   const [isEditingCategories, setIsEditingCategories] = useState(false)
   const [newCategory, setNewCategory] = useState("")
 
-  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false)
-
   // Handlers for category management
   const handleDeleteCategory = (catToDelete) => {
     const updated = categories.filter(c => c !== catToDelete)
@@ -59,8 +56,6 @@ export default function CinemaFeed() {
     setNewCategory("")
     toast.success(`Added ${trimmed}`)
   }
-
-  const openUploadModal = useCallback(() => setIsUploadModalOpen(true), [])
 
   // Fetch featured video (highest trendScore with fallback to latest)
   const { data: featuredVideoData } = useQuery({
@@ -145,11 +140,8 @@ export default function CinemaFeed() {
   return (
     <div className="min-h-screen bg-[#050505] text-white overflow-x-hidden selection:bg-indigo-500/30">
 
-      {/* Video Upload Modal */}
-      <VideoUploadForm isOpen={isUploadModalOpen} onClose={() => setIsUploadModalOpen(false)} />
-
       {/* Header (Cinema Variant) - Sits on top of hero */}
-      <Header variant="cinema" onUploadClick={() => setIsUploadModalOpen(true)} />
+      <Header variant="cinema" />
 
       {/* Sidebar (Floating) - Sits on top of hero */}
       <Sidebar />
@@ -160,7 +152,6 @@ export default function CinemaFeed() {
           hasVideos={hasVideos}
           featuredVideo={featuredVideo}
           userData={userData}
-          onUploadClick={openUploadModal}
         />
       </section>
 

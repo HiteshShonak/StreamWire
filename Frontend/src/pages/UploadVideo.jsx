@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Upload, Film, FileText, Tag, Sparkles, Check, Image, Video, X } from 'lucide-react';
+import { ArrowLeft, Upload, Film, FileText, Tag, Sparkles, Check, Image, Video, X, Zap } from 'lucide-react';
 import { LoadingDots } from '../Components/Common/LoadingIndicator';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { videoService } from '../api/services/video.service';
+import { compressVideo } from '../utils/compressVideo';
 import Header from '../Components/Header';
 import Sidebar from '../Components/Sidebar';
 
@@ -21,6 +22,8 @@ export default function UploadVideo() {
   });
   const [previews, setPreviews] = useState({ video: null, thumbnail: null });
   const [uploadProgress, setUploadProgress] = useState({ percent: 0, loaded: 0, total: 0, eta: null, startTime: null });
+  const [isCompressing, setIsCompressing] = useState(false);
+  const [compressionProgress, setCompressionProgress] = useState({ percent: 0, label: '', originalMB: 0, compressedMB: 0 });
 
   const uploadMutation = useMutation({
     mutationFn: async (data) => {
@@ -82,16 +85,49 @@ export default function UploadVideo() {
     }
   });
 
-  const handleVideoChange = (e) => {
+  const handleVideoChange = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      if (file.size > 200 * 1024 * 1024) {
-        toast.error('Video file must be less than 200MB');
-        return;
+    if (!file) return;
+
+    if (file.size > 200 * 1024 * 1024) {
+      toast.error('Video file must be less than 200MB');
+      return;
+    }
+
+    const originalMB = file.size / (1024 * 1024);
+    const url = URL.createObjectURL(file);
+    // Show original immediately so user can see it
+    setFormData(prev => ({ ...prev, videoFile: file }));
+    setPreviews(prev => ({ ...prev, video: url }));
+
+    // Files under 50MB skip compression
+    if (originalMB < 50) {
+      return;
+    }
+
+    // Run quick first-pass compression
+    setIsCompressing(true);
+    setCompressionProgress({ percent: 0, label: 'Starting compression...', originalMB, compressedMB: 0 });
+
+    try {
+      const compressed = await compressVideo(file, (percent, label) => {
+        setCompressionProgress(prev => ({ ...prev, percent, label }));
+      });
+
+      const compressedMB = compressed.size / (1024 * 1024);
+      const saved = ((1 - compressed.size / file.size) * 100).toFixed(0);
+
+      setFormData(prev => ({ ...prev, videoFile: compressed }));
+      setCompressionProgress(prev => ({ ...prev, percent: 100, label: `Saved ${saved}%`, originalMB, compressedMB }));
+
+      if (compressed !== file) {
+        toast.success(`Compressed: ${originalMB.toFixed(0)}MB → ${compressedMB.toFixed(0)}MB (${saved}% smaller)`);
       }
-      setFormData({ ...formData, videoFile: file });
-      const url = URL.createObjectURL(file);
-      setPreviews({ ...previews, video: url });
+    } catch (err) {
+      console.warn('Compression failed, using original:', err);
+      toast('Using original file — compression failed', { icon: '⚠️' });
+    } finally {
+      setIsCompressing(false);
     }
   };
 
@@ -111,6 +147,8 @@ export default function UploadVideo() {
   const handleRemoveVideo = () => {
     setFormData({ ...formData, videoFile: null });
     setPreviews({ ...previews, video: null });
+    setIsCompressing(false);
+    setCompressionProgress({ percent: 0, label: '', originalMB: 0, compressedMB: 0 });
   };
 
   const handleRemoveThumbnail = () => {
@@ -183,7 +221,7 @@ export default function UploadVideo() {
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-white">Video File</h3>
-                  <p className="text-sm text-zinc-500">Upload your video (max 2GB)</p>
+                  <p className="text-sm text-zinc-500">Upload your video (max 200MB)</p>
                 </div>
               </div>
 
@@ -218,6 +256,11 @@ export default function UploadVideo() {
                       <p className="text-white font-semibold mb-1">{formData.videoFile.name}</p>
                       <p className="text-sm text-zinc-500">
                         {(formData.videoFile.size / (1024 * 1024)).toFixed(2)} MB
+                        {compressionProgress.originalMB > 0 && compressionProgress.compressedMB > 0 && (
+                          <span className="ml-2 text-emerald-400 font-medium">
+                            (compressed from {compressionProgress.originalMB.toFixed(0)}MB)
+                          </span>
+                        )}
                       </p>
                     </div>
                     <button
@@ -360,6 +403,36 @@ export default function UploadVideo() {
               )}
             </div>
 
+            {/* Compression Progress */}
+            {isCompressing && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-zinc-900/50 border border-amber-500/30 rounded-2xl p-6"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center">
+                    <Zap className="w-5 h-5 text-amber-400 animate-pulse" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="text-sm font-bold text-white">Quick Compression</h4>
+                      <span className="text-xl font-bold text-amber-400">{compressionProgress.percent}%</span>
+                    </div>
+                    <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${compressionProgress.percent}%` }}
+                        transition={{ duration: 0.3, ease: 'easeOut' }}
+                        className="h-full bg-gradient-to-r from-amber-500 to-orange-400"
+                      />
+                    </div>
+                    <p className="text-xs text-zinc-500 mt-2">{compressionProgress.label}</p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
             {/* Upload Progress Bar */}
             {uploadMutation.isPending && (
               <motion.div
@@ -415,17 +488,22 @@ export default function UploadVideo() {
               <button
                 type="button"
                 onClick={() => navigate('/dashboard')}
-                disabled={uploadMutation.isPending}
+                disabled={uploadMutation.isPending || isCompressing}
                 className="flex-1 px-6 py-4 rounded-xl border border-zinc-700 text-white hover:bg-zinc-800 transition-colors font-bold disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                disabled={uploadMutation.isPending || !formData.videoFile || !formData.title.trim()}
+                disabled={uploadMutation.isPending || isCompressing || !formData.videoFile || !formData.title.trim()}
                 className="flex-1 px-6 py-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                {uploadMutation.isPending ? (
+                {isCompressing ? (
+                  <>
+                    <Zap className="w-5 h-5 animate-pulse" />
+                    Compressing {compressionProgress.percent}%...
+                  </>
+                ) : uploadMutation.isPending ? (
                   <>
                     <LoadingDots size="md" />
                     {uploadProgress.percent > 0 ? `Uploading ${uploadProgress.percent}%` : 'Preparing...'}

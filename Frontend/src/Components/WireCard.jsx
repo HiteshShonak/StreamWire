@@ -13,12 +13,14 @@ import toast from 'react-hot-toast'
 // Services (Imported for local mutation)
 import { tweetService } from '../api/services/tweet.service'
 import { subscriptionService } from '../api/services/subscription.service'
+import ImageLightbox from './Common/ImageLightbox'
 
 const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
     const { userData } = useSelector((state) => state.auth)
     const navigate = useNavigate()
     const queryClient = useQueryClient()
     const [copied, setCopied] = useState(false)
+    const [lightboxSrc, setLightboxSrc] = useState(null)
 
     const handleShare = (e) => {
         e.stopPropagation()
@@ -78,6 +80,7 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
     }
 
     return (
+        <>
         <motion.article
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -204,11 +207,14 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
 
                     {/* Image Attachment */}
                     {wire.image?.url && (
-                        <div className="mb-3 rounded-xl overflow-hidden border border-zinc-800 bg-zinc-900/50">
+                        <div
+                            className="mb-3 rounded-xl overflow-hidden border border-zinc-800 bg-zinc-900/50 cursor-zoom-in"
+                            onClick={e => { e.stopPropagation(); setLightboxSrc(wire.image.url) }}
+                        >
                             <img
                                 src={wire.image.url}
                                 alt="Attachment"
-                                className="w-full h-auto max-h-[500px] object-cover"
+                                className="w-full h-auto max-h-[500px] object-cover hover:opacity-90 transition-opacity"
                                 loading="lazy"
                             />
                         </div>
@@ -289,7 +295,17 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
                 </div>
             </div>
         </motion.article>
+
+        {/* Full-screen image lightbox */}
+        {lightboxSrc && (
+            <ImageLightbox
+                src={lightboxSrc}
+                alt="Wire image"
+                onClose={() => setLightboxSrc(null)}
+            />
+        )}
+        </>
     )
 })
 
-export default WireCard
+export default WireCard

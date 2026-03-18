@@ -11,7 +11,6 @@ const HeroSection = React.memo(({
     hasVideos,
     featuredVideo,
     userData,
-    onUploadClick
 }) => {
     const navigate = useNavigate()
     const queryClient = useQueryClient()
@@ -107,7 +106,7 @@ const HeroSection = React.memo(({
                         transition={{ delay: 0.5, duration: 0.6 }}
                         whileHover={{ scale: 1.05, boxShadow: "0 0 30px rgba(99, 102, 241, 0.5)" }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={onUploadClick}
+                        onClick={() => navigate('/upload')}
                         className="inline-flex items-center gap-3 px-10 py-4 bg-indigo-600 hover:bg-indigo-500 rounded-full text-white font-bold text-lg shadow-lg hover:shadow-indigo-500/40 transition-all"
                     >
                         <Upload className="w-6 h-6" />

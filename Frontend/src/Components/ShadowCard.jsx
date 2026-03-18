@@ -11,12 +11,14 @@ import { formatDistanceToNow } from 'date-fns'
 import toast from 'react-hot-toast'
 
 import { tweetService } from '../api/services/tweet.service'
+import ImageLightbox from './Common/ImageLightbox'
 
 const ShadowCard = memo(function ShadowCard({ shadow, onLike, onDelete }) {
     const { userData } = useSelector((state) => state.auth)
     const navigate = useNavigate()
     const queryClient = useQueryClient()
     const [copied, setCopied] = useState(false)
+    const [lightboxSrc, setLightboxSrc] = useState(null)
 
     const handleShare = (e) => {
         e.stopPropagation()
@@ -56,6 +58,7 @@ const ShadowCard = memo(function ShadowCard({ shadow, onLike, onDelete }) {
     }
 
     return (
+        <>
         <motion.article
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -145,11 +148,14 @@ const ShadowCard = memo(function ShadowCard({ shadow, onLike, onDelete }) {
 
                     {/* Image Attachment */}
                     {shadow.image?.url && (
-                        <div className="mb-3 rounded-xl overflow-hidden border border-zinc-900 bg-zinc-950/50">
+                        <div
+                            className="mb-3 rounded-xl overflow-hidden border border-zinc-900 bg-zinc-950/50 cursor-zoom-in"
+                            onClick={e => { e.stopPropagation(); setLightboxSrc(shadow.image.url) }}
+                        >
                             <img
                                 src={shadow.image.url}
                                 alt="Attachment"
-                                className="w-full h-auto max-h-[500px] object-cover opacity-90"
+                                className="w-full h-auto max-h-[500px] object-cover opacity-90 hover:opacity-100 transition-opacity"
                                 loading="lazy"
                             />
                         </div>
@@ -230,6 +236,16 @@ const ShadowCard = memo(function ShadowCard({ shadow, onLike, onDelete }) {
                 </div>
             </div>
         </motion.article>
+
+        {/* Full-screen image lightbox */}
+        {lightboxSrc && (
+            <ImageLightbox
+                src={lightboxSrc}
+                alt="Shadow image"
+                onClose={() => setLightboxSrc(null)}
+            />
+        )}
+        </>
     )
 })
 

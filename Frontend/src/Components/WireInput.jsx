@@ -12,6 +12,7 @@ export default function WireInput({ onSuccess }) {
     const [images, setImages] = useState([])
     const [isStealth, setIsStealth] = useState(false)
     const [isUploadingImage, setIsUploadingImage] = useState(false)
+    const [isDragging, setIsDragging] = useState(false)
 
     // Poll State
     const [showPoll, setShowPoll] = useState(false)
@@ -31,9 +32,9 @@ export default function WireInput({ onSuccess }) {
             formData.append('content', payload.content)
             formData.append('isStealthMode', payload.isStealthMode)
 
-            // Append image if present (single file only)
+            // Append image file if present (single file only)
             if (payload.images && payload.images.length > 0) {
-                formData.append('image', payload.images[0])
+                formData.append('image', payload.images[0].file)
             }
 
             // Append poll data if present
@@ -58,50 +59,56 @@ export default function WireInput({ onSuccess }) {
 
     const resetForm = () => {
         setContent("")
-        setImages([])
+        // Revoke all blob URLs to free memory before clearing
+        setImages(prev => { prev.forEach(img => URL.revokeObjectURL(img.url)); return [] })
         setIsStealth(false)
         setShowPoll(false)
         setPollQuestion("")
         setPollOptions(["", ""])
     }
 
-    // Image Handling
-    const handleImageUpload = async (e) => {
-        const files = Array.from(e.target.files)
+    // Core file processing — shared by file picker and drag-and-drop
+    const processFiles = async (rawFiles) => {
+        const files = Array.from(rawFiles)
 
         if (images.length + files.length > MAX_IMAGES) {
             toast.error(`Maximum ${MAX_IMAGES} image allowed`)
             return
         }
 
-        // Validate and compress images
         try {
             const validFiles = files.filter(file => {
                 if (!isValidImage(file)) {
                     toast.error(`${file.name} is not a valid image type`)
                     return false
                 }
+                if (file.size > 10 * 1024 * 1024) {
+                    toast.error(`${file.name} exceeds 10MB limit`)
+                    return false
+                }
                 return true
-            });
+            })
 
-            if (validFiles.length === 0) return;
+            if (validFiles.length === 0) return
 
-            // Show upload in progress
             setIsUploadingImage(true)
-            const uploadToast = toast.loading('Uploading...')
+            const uploadToast = toast.loading('Processing image...')
 
-            // Compress images (max width 1800px for 3x retina @ 600px base)
             const compressedFiles = await Promise.all(
                 validFiles.map(file => compressImage(file, { maxWidth: 1800, quality: 0.85 }))
-            );
+            )
 
             setIsUploadingImage(false)
             toast.dismiss(uploadToast)
-            toast.success('Uploaded')
+            toast.success('Image ready')
 
-            setImages(prev => [...prev, ...compressedFiles])
+            // Store file + pre-computed URL (created once, not per-render)
+            const newEntries = compressedFiles.map(file => ({
+                file,
+                url: URL.createObjectURL(file)
+            }))
+            setImages(prev => [...prev, ...newEntries])
 
-            // Can't have image and poll together
             if (showPoll) setShowPoll(false)
         } catch (error) {
             setIsUploadingImage(false)
@@ -110,8 +117,48 @@ export default function WireInput({ onSuccess }) {
         }
     }
 
+    // File picker onChange
+    const handleImageUpload = async (e) => {
+        await processFiles(e.target.files)
+        e.target.value = ''
+    }
+
+    // Drag-and-drop handlers
+    const handleDragEnter = (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        if (images.length < MAX_IMAGES && !showPoll) setIsDragging(true)
+    }
+    const handleDragOver = (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+    }
+    const handleDragLeave = (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        // Only clear drag state when leaving the container entirely
+        if (!e.currentTarget.contains(e.relatedTarget)) setIsDragging(false)
+    }
+    const handleDrop = async (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        setIsDragging(false)
+        if (showPoll) {
+            toast.error('Cannot add image with poll')
+            return
+        }
+        const dropped = e.dataTransfer.files
+        if (dropped?.length) await processFiles(dropped)
+    }
+
     const removeImage = (index) => {
-        setImages(prev => prev.filter((_, i) => i !== index))
+        setImages(prev => {
+            // Revoke URL for the removed entry to free memory
+            if (prev[index]) URL.revokeObjectURL(prev[index].url)
+            return prev.filter((_, i) => i !== index)
+        })
+        // Reset the file input so the same file can be re-selected
+        if (fileInputRef.current) fileInputRef.current.value = ''
     }
 
     // Poll Handling
@@ -163,7 +210,7 @@ export default function WireInput({ onSuccess }) {
     }
 
     return (
-        <div className={`bg-[#0a0a0c] border rounded-2xl overflow-hidden transition-colors duration-300 ${isStealth ? "border-green-900/50" : "border-zinc-800"}`}>
+        <div className={`relative bg-[#0a0a0c] border rounded-2xl overflow-hidden transition-colors duration-300 ${isStealth ? "border-green-900/50" : "border-zinc-800"}`}>
 
             {/* Header */}
             <div className={`px-4 py-3 border-b flex justify-between items-center transition-colors ${isStealth ? "bg-green-900/10 border-green-900/30" : "bg-zinc-900/50 border-zinc-800"}`}>
@@ -182,8 +229,67 @@ export default function WireInput({ onSuccess }) {
                 </button>
             </div>
 
-            {/* Input Area */}
-            <div className="p-4">
+            {/* Input Area — accepts drag-and-drop */}
+            <div
+                className={`p-4 transition-colors duration-200 ${isDragging ? (isStealth ? 'bg-green-900/10 ring-1 ring-green-500/40 rounded-xl' : 'bg-indigo-500/5 ring-1 ring-indigo-500/40 rounded-xl') : ''}`}
+                onDragEnter={handleDragEnter}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+            >
+                {isDragging && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className={`absolute inset-0 z-20 flex items-center justify-center rounded-2xl pointer-events-none
+                            ${isStealth
+                                ? 'bg-[#0a0a0c]/90 border-2 border-dashed border-green-500/60'
+                                : 'bg-[#0a0a0c]/90 border-2 border-dashed border-indigo-500/60'
+                            }`}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.85, y: 8 }}
+                            animate={{ scale: 1, y: 0 }}
+                            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                            className="flex flex-col items-center gap-3 select-none"
+                        >
+                            {/* Animated icon with pulse ring */}
+                            <div className="relative">
+                                <motion.div
+                                    animate={{ scale: [1, 1.3, 1], opacity: [0.4, 0, 0.4] }}
+                                    transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
+                                    className={`absolute inset-0 rounded-full ${isStealth ? 'bg-green-500/30' : 'bg-indigo-500/30'}`}
+                                />
+                                <div className={`relative w-14 h-14 rounded-full flex items-center justify-center
+                                    ${isStealth ? 'bg-green-500/10 border border-green-500/30' : 'bg-indigo-500/10 border border-indigo-500/30'}`}>
+                                    <ImageIcon className={`w-6 h-6 ${isStealth ? 'text-green-400' : 'text-indigo-400'}`} />
+                                </div>
+                            </div>
+
+                            {/* Headline */}
+                            <motion.p
+                                initial={{ opacity: 0, y: 4 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.06 }}
+                                className={`text-lg font-black tracking-tight leading-none
+                                    ${isStealth ? 'text-green-300' : 'text-indigo-300'}`}
+                            >
+                                {isStealth ? 'Drop to transmit in stealth' : 'Drop to add image'}
+                            </motion.p>
+
+                            {/* Sub-hint */}
+                            <motion.p
+                                initial={{ opacity: 0, y: 4 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.12 }}
+                                className="text-xs font-medium text-zinc-500"
+                            >
+                                JPEG · PNG · WebP · GIF &nbsp;·&nbsp; max 10 MB
+                            </motion.p>
+                        </motion.div>
+                    </motion.div>
+                )}
                 <textarea
                     value={content}
                     onChange={(e) => {
@@ -255,13 +361,17 @@ export default function WireInput({ onSuccess }) {
                                     exit={{ opacity: 0, scale: 0.8 }}
                                     className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 group"
                                 >
-                                    <img src={URL.createObjectURL(img)} alt="preview" className="w-full h-full object-cover" />
+                                    <img src={img.url} alt="preview" className="w-full h-full object-cover" />
                                     <button
                                         onClick={() => removeImage(i)}
                                         className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                                     >
                                         <X className="w-4 h-4 text-white" />
                                     </button>
+                                    {/* Compressed size badge */}
+                                    <span className="absolute bottom-0.5 left-0.5 text-[9px] font-bold bg-black/60 text-indigo-300 px-1 rounded">
+                                        {(img.file.size / 1024).toFixed(0)}KB
+                                    </span>
                                 </motion.div>
                             ))}
                         </AnimatePresence>
