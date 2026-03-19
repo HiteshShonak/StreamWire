@@ -7,6 +7,7 @@ import { login, logout, setLoading } from './store/authSlice'
 
 import Header from './Components/Header'
 import Sidebar from './Components/Sidebar'
+import { UploadProvider } from './context/UploadContext'
 
 function App() {
   const dispatch = useDispatch()
@@ -74,6 +75,7 @@ function App() {
   }
 
   return (
+    <UploadProvider>
     <div className="min-h-screen bg-[#050505] text-white selection:bg-indigo-500/30 font-sans overflow-x-hidden">
 
       {showHeader && <Header variant={getHeaderVariant()} />}
@@ -88,6 +90,7 @@ function App() {
       </main>
 
     </div>
+    </UploadProvider>
   )
 }
 

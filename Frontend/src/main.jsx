@@ -58,6 +58,7 @@ const Settings = lazy(() => import('./pages/Settings.jsx'))
 const Support = lazy(() => import('./pages/Support.jsx'))
 const KillSwitch = lazy(() => import('./pages/KillSwitch.jsx'))
 const UploadVideo = lazy(() => import('./pages/UploadVideo.jsx'))
+const UploadStatus = lazy(() => import('./pages/UploadStatus.jsx'))
 const Customize = lazy(() => import('./pages/Customize.jsx'))
 const BuildFeed = lazy(() => import('./pages/BuildFeed.jsx'))
 const NotFound = lazy(() => import('./pages/NotFound.jsx'))
@@ -284,6 +285,16 @@ const router = createBrowserRouter([
           <AuthLayout authentication>
             <Suspense fallback={<UploadPageSkeleton />}>
               <UploadVideo />
+            </Suspense>
+          </AuthLayout>
+        ),
+      },
+      {
+        path: '/uploading/:id',
+        element: (
+          <AuthLayout authentication>
+            <Suspense fallback={<UploadPageSkeleton />}>
+              <UploadStatus />
             </Suspense>
           </AuthLayout>
         ),

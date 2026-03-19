@@ -9,8 +9,8 @@
  * - Target ~1.5 Mbps video — good enough for streaming, fast to produce
  */
 
-const SKIP_THRESHOLD_MB = 50;
-const TARGET_VIDEO_BITRATE = 1_500_000; // 1.5 Mbps
+const SKIP_THRESHOLD_MB = 0; // Compress all videos regardless of size
+const TARGET_VIDEO_BITRATE = 8_000_000; // 8 Mbps - High Quality 1080p retention
 const PLAYBACK_RATE = 4; // 4x speed = compress in 1/4 the video duration
 
 /** Clamp a dimension to the nearest even number (required by some codecs) */

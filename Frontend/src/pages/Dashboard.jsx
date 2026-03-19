@@ -180,23 +180,6 @@ export default function Dashboard() {
                 </p>
               </div>
 
-              {/* Quick Actions */}
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => navigate('/upload')}
-                  className="flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-bold text-sm transition-all"
-                >
-                  <Upload className="w-4 h-4" />
-                  Upload Video
-                </button>
-                <Link
-                  to="/wire"
-                  className="flex items-center gap-2 px-6 py-3 bg-zinc-800 hover:bg-zinc-700 rounded-xl font-bold text-sm transition-all border border-zinc-700"
-                >
-                  <PenSquare className="w-4 h-4" />
-                  New Wire
-                </Link>
-              </div>
             </div>
           </div>
 

@@ -9,7 +9,6 @@ import toast from 'react-hot-toast';
 
 import Header from '../Components/Header';
 import Sidebar from '../Components/Sidebar';
-import VideoUploadForm from '../Components/VideoUploadForm';
 import { videoService } from '../api/services/video.service';
 import { subscriptionService } from '../api/services/subscription.service';
 import { likeService } from '../api/services/like.service';
@@ -736,8 +735,7 @@ export default function VideoPlayer() {
 
   return (
     <div className="min-h-screen bg-[#050505] text-white">
-      <VideoUploadForm isOpen={isUploadModalOpen} onClose={() => setIsUploadModalOpen(false)} />
-      <Header variant="cinema" onUploadClick={() => setIsUploadModalOpen(true)} />
+      <Header variant="cinema" onUploadClick={() => navigate('/upload')} />
       <Sidebar />
 
       <div className="lg:pl-[280px] pt-24 pb-20 px-4 md:px-6">

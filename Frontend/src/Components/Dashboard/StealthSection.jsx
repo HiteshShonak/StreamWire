@@ -1,5 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 import { ShieldCheck, Film, Ghost, MessageSquare } from 'lucide-react'
 import DashboardVideoCard from './DashboardVideoCard'
 import WireCardMini from './WireCardMini'
@@ -20,6 +21,17 @@ const StealthSection = ({
             exit={{ opacity: 0, y: -20 }}
             className="space-y-8"
         >
+            <div className="flex items-center justify-between mb-2">
+                <h2 className="text-2xl font-bold text-white">Stealth Posts</h2>
+                <Link
+                    to="/shadows"
+                    className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-500 rounded-lg font-bold text-sm transition-all text-white"
+                >
+                    <Ghost className="w-4 h-4" />
+                    New Shadow
+                </Link>
+            </div>
+
             {/* Info Banner */}
             <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-xl flex items-start gap-3">
                 <ShieldCheck className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
