@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Upload, Film, FileText, Tag, Sparkles, Check, Image, Video, X, Zap } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { compressVideo } from '../utils/compressVideo';
 import { useUpload } from '../context/UploadContext';
 
 export default function UploadVideo() {
@@ -18,8 +17,6 @@ export default function UploadVideo() {
     thumbnail: null
   });
   const [previews, setPreviews] = useState({ video: null, thumbnail: null });
-  const [isCompressing, setIsCompressing] = useState(false);
-  const [compressionProgress, setCompressionProgress] = useState({ percent: 0, label: '', originalMB: 0, compressedMB: 0 });
   const [isDraggingVideo, setIsDraggingVideo] = useState(false);
   const [isDraggingThumb, setIsDraggingThumb] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -35,30 +32,11 @@ export default function UploadVideo() {
       return;
     }
 
-    const originalMB = file.size / (1024 * 1024);
     const url = URL.createObjectURL(file);
     setFormData(prev => ({ ...prev, videoFile: file }));
     setPreviews(prev => ({ ...prev, video: url }));
-
-    setIsCompressing(true);
-    setCompressionProgress({ percent: 0, label: 'Starting compression...', originalMB, compressedMB: 0 });
-
-    try {
-      const compressed = await compressVideo(file, (percent, label) => {
-        setCompressionProgress(prev => ({ ...prev, percent, label }));
-      });
-      const compressedMB = compressed.size / (1024 * 1024);
-      const saved = ((1 - compressed.size / file.size) * 100).toFixed(0);
-      setFormData(prev => ({ ...prev, videoFile: compressed }));
-      setCompressionProgress(prev => ({ ...prev, percent: 100, label: `Saved ${saved}%`, originalMB, compressedMB }));
-      if (compressed !== file) {
-        toast.success(`Compressed: ${originalMB.toFixed(0)}MB → ${compressedMB.toFixed(0)}MB (${saved}% smaller)`);
-      }
-    } catch (err) {
-      toast('Using original file — compression failed', { icon: '⚠️' });
-    } finally {
-      setIsCompressing(false);
-    }
+    // Note: The heavy video compression is now offloaded completely to the background globally
+    // inside `UploadContext.jsx` after the user hits "Upload".
   }, []);
 
   const processThumbnailFile = useCallback((file) => {
@@ -77,8 +55,6 @@ export default function UploadVideo() {
     if (previews.video) URL.revokeObjectURL(previews.video);
     setFormData(prev => ({ ...prev, videoFile: null }));
     setPreviews(prev => ({ ...prev, video: null }));
-    setIsCompressing(false);
-    setCompressionProgress({ percent: 0, label: '', originalMB: 0, compressedMB: 0 });
   };
 
   const handleRemoveThumbnail = () => {
@@ -117,7 +93,6 @@ export default function UploadVideo() {
     e.preventDefault();
     if (!formData.title.trim()) { toast.error('Please enter a title'); return; }
     if (!formData.videoFile) { toast.error('Please select a video file'); return; }
-    if (isCompressing) { toast.error('Please wait for compression to finish'); return; }
 
     setIsSubmitting(true);
     
@@ -268,11 +243,6 @@ export default function UploadVideo() {
                       <p className="text-white font-semibold mb-1 truncate text-sm sm:text-base" title={formData.videoFile.name}>{formData.videoFile.name}</p>
                       <div className="text-xs sm:text-sm text-zinc-500">
                         {(formData.videoFile.size / (1024 * 1024)).toFixed(2)} MB
-                        {compressionProgress.originalMB > 0 && compressionProgress.compressedMB > 0 && (
-                          <span className="block sm:inline sm:ml-2 text-emerald-400 font-medium mt-0.5 sm:mt-0">
-                            (compressed from {compressionProgress.originalMB.toFixed(0)}MB)
-                          </span>
-                        )}
                       </div>
                     </div>
                     <button type="button" onClick={handleRemoveVideo} className="p-1.5 sm:p-2 rounded-lg hover:bg-red-500/10 text-red-400 transition-colors shrink-0">
@@ -401,54 +371,22 @@ export default function UploadVideo() {
               )}
             </div>
 
-            {/* ── Compression Progress ── */}
-            {isCompressing && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-zinc-900/50 border border-amber-500/30 rounded-2xl p-6"
-              >
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center">
-                    <Zap className="w-5 h-5 text-amber-400 animate-pulse" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="text-sm font-bold text-white">Quick Compression</h4>
-                      <span className="text-xl font-bold text-amber-400">{compressionProgress.percent}%</span>
-                    </div>
-                    <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${compressionProgress.percent}%` }}
-                        transition={{ duration: 0.3, ease: 'easeOut' }}
-                        className="h-full bg-gradient-to-r from-amber-500 to-orange-400"
-                      />
-                    </div>
-                    <p className="text-xs text-zinc-500 mt-2">{compressionProgress.label}</p>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
             {/* ── Submit Buttons ── */}
             <div className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 pt-4">
               <button
                 type="button"
                 onClick={() => navigate('/dashboard')}
-                disabled={isSubmitting || isCompressing}
+                disabled={isSubmitting}
                 className="w-full sm:flex-1 px-6 py-4 rounded-xl border border-zinc-700 text-white hover:bg-zinc-800 transition-colors font-bold disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                disabled={isSubmitting || isCompressing || !formData.videoFile || !formData.title.trim()}
+                disabled={isSubmitting || !formData.videoFile || !formData.title.trim()}
                 className="w-full sm:flex-1 px-6 py-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                {isCompressing ? (
-                  <><Zap className="w-5 h-5 animate-pulse" /> Compressing {compressionProgress.percent}%...</>
-                ) : isSubmitting ? (
+                {isSubmitting ? (
                   <><Upload className="w-5 h-5 animate-bounce" /> Starting upload...</>
                 ) : (
                   <><Upload className="w-5 h-5" /> Upload Video</>

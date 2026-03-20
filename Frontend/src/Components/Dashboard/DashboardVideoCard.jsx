@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { Play, Ghost, MoreHorizontal, Eye, EyeOff, Trash2, Upload, AlertTriangle, X, RefreshCw } from 'lucide-react'
+import { Play, Ghost, MoreHorizontal, Eye, EyeOff, Trash2, Upload, AlertTriangle, X, RefreshCw, Zap } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { formatViews, formatDuration } from '../../utils/formatters'
 import { useUpload } from '../../context/UploadContext'
@@ -73,6 +73,7 @@ function UploadingGhostCard({ upload }) {
     const { retryUpload, dismissUpload } = useUpload()
     const navigate = useNavigate()
     const isError = upload.status === 'error'
+    const isCompressing = upload.status === 'compressing'
 
     return (
         <motion.div
@@ -81,7 +82,9 @@ function UploadingGhostCard({ upload }) {
             exit={{ opacity: 0, scale: 0.95 }}
             onClick={() => navigate(`/uploading/${upload.id}`)}
             className={`relative rounded-xl overflow-hidden border cursor-pointer hover:border-indigo-500/50 transition-colors ${
-                isError ? 'border-red-500/30 bg-red-950/20' : 'border-indigo-500/30 bg-indigo-950/10'
+                isError ? 'border-red-500/30 bg-red-950/20' : 
+                isCompressing ? 'border-amber-500/30 bg-amber-950/10' :
+                'border-indigo-500/30 bg-indigo-950/10'
             }`}
         >
             {/* Thumbnail area */}
@@ -95,9 +98,11 @@ function UploadingGhostCard({ upload }) {
                 )}
 
                 {/* Status badge */}
-                <div className={`absolute top-2 left-2 px-2 py-1 rounded-lg flex items-center gap-1.5 text-[10px] font-bold ${isError ? 'bg-red-500/90' : 'bg-indigo-600/90'}`}>
+                <div className={`absolute top-2 left-2 px-2 py-1 rounded-lg flex items-center gap-1.5 text-[10px] font-bold ${isError ? 'bg-red-500/90' : isCompressing ? 'bg-amber-600/90' : 'bg-indigo-600/90'}`}>
                     {isError ? (
                         <><AlertTriangle className="w-3 h-3" /> FAILED</>
+                    ) : isCompressing ? (
+                        <><Zap className="w-3 h-3 animate-pulse" /> COMPRESSING</>
                     ) : (
                         <><Upload className="w-3 h-3 animate-bounce" /> UPLOADING</>
                     )}
@@ -110,14 +115,14 @@ function UploadingGhostCard({ upload }) {
                             initial={{ width: 0 }}
                             animate={{ width: `${upload.progress}%` }}
                             transition={{ duration: 0.4, ease: 'easeOut' }}
-                            className="h-full bg-indigo-500"
+                            className={`h-full ${isCompressing ? 'bg-amber-500' : 'bg-indigo-500'}`}
                         />
                     </div>
                 )}
 
                 {/* Shimmer overlay when uploading */}
                 {!isError && (
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-indigo-500/5 to-transparent animate-pulse" />
+                    <div className={`absolute inset-0 bg-gradient-to-r ${isCompressing ? 'from-transparent via-amber-500/5 to-transparent' : 'from-transparent via-indigo-500/5 to-transparent'} animate-pulse`} />
                 )}
             </div>
 
@@ -143,8 +148,8 @@ function UploadingGhostCard({ upload }) {
                         <RefreshCw className="w-3 h-3" /> Retry upload
                     </button>
                 ) : (
-                    <p className="text-xs text-indigo-400 mt-1">
-                        {upload.progress > 0 ? `${upload.progress}% uploaded` : 'Preparing…'}
+                    <p className={`text-xs mt-1 ${isCompressing ? 'text-amber-400' : 'text-indigo-400'}`}>
+                        {upload.progress > 0 ? `${upload.progress}% ${isCompressing ? 'compressed' : 'uploaded'}` : 'Preparing…'}
                     </p>
                 )}
             </div>

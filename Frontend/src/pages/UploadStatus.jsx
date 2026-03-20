@@ -35,6 +35,7 @@ export default function UploadStatus() {
   const isDone = upload.status === 'done';
   const isError = upload.status === 'error';
   const isUploading = upload.status === 'uploading';
+  const isCompressing = upload.status === 'compressing';
 
   // Format bytes helper
   const formatBytes = (bytes) => {
@@ -87,16 +88,17 @@ export default function UploadStatus() {
           <div className={`w-36 h-36 rounded-full flex items-center justify-center relative shadow-2xl
             ${isDone ? 'bg-indigo-600 shadow-indigo-500/20' : 
               isError ? 'bg-red-500/10 shadow-red-500/20' : 
+              isCompressing ? 'bg-amber-500/10 shadow-amber-500/20' :
               'bg-zinc-800/50 shadow-black/50'}
           `}>
             
             {/* SVG Progress Ring */}
-            {isUploading && (
+            {(isUploading || isCompressing) && (
               <svg className="absolute inset-0 w-full h-full -rotate-90">
                 <circle cx="72" cy="72" r="70" className="stroke-zinc-800" strokeWidth="4" fill="none" />
                 <motion.circle 
                   cx="72" cy="72" r="70" 
-                  className="stroke-indigo-500" 
+                  className={isCompressing ? "stroke-amber-500" : "stroke-indigo-500"} 
                   strokeWidth="4" fill="none" strokeLinecap="round"
                   strokeDasharray="439.8" 
                   initial={{ strokeDashoffset: 439.8 }}
@@ -111,6 +113,11 @@ export default function UploadStatus() {
               <CheckCircle className="w-16 h-16 text-white" />
             ) : isError ? (
               <AlertTriangle className="w-16 h-16 text-red-500" />
+            ) : isCompressing ? (
+              <div className="text-center mt-2">
+                <Zap className="w-8 h-8 text-amber-500 mx-auto mb-1 animate-pulse" />
+                <span className="text-xl font-black text-white">{upload.progress}%</span>
+              </div>
             ) : (
               <div className="text-center">
                 <span className="text-3xl font-black text-white">{upload.progress}%</span>
@@ -132,13 +139,27 @@ export default function UploadStatus() {
             <p className="text-red-400 font-medium">Upload failed. Please check your connection and retry.</p>
           ) : (
             <div className="space-y-1">
-              <p className="text-indigo-400 font-medium flex items-center justify-center gap-2">
-                <Zap className="w-4 h-4" /> 
-                {formatETA(upload.eta)}
-              </p>
-              <p className="text-sm text-zinc-500 font-medium">
-                {formatBytes(upload.loaded)} / {formatBytes(upload.total)} at {formatBytes(upload.speed)}/s
-              </p>
+              {isCompressing ? (
+                <>
+                  <p className="text-amber-400 font-medium flex items-center justify-center gap-2">
+                    <Zap className="w-4 h-4 animate-pulse" /> 
+                    Compressing video...
+                  </p>
+                  <p className="text-sm text-zinc-500 font-medium">
+                    {upload.eta || 'Preparing frames...'}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-indigo-400 font-medium flex items-center justify-center gap-2">
+                    <Zap className="w-4 h-4" /> 
+                    {formatETA(upload.eta)}
+                  </p>
+                  <p className="text-sm text-zinc-500 font-medium">
+                    {formatBytes(upload.loaded)} / {formatBytes(upload.total)} at {formatBytes(upload.speed)}/s
+                  </p>
+                </>
+              )}
             </div>
           )}
         </div>

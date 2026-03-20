@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { videoService } from '../api/services/video.service'
+import { compressVideo } from '../utils/compressVideo'
 import toast from 'react-hot-toast'
 
 const UploadContext = createContext(null)
@@ -37,17 +38,30 @@ export function UploadProvider({ children }) {
         // 1. Add ghost immediately
         setPendingUploads(prev => [ghost, ...prev])
 
-        // 3. Build FormData to send
-        const body = new FormData()
-        body.append('title', formData.title)
-        body.append('description', formData.description || '')
-        body.append('tags', formData.tags || '')
-        body.append('videoFile', formData.videoFile)
-        if (formData.thumbnail) body.append('thumbnail', formData.thumbnail)
-
-        // 4. Fire upload — runs in background (don't await it here so we can return the ID synchronously)
+        // 3. Fire compression and upload — runs in background (don't await it here so we can return the ID synchronously)
         const uploadPromise = (async () => {
             try {
+                // Phase 1: Background Compression
+                setPendingUploads(prev => prev.map(u => u.id === id ? { ...u, status: 'compressing', progress: 0 } : u));
+                
+                const compressedFile = await compressVideo(formData.videoFile, (percent, label) => {
+                    setPendingUploads(prev => prev.map(u => u.id === id ? {
+                        ...u,
+                        status: 'compressing',
+                        progress: percent,
+                        // Store the label in 'eta' field temporarily to display strictly the compression label on UI
+                        eta: label
+                    } : u));
+                });
+
+                // Phase 2: Build final FormData with the compressed file
+                setPendingUploads(prev => prev.map(u => u.id === id ? { ...u, status: 'uploading', progress: 0, eta: null } : u));
+                const body = new FormData()
+                body.append('title', formData.title)
+                body.append('description', formData.description || '')
+                body.append('tags', formData.tags || '')
+                body.append('videoFile', compressedFile)
+                if (formData.thumbnail) body.append('thumbnail', formData.thumbnail)
                 const startTime = Date.now()
                 const response = await videoService.publishVideo(body, (progressEvent) => {
                     const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total)
