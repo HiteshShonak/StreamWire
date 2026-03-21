@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Upload, Film, FileText, Tag, Sparkles, Check, Image, Video, X, Zap } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useUpload } from '../context/UploadContext';
+import { compressImage } from '../utils/imageCompressor';
 
 export default function UploadVideo() {
   const navigate = useNavigate();
@@ -27,23 +28,27 @@ export default function UploadVideo() {
   const processVideoFile = useCallback(async (file) => {
     if (!file) return;
 
-    if (file.size > 200 * 1024 * 1024) {
-      toast.error('Video file must be less than 200MB');
+    if (file.size > 100 * 1024 * 1024) {
+      toast.error('Video file must be less than 100MB');
       return;
     }
 
     const url = URL.createObjectURL(file);
     setFormData(prev => ({ ...prev, videoFile: file }));
     setPreviews(prev => ({ ...prev, video: url }));
-    // Note: The heavy video compression is now offloaded completely to the background globally
-    // inside `UploadContext.jsx` after the user hits "Upload".
   }, []);
 
-  const processThumbnailFile = useCallback((file) => {
+  const processThumbnailFile = useCallback(async (file) => {
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) { toast.error('Thumbnail must be less than 5MB'); return; }
-    setFormData(prev => ({ ...prev, thumbnail: file }));
-    setPreviews(prev => ({ ...prev, thumbnail: URL.createObjectURL(file) }));
+    try {
+      const compressed = await compressImage(file);
+      setFormData(prev => ({ ...prev, thumbnail: compressed }));
+      setPreviews(prev => ({ ...prev, thumbnail: URL.createObjectURL(compressed) }));
+    } catch {
+      setFormData(prev => ({ ...prev, thumbnail: file }));
+      setPreviews(prev => ({ ...prev, thumbnail: URL.createObjectURL(file) }));
+    }
   }, []);
 
   // ─── Input handlers ──────────────────────────────────────────────────────────
@@ -189,7 +194,7 @@ export default function UploadVideo() {
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-white">Video File</h3>
-                  <p className="text-sm text-zinc-500">Upload or drag-and-drop your video (max 200MB)</p>
+                  <p className="text-sm text-zinc-500">Upload or drag-and-drop your video (max 100MB)</p>
                 </div>
               </div>
 
@@ -215,7 +220,7 @@ export default function UploadVideo() {
                       <p className="text-white font-semibold mb-1">
                         {isDraggingVideo ? '⚡ Drop to upload' : 'Click or drag to upload video'}
                       </p>
-                      <p className="text-sm text-zinc-500">All video formats supported · max 200MB</p>
+                      <p className="text-sm text-zinc-500">All video formats supported · max 100MB</p>
                     </div>
                   </label>
 

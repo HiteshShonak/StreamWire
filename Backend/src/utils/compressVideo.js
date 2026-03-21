@@ -8,7 +8,6 @@ import fs from 'fs';
 ffmpeg.setFfmpegPath(ffmpegStatic);
 ffmpeg.setFfprobePath(ffprobeStatic.path);
 
-// compress video to target size using FFmpeg
 export const compressVideo = async (inputPath, targetSizeMB = 90) => {
     return new Promise((resolve, reject) => {
         const inputDir = path.dirname(inputPath);
@@ -20,16 +19,11 @@ export const compressVideo = async (inputPath, targetSizeMB = 90) => {
         const inputStats = fs.statSync(inputPath);
         const inputSizeMB = inputStats.size / (1024 * 1024);
 
-        console.log(`Input video: ${inputSizeMB.toFixed(2)} MB`);
-
-        // Skip compression if already under target (with 5MB margin)
+        // skip if already small enough
         if (inputSizeMB <= targetSizeMB - 5) {
-            console.log(`Video already under ${targetSizeMB}MB, skipping compression`);
             resolve(inputPath);
             return;
         }
-
-        console.log(`Compressing ${inputSizeMB.toFixed(2)}MB → target ${targetSizeMB}MB...`);
 
         // Get video duration first
         ffmpeg.ffprobe(inputPath, (err, metadata) => {
@@ -41,14 +35,13 @@ export const compressVideo = async (inputPath, targetSizeMB = 90) => {
 
             const duration = metadata.format.duration || 60;
 
-            // Calculate required bitrate (in kbps)
-            // Use 85% of target for safety margin
+            // target bitrate with 15% safety margin
             const safeTargetMB = targetSizeMB * 0.85;
             const totalBitrate = Math.floor((safeTargetMB * 8 * 1024) / duration);
-            const audioBitrate = 96; // Lower audio for more video headroom
+            const audioBitrate = 96;
             const videoBitrate = Math.max(200, totalBitrate - audioBitrate);
 
-            // For very long videos, use lower resolution
+            // downscale if bitrate is too low for decent quality
             const needsDownscale = videoBitrate < 400;
 
             console.log(`   Duration: ${duration.toFixed(2)}s (${(duration / 60).toFixed(1)} min)`);
@@ -67,7 +60,7 @@ export const compressVideo = async (inputPath, targetSizeMB = 90) => {
                 '-y'
             ];
 
-            // Add downscale for long videos with low bitrate
+            // add downscale filter for low-bitrate encodes
             if (needsDownscale) {
                 outputOptions.push('-vf scale=-2:720');  // 720p
             }
@@ -90,13 +83,12 @@ export const compressVideo = async (inputPath, targetSizeMB = 90) => {
                     const outputSizeMB = outputStats.size / (1024 * 1024);
                     console.log(`   Output: ${outputSizeMB.toFixed(2)} MB`);
 
-                    // If still too large, do second pass with CRF
+                    // second pass if first wasn't enough
                     if (outputSizeMB > targetSizeMB) {
                         console.log(`   Still over ${targetSizeMB}MB, doing aggressive recompress...`);
 
                         const secondPassPath = path.join(inputDir, `${inputBase}_final.mp4`);
 
-                        // Calculate how much more we need to compress
                         const ratio = targetSizeMB / outputSizeMB;
                         const newBitrate = Math.floor(videoBitrate * ratio * 0.85);
 
@@ -127,28 +119,23 @@ export const compressVideo = async (inputPath, targetSizeMB = 90) => {
                                 console.log(`   Final size: ${finalSizeMB.toFixed(2)} MB`);
                                 console.log(`   Total saved: ${((1 - finalSizeMB / inputSizeMB) * 100).toFixed(1)}%`);
 
-                                // Cleanup
                                 try {
                                     fs.unlinkSync(inputPath);
                                     fs.unlinkSync(outputPath);
-                                    console.log('   🧹 Temp files deleted');
                                 } catch (e) { }
 
                                 resolve(secondPassPath);
                             })
                             .on('error', (err) => {
                                 console.error('\n   Second pass error:', err.message);
-                                // Return first pass output anyway
                                 try { fs.unlinkSync(inputPath); } catch (e) { }
                                 resolve(outputPath);
                             })
                             .run();
                     } else {
-                        // First pass was enough
                         console.log(`   Saved: ${((1 - outputSizeMB / inputSizeMB) * 100).toFixed(1)}%`);
                         try {
                             fs.unlinkSync(inputPath);
-                            console.log('   🧹 Original file deleted');
                         } catch (e) { }
                         resolve(outputPath);
                     }

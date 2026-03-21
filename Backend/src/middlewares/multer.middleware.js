@@ -20,20 +20,9 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-    const allowedMimeTypes = [
-        "image/jpeg",
-        "image/png",
-        "image/webp",
-        "image/gif",
-        "video/mp4",
-        "video/webm",
-        "video/mkv",
-        "video/x-matroska",
-        "video/quicktime",
-        "video/avi"
-    ];
-
-    if (allowedMimeTypes.includes(file.mimetype)) {
+    // strip codec params e.g. "video/webm;codecs=vp9,opus" → "video/webm"
+    const baseType = file.mimetype.split(';')[0].trim();
+    if (baseType.startsWith('video/') || baseType.startsWith('image/')) {
         cb(null, true);
     } else {
         cb(new Error("File type not supported. Only images and videos are allowed."), false);

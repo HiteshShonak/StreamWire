@@ -1,8 +1,7 @@
-import { createContext, useContext, useState, useCallback, useRef } from 'react'
+import { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { videoService } from '../api/services/video.service'
-import { compressVideo } from '../utils/compressVideo'
 import toast from 'react-hot-toast'
 
 const UploadContext = createContext(null)
@@ -18,6 +17,18 @@ export function UploadProvider({ children }) {
     const navigate = useNavigate()
     const queryClient = useQueryClient()
     const idCounter = useRef(0)
+
+    // Warn user before navigating away while an upload/compression is in progress
+    useEffect(() => {
+        const isActive = pendingUploads.some(u => u.status === 'uploading')
+        if (!isActive) return
+        const handler = (e) => {
+            e.preventDefault()
+            e.returnValue = ''
+        }
+        window.addEventListener('beforeunload', handler)
+        return () => window.removeEventListener('beforeunload', handler)
+    }, [pendingUploads])
 
     const startUpload = useCallback(async (formData, meta) => {
         // meta: { title, thumbnailUrl (local blob preview) }
@@ -38,29 +49,16 @@ export function UploadProvider({ children }) {
         // 1. Add ghost immediately
         setPendingUploads(prev => [ghost, ...prev])
 
-        // 3. Fire compression and upload — runs in background (don't await it here so we can return the ID synchronously)
+        // 3. Fire upload — runs in background (don't await it here so we can return the ID synchronously)
         const uploadPromise = (async () => {
             try {
-                // Phase 1: Background Compression
-                setPendingUploads(prev => prev.map(u => u.id === id ? { ...u, status: 'compressing', progress: 0 } : u));
-                
-                const compressedFile = await compressVideo(formData.videoFile, (percent, label) => {
-                    setPendingUploads(prev => prev.map(u => u.id === id ? {
-                        ...u,
-                        status: 'compressing',
-                        progress: percent,
-                        // Store the label in 'eta' field temporarily to display strictly the compression label on UI
-                        eta: label
-                    } : u));
-                });
-
-                // Phase 2: Build final FormData with the compressed file
-                setPendingUploads(prev => prev.map(u => u.id === id ? { ...u, status: 'uploading', progress: 0, eta: null } : u));
+                // Build FormData with the original file — server-side FFmpeg handles compression
+                setPendingUploads(prev => prev.map(u => u.id === id ? { ...u, status: 'uploading', progress: 0 } : u));
                 const body = new FormData()
                 body.append('title', formData.title)
                 body.append('description', formData.description || '')
                 body.append('tags', formData.tags || '')
-                body.append('videoFile', compressedFile)
+                body.append('videoFile', formData.videoFile)
                 if (formData.thumbnail) body.append('thumbnail', formData.thumbnail)
                 const startTime = Date.now()
                 const response = await videoService.publishVideo(body, (progressEvent) => {
