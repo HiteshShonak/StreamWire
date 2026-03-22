@@ -4,6 +4,8 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import morgan from "morgan";
 import { authenticate } from "./middlewares/auth.middleware.js";
+import { MAX_THUMBNAIL_UPLOAD_MB, MAX_VIDEO_UPLOAD_MB } from "./constants.js";
+import { cleanupRequestTempFiles } from "./utils/tempFileCleanup.js";
 
 const app = express();
 
@@ -21,6 +23,22 @@ app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
+
+// Final safety net: remove any temp upload files left on request completion.
+app.use((req, res, next) => {
+    let didCleanup = false;
+
+    const cleanupTempFiles = () => {
+        if (didCleanup) return;
+        didCleanup = true;
+        cleanupRequestTempFiles(req, { reason: "request-finalize" });
+    };
+
+    res.once("finish", cleanupTempFiles);
+    res.once("close", cleanupTempFiles);
+
+    next();
+});
 
 // Global Auth Middleware
 app.use(authenticate);
@@ -60,9 +78,18 @@ app.use('/api/v1/library', libraryRoutes);
 app.use('/api/v1/contact', contactRoutes);
 
 // Global Error Handler
-app.use((err, req, res, next) => {
-    const statusCode = err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
+app.use((err, req, res, _next) => {
+    let statusCode = err.statusCode || 500;
+    let message = err.message || "Internal Server Error";
+
+    cleanupRequestTempFiles(req, { reason: "request-error" });
+
+    if (err?.name === "MulterError") {
+        statusCode = 400;
+        if (err.code === "LIMIT_FILE_SIZE") {
+            message = `File too large. Max video size is ${MAX_VIDEO_UPLOAD_MB}MB and max thumbnail size is ${MAX_THUMBNAIL_UPLOAD_MB}MB.`;
+        }
+    }
 
     if (statusCode >= 500) {
         console.error(`[SERVER ERROR]: ${err.stack}`);

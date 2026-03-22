@@ -1,10 +1,8 @@
 import mongoose, { isValidObjectId } from "mongoose";
 import { Video } from "../models/video.model.js";
-import { User } from "../models/user.model.js";
 import { Like } from "../models/like.model.js";
 import { History } from "../models/history.model.js";
 import { VideoView } from "../models/videoView.model.js"; // View tracking
-import { Subscription } from "../models/subscription.model.js";
 import { Comment } from "../models/comment.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -16,7 +14,14 @@ import { maskIdentityStage } from "../utils/helper.js";
 import { updateVideoTrendScore } from "../utils/trendScore.js";
 import { updateFeedOnWatch } from "../utils/feedBuilder.js";
 import { compressVideo } from "../utils/compressVideo.js";
+import {
+    MAX_THUMBNAIL_UPLOAD_BYTES,
+    MAX_THUMBNAIL_UPLOAD_MB,
+    VIDEO_COMPRESSION_TARGET_MB,
+} from "../constants.js";
 import fs from "fs";
+import { logDebug } from "../utils/logger.js";
+import { safeUnlink } from "../utils/tempFileCleanup.js";
 
 // Helper: common video pipeline
 const getCommonVideoPipeline = (userId) => {
@@ -166,102 +171,134 @@ const getCommonVideoPipeline = (userId) => {
 // Publish video
 export const publishAVideo = asyncHandler(async (req, res) => {
     const { title, description, isStealthMode, tags } = req.body;
-
-    if (!title?.trim()) {
-        throw new ApiError(400, "Title is required");
-    }
-
-    let videoTags = [];
-    if (tags) {
-        videoTags = Array.isArray(tags)
-            ? tags
-            : tags.split(",").map((tag) => tag.trim()).filter(t => t);
-    }
-
     const videoLocalPath = req.files?.videoFile?.[0]?.path;
     const thumbnailLocalPath = req.files?.thumbnail?.[0]?.path;
 
-    console.log("Video upload request received:");
-    console.log("   Title:", title);
-    console.log("   Video path:", videoLocalPath);
-    console.log("   Thumbnail path:", thumbnailLocalPath);
+    let uploadedVideoPublicId = null;
+    let uploadedThumbnailPublicId = null;
+    let processedVideoPath = videoLocalPath;
 
-    if (!videoLocalPath) throw new ApiError(400, "Video file is required");
-
-    const timestamp = Date.now();
-    const sanitizedTitle = sanitizeFilename(title);
-    const sanitizedUsername = sanitizeFilename(req.user.username);
-    const videoFilename = `video_${sanitizedTitle}_${sanitizedUsername}_${timestamp}`;
-    const thumbnailFilename = `thumbnail_${sanitizedTitle}_${sanitizedUsername}_${timestamp}`;
-
-    console.log("Compressing video if needed...");
-    let processedVideoPath;
     try {
-        processedVideoPath = await compressVideo(videoLocalPath, 95);
-    } catch (compressError) {
-        console.error("Compression failed, using original file:", compressError.message);
-        processedVideoPath = videoLocalPath;
+        if (!title?.trim()) {
+            throw new ApiError(400, "Title is required");
+        }
+
+        let videoTags = [];
+        if (tags) {
+            videoTags = Array.isArray(tags)
+                ? tags
+                : tags.split(",").map((tag) => tag.trim()).filter(t => t);
+        }
+
+        logDebug("Video upload request received:");
+        logDebug("   Title:", title);
+        logDebug("   Video path:", videoLocalPath);
+        logDebug("   Thumbnail path:", thumbnailLocalPath);
+
+        if (!videoLocalPath) throw new ApiError(400, "Video file is required");
+
+        if (thumbnailLocalPath) {
+            try {
+                const thumbnailSize = fs.statSync(thumbnailLocalPath).size;
+                if (thumbnailSize > MAX_THUMBNAIL_UPLOAD_BYTES) {
+                    throw new ApiError(400, `Thumbnail file must be less than ${MAX_THUMBNAIL_UPLOAD_MB}MB`);
+                }
+            } catch (error) {
+                if (error instanceof ApiError) throw error;
+                throw new ApiError(400, "Invalid thumbnail file");
+            }
+        }
+
+        const timestamp = Date.now();
+        const sanitizedTitle = sanitizeFilename(title);
+        const sanitizedUsername = sanitizeFilename(req.user.username);
+        const videoFilename = `video_${sanitizedTitle}_${sanitizedUsername}_${timestamp}`;
+        const thumbnailFilename = `thumbnail_${sanitizedTitle}_${sanitizedUsername}_${timestamp}`;
+
+        logDebug("Compressing video if needed...");
+        try {
+            processedVideoPath = await compressVideo(videoLocalPath, VIDEO_COMPRESSION_TARGET_MB);
+        } catch (compressError) {
+            console.error("Compression failed, using original file:", compressError.message);
+            processedVideoPath = videoLocalPath;
+        }
+
+        logDebug("Uploading video to Cloudinary...");
+        const videoUpload = await uploadOnCloudinary(processedVideoPath, "video", videoFilename);
+        if (!videoUpload) throw new ApiError(500, "Video upload failed. Please check your file and try again.");
+        uploadedVideoPublicId = videoUpload.public_id;
+
+        let thumbnailData;
+        if (thumbnailLocalPath) {
+            const thumbnailUpload = await uploadOnCloudinary(thumbnailLocalPath, "thumbnail", thumbnailFilename);
+            if (!thumbnailUpload) throw new ApiError(500, "Thumbnail upload failed");
+
+            uploadedThumbnailPublicId = thumbnailUpload.public_id;
+            thumbnailData = {
+                url: thumbnailUpload.secure_url,
+                public_id: thumbnailUpload.public_id,
+                isAutoGenerated: false
+            };
+        } else {
+            const autoThumbnailUrl = generateAutoThumbnail(videoUpload.public_id, { time: "1" });
+            thumbnailData = {
+                url: autoThumbnailUrl,
+                public_id: null,
+                isAutoGenerated: true
+            };
+            logDebug(`Auto-generated thumbnail URL: ${autoThumbnailUrl}`);
+            logDebug(`Video public_id used: ${videoUpload.public_id}`);
+        }
+
+        // Stealth Logic: Force Stealth if User is Globally Cloaked
+        let finalStealthMode = req.user.isIdentityCloaked;
+        if (isStealthMode !== undefined) {
+            finalStealthMode = req.user.isIdentityCloaked || (isStealthMode === "true" || isStealthMode === true);
+        }
+
+        // Description: use provided or mark for AI generation
+        const videoDescription = description?.trim() || "";
+        const needsAIDescription = !videoDescription;
+
+        const video = await Video.create({
+            title: title.trim(),
+            description: videoDescription,
+            videoFile: { url: videoUpload.secure_url, public_id: videoUpload.public_id },
+            thumbnail: thumbnailData,
+            duration: videoUpload.duration,
+            owner: req.user._id,
+            isPublished: true,
+            isStealthMode: finalStealthMode,
+            tags: videoTags,
+            transcript: ""
+        });
+
+        // Set trendScore (new videos get recency boost)
+        updateVideoTrendScore(video._id);
+
+        // Generate transcript and description in background from Cloudinary URL
+        generateVideoMetadataFromUrl(videoUpload.secure_url, video._id, { generateDescription: needsAIDescription });
+
+        return res.status(201).json(new ApiResponse(201, video,
+            needsAIDescription
+                ? "Video published! AI is generating description & transcript..."
+                : "Video published! AI is generating transcript..."
+        ));
+    } catch (error) {
+        if (uploadedThumbnailPublicId) {
+            await deleteFromCloudinary(uploadedThumbnailPublicId, "image");
+        }
+
+        if (uploadedVideoPublicId) {
+            await deleteFromCloudinary(uploadedVideoPublicId, "video");
+        }
+
+        throw error;
+    } finally {
+        safeUnlink(videoLocalPath, { reason: 'video-publish-finally' });
+        safeUnlink(processedVideoPath, { reason: 'video-publish-processed-finally' });
+        safeUnlink(thumbnailLocalPath, { reason: 'video-thumbnail-finally' });
     }
-
-    console.log("Uploading video to Cloudinary...");
-    const videoUpload = await uploadOnCloudinary(processedVideoPath, "video", videoFilename);
-    if (!videoUpload) throw new ApiError(500, "Video upload failed. Please check your file and try again.");
-
-    let thumbnailData;
-    if (thumbnailLocalPath) {
-        const thumbnailUpload = await uploadOnCloudinary(thumbnailLocalPath, "thumbnail", thumbnailFilename);
-        if (!thumbnailUpload) throw new ApiError(500, "Thumbnail upload failed");
-        thumbnailData = {
-            url: thumbnailUpload.secure_url,
-            public_id: thumbnailUpload.public_id,
-            isAutoGenerated: false
-        };
-        try { fs.unlinkSync(thumbnailLocalPath); } catch (e) { }
-    } else {
-        const autoThumbnailUrl = generateAutoThumbnail(videoUpload.public_id, { time: "1" });
-        thumbnailData = {
-            url: autoThumbnailUrl,
-            public_id: null,
-            isAutoGenerated: true
-        };
-        console.log(`Auto-generated thumbnail URL: ${autoThumbnailUrl}`);
-        console.log(`Video public_id used: ${videoUpload.public_id}`);
-    }
-
-    // Stealth Logic: Force Stealth if User is Globally Cloaked
-    let finalStealthMode = req.user.isIdentityCloaked;
-    if (isStealthMode !== undefined) {
-        finalStealthMode = req.user.isIdentityCloaked || (isStealthMode === "true" || isStealthMode === true);
-    }
-
-    // Description: use provided or mark for AI generation
-    const videoDescription = description?.trim() || "";
-    const needsAIDescription = !videoDescription;
-
-    const video = await Video.create({
-        title: title.trim(),
-        description: videoDescription,
-        videoFile: { url: videoUpload.secure_url, public_id: videoUpload.public_id },
-        thumbnail: thumbnailData,
-        duration: videoUpload.duration,
-        owner: req.user._id,
-        isPublished: true,
-        isStealthMode: finalStealthMode,
-        tags: videoTags,
-        transcript: ""
-    });
-
-    // Set trendScore (new videos get recency boost)
-    updateVideoTrendScore(video._id);
-
-    // Generate transcript and description in background from Cloudinary URL
-    generateVideoMetadataFromUrl(videoUpload.secure_url, video._id, { generateDescription: needsAIDescription });
-
-    return res.status(201).json(new ApiResponse(201, video,
-        needsAIDescription
-            ? "Video published! AI is generating description & transcript..."
-            : "Video published! AI is generating transcript..."
-    ));
 });
 
 // Get video by ID
@@ -394,11 +431,14 @@ export const getAllVideos = asyncHandler(async (req, res) => {
 export const updateVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
     const { title, description, isStealthMode, tags } = req.body;
+    const thumbnailLocalPath = req.file?.path;
 
     if (!isValidObjectId(videoId)) throw new ApiError(400, "Invalid video ID");
 
     const video = await Video.findById(videoId);
     if (!video) throw new ApiError(404, "Video not found");
+
+    const existingThumbnailPublicId = video.thumbnail?.public_id || null;
 
     if (video.owner.toString() !== req.user._id.toString()) {
         throw new ApiError(403, "Unauthorized");
@@ -417,20 +457,44 @@ export const updateVideo = asyncHandler(async (req, res) => {
         video.isStealthMode = isStealthMode === "true" || isStealthMode === true;
     }
 
-    if (req.file) {
-        const thumbnailUpload = await uploadOnCloudinary(req.file.path, "thumbnail");
+    let newThumbnailPublicId = null;
+
+    if (thumbnailLocalPath) {
+        try {
+            const thumbnailSize = fs.statSync(thumbnailLocalPath).size;
+            if (thumbnailSize > MAX_THUMBNAIL_UPLOAD_BYTES) {
+                throw new ApiError(400, `Thumbnail file must be less than ${MAX_THUMBNAIL_UPLOAD_MB}MB`);
+            }
+        } catch (error) {
+            if (error instanceof ApiError) throw error;
+            throw new ApiError(400, "Invalid thumbnail file");
+        }
+
+        const thumbnailUpload = await uploadOnCloudinary(thumbnailLocalPath, "thumbnail");
         if (!thumbnailUpload) throw new ApiError(500, "Thumbnail upload failed");
 
-        await deleteFromCloudinary(video.thumbnail.public_id);
+        newThumbnailPublicId = thumbnailUpload.public_id;
 
         video.thumbnail = {
             url: thumbnailUpload.secure_url,
             public_id: thumbnailUpload.public_id,
         };
-        try { fs.unlinkSync(req.file.path); } catch (e) { }
     }
 
-    await video.save();
+    try {
+        await video.save();
+    } catch (error) {
+        if (newThumbnailPublicId) {
+            await deleteFromCloudinary(newThumbnailPublicId, "image");
+        }
+        throw error;
+    } finally {
+        safeUnlink(thumbnailLocalPath, { reason: 'video-update-thumbnail-finally' });
+    }
+
+    if (newThumbnailPublicId && existingThumbnailPublicId && existingThumbnailPublicId !== newThumbnailPublicId) {
+        await deleteFromCloudinary(existingThumbnailPublicId, "image");
+    }
 
     return res.status(200).json(new ApiResponse(200, video, "Video updated"));
 });

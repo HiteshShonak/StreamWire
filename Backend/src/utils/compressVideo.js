@@ -122,13 +122,13 @@ export const compressVideo = async (inputPath, targetSizeMB = 90) => {
                                 try {
                                     fs.unlinkSync(inputPath);
                                     fs.unlinkSync(outputPath);
-                                } catch (e) { }
+                                } catch (_e) { }
 
                                 resolve(secondPassPath);
                             })
                             .on('error', (err) => {
                                 console.error('\n   Second pass error:', err.message);
-                                try { fs.unlinkSync(inputPath); } catch (e) { }
+                                try { fs.unlinkSync(inputPath); } catch (_e) { }
                                 resolve(outputPath);
                             })
                             .run();
@@ -136,7 +136,7 @@ export const compressVideo = async (inputPath, targetSizeMB = 90) => {
                         console.log(`   Saved: ${((1 - outputSizeMB / inputSizeMB) * 100).toFixed(1)}%`);
                         try {
                             fs.unlinkSync(inputPath);
-                        } catch (e) { }
+                        } catch (_e) { }
                         resolve(outputPath);
                     }
                 })

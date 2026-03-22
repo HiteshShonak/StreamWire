@@ -1,2 +1,4 @@
 node_modules
 .env
+public/temp/chunk-*.mp4
+public/temp/chunks/
