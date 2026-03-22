@@ -128,8 +128,8 @@ All protected endpoints require a valid JWT access token sent via **HTTP-Only co
 **Publish Video** — `multipart/form-data`:
 | Field | Type | Description |
 |-------|------|-------------|
-| `videoFile` | File | Video file (max 2GB) |
-| `thumbnail` | File | Thumbnail image |
+| `videoFile` | File | Video file (max 100MB) |
+| `thumbnail` | File | Thumbnail image (max 5MB) |
 | `title` | string | Video title |
 | `description` | string | Optional description (AI-generated if empty) |
 | `tags` | string | Comma-separated tags |

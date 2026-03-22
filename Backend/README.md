@@ -88,7 +88,7 @@ src/
 │
 ├── middlewares/
 │   ├── auth.middleware.js             # JWT verify (authenticate) + role guard (restrictTo)
-│   ├── multer.middleware.js           # File upload (2GB limit, image/video filter)
+│   ├── multer.middleware.js           # File upload (100MB video cap, image/video filter)
 │   ├── validate.middleware.js         # Zod schema validation with formatted errors
 │   └── rate-limiters/
 │       ├── index.js                       # Re-exports all limiters
