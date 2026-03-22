@@ -9,6 +9,13 @@ import {
     generateVideoSummary,
     askQuestionAboutVideo
 } from "../controllers/video.controller.js";
+import {
+    cancelChunkedUpload,
+    completeChunkedUpload,
+    getChunkUploadStatus,
+    initChunkedUpload,
+    uploadChunkPart,
+} from "../controllers/chunkUpload.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { restrictTo } from "../middlewares/auth.middleware.js";
 import { aiLimiter, uploadLimiter } from "../middlewares/rate-limiters/index.js";
@@ -28,6 +35,11 @@ router.route("/v/:videoId/ask").post(aiLimiter, validate(askQuestionSchema), ask
 
 // Protected routes (creator tools)
 router.use(restrictTo(["USER", "ADMIN"]));
+
+router.route('/publish/chunk/init').post(initChunkedUpload);
+router.route('/publish/chunk/:sessionId/status').get(getChunkUploadStatus);
+router.route('/publish/chunk/:sessionId').post(upload.single('chunk'), uploadChunkPart).delete(cancelChunkedUpload);
+router.route('/publish/chunk/:sessionId/complete').post(upload.single('thumbnail'), completeChunkedUpload);
 
 router.route("/publish").post(
     uploadLimiter,
