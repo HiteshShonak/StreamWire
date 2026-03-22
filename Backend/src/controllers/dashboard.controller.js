@@ -6,15 +6,24 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
+const getAuthenticatedUserObjectId = (userId) => {
+    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+        throw new ApiError(401, "Unauthorized request");
+    }
+
+    return new mongoose.Types.ObjectId(userId);
+};
+
 // Get channel stats
 export const getChannelStats = asyncHandler(async (req, res) => {
-    const userId = req.user._id;
+    const userId = req.user?._id;
+    const userObjectId = getAuthenticatedUserObjectId(userId);
 
     // 1. Get Video Stats (Views, Total Count, and Stealth Count)
     const videoStats = await Video.aggregate([
         {
             $match: {
-                owner: new mongoose.Types.ObjectId(userId)
+                owner: userObjectId
             }
         },
         {
@@ -34,14 +43,14 @@ export const getChannelStats = asyncHandler(async (req, res) => {
 
     // 2. Get Total Subscribers (Only ACCEPTED ones)
     const subscribersCount = await Subscription.countDocuments({
-        channel: userId,
+        channel: userObjectId,
         status: "ACCEPTED"
     });
 
     // 3. Get Total Likes
     // Optimization: Fetch video IDs first, then count likes for those IDs
     // This is faster than joining the massive Likes collection
-    const userVideos = await Video.find({ owner: userId }, { _id: 1 });
+    const userVideos = await Video.find({ owner: userObjectId }, { _id: 1 });
     const videoIds = userVideos.map(video => video._id);
 
     const totalLikes = await Like.countDocuments({
@@ -67,9 +76,10 @@ export const getChannelVideos = asyncHandler(async (req, res) => {
     // We do NOT mask identity here, as the user needs to see their own data.
 
     const { page = 1, limit = 10, query } = req.query;
+    const userObjectId = getAuthenticatedUserObjectId(req.user?._id);
 
     const matchStage = {
-        owner: new mongoose.Types.ObjectId(req.user._id)
+        owner: userObjectId
     };
 
     // Optional: Search within your own dashboard

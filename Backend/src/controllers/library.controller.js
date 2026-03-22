@@ -6,6 +6,7 @@ import { SavedPlaylist } from "../models/savedPlaylist.model.js";
 import { ANONYMOUS_USER_NAME } from "../constants.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
+import { logDebug } from "../utils/logger.js";
 
 // Watch history (fetch videos watched by user, ordered by most recent)
 export const getWatchHistory = asyncHandler(async (req, res) => {
@@ -384,7 +385,7 @@ export const toggleWatchLater = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
     const userId = req.user._id;
 
-    console.log('toggleWatchLater called - videoId:', videoId, 'userId:', userId);
+    logDebug('toggleWatchLater called - videoId:', videoId, 'userId:', userId);
 
     if (!videoId) {
         return res.status(400).json(new ApiResponse(400, null, "Video ID is required"));
@@ -396,17 +397,17 @@ export const toggleWatchLater = asyncHandler(async (req, res) => {
         owner: userId
     });
 
-    console.log('📌 Existing watch later entry:', existing ? 'Found' : 'Not found');
+    logDebug('Existing watch later entry:', existing ? 'Found' : 'Not found');
 
     if (existing) {
         // Remove from watch later
         await WatchLater.findByIdAndDelete(existing._id);
-        console.log('Removed from watch later');
+        logDebug('Removed from watch later');
         return res.status(200).json(new ApiResponse(200, { isInWatchLater: false }, "Removed from My List"));
     } else {
         // Add to watch later
         const newEntry = await WatchLater.create({ video: videoId, owner: userId });
-        console.log('Added to watch later:', newEntry._id);
+        logDebug('Added to watch later:', newEntry._id);
         return res.status(200).json(new ApiResponse(200, { isInWatchLater: true }, "Added to My List"));
     }
 });

@@ -1,12 +1,12 @@
-import mongoose from "mongoose";
 import { History } from "../models/history.model.js";
 import { Video } from "../models/video.model.js";
 import { User } from "../models/user.model.js";
+import { logDebug } from "./logger.js";
 
 // build User Feed from Watch History
 export const buildUserFeed = async (userId) => {
     try {
-        console.log('Building feed for user:', userId);
+        logDebug('Building feed for user:', userId);
 
         // Get user's watch history (last 100 videos)
         const history = await History.find({ owner: userId })
@@ -17,7 +17,7 @@ export const buildUserFeed = async (userId) => {
 
 
         if (!history.length) {
-            console.log('No watch history found');
+            logDebug('No watch history found');
             return [];
         }
 
@@ -42,11 +42,11 @@ export const buildUserFeed = async (userId) => {
             .slice(0, 20)
             .map(([tag]) => tag);
 
-        console.log('Sorted tags (top 20):', sortedTags);
+        logDebug('Sorted tags (top 20):', sortedTags);
 
         // Update user's feedPreferences
         await User.findByIdAndUpdate(userId, { feedPreferences: sortedTags });
-        console.log('Updated user feedPreferences');
+        logDebug('Updated user feedPreferences');
 
         return sortedTags;
     } catch (error) {
