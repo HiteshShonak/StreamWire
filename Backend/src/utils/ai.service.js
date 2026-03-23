@@ -206,7 +206,7 @@ export const generateVideoMetadataFromUrl = async (cloudinaryUrl, videoId, optio
                 const tagsText = tagsResponse.choices[0]?.message?.content || "[]";
                 tags = JSON.parse(tagsText.replace(/```json|```/g, "").trim());
                 if (!Array.isArray(tags)) tags = [];
-            } catch (e) {
+            } catch (_e) {
                 console.log(`[AI Worker] Failed to parse tags, using empty array`);
             }
 

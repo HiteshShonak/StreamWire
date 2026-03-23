@@ -24,13 +24,50 @@ export const videoService = {
     },
 
     // --- Creator Tools ---
-    publishVideo: async (formData, onUploadProgress) => {
+    publishVideo: async (formData, onUploadProgress, signal) => {
         // formData: videoFile, thumbnail, title, description, isStealthMode, tags
         return await api.post('/videos/publish', formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
-            timeout: 30 * 60 * 1000, // 30 minutes timeout for large video uploads (up to 2GB)
+            timeout: 30 * 60 * 1000, // generous timeout for slower networks
+            onUploadProgress,
+            signal
+        });
+    },
+
+    initChunkedVideoUpload: async (payload, signal) => {
+        return await api.post('/videos/publish/chunk/init', payload, { signal });
+    },
+
+    uploadVideoChunk: async (sessionId, chunkBlob, chunkIndex, signal, onUploadProgress) => {
+        const form = new FormData();
+        form.append('chunk', chunkBlob, `chunk-${chunkIndex}.part`);
+        form.append('chunkIndex', String(chunkIndex));
+
+        return await api.post(`/videos/publish/chunk/${sessionId}`, form, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+            signal,
             onUploadProgress
         });
+    },
+
+    getChunkedUploadStatus: async (sessionId, signal) => {
+        return await api.get(`/videos/publish/chunk/${sessionId}/status`, { signal });
+    },
+
+    completeChunkedVideoUpload: async (sessionId, thumbnail, signal) => {
+        const form = new FormData();
+        if (thumbnail) {
+            form.append('thumbnail', thumbnail);
+        }
+
+        return await api.post(`/videos/publish/chunk/${sessionId}/complete`, form, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+            signal,
+        });
+    },
+
+    cancelChunkedVideoUpload: async (sessionId, signal) => {
+        return await api.delete(`/videos/publish/chunk/${sessionId}`, { signal });
     },
 
     updateVideo: async (videoId, formData) => {

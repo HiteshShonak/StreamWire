@@ -40,7 +40,7 @@ class JwtService {
   verifyAccessToken(token) {
     try {
       return jwt.verify(token, this.accessTokenSecret);
-    } catch (error) {
+    } catch (_error) {
       return null;
     }
   }
@@ -48,7 +48,7 @@ class JwtService {
   verifyRefreshToken(token) {
     try {
       return jwt.verify(token, this.refreshTokenSecret);
-    } catch (error) {
+    } catch (_error) {
       return null;
     }
   }

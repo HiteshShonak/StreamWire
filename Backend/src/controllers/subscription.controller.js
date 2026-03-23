@@ -40,7 +40,7 @@ export const toggleSubscription = asyncHandler(async (req, res) => {
     // 2. Subscribe logic (public profile = accepted, private = pending approval)
     const subStatus = targetChannel.isProfilePublic ? "ACCEPTED" : "PENDING";
 
-    const newSub = await Subscription.create({
+    await Subscription.create({
         subscriber: req.user?._id,
         channel: channelId,
         status: subStatus,

@@ -27,7 +27,6 @@ import {
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { restrictTo } from "../middlewares/auth.middleware.js";
-import { ApiError } from "../utils/ApiError.js";
 import {
     loginLimiter,
     authLimiter,

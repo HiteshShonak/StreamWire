@@ -21,7 +21,7 @@ const userSchema = new Schema(
       trim: true,
       lowercase: true,
       match: [
-        /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+        /^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/,
         "Please fill a valid email address",
       ],
     },

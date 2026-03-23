@@ -40,7 +40,7 @@ const toggleLike = async (Model, resourceId, user, resourceField) => {
         try {
             await Like.findByIdAndDelete(existingLike._id);
             return { isLiked: false };
-        } catch (delErr) {
+        } catch (_delErr) {
             // If deletion failed, surface a conflict-like response
             throw new ApiError(500, 'Failed to remove like');
         }
@@ -64,7 +64,7 @@ const toggleLike = async (Model, resourceId, user, resourceField) => {
                 try {
                     await Like.deleteOne(query);
                     return { isLiked: false };
-                } catch (delErr) {
+                } catch (_delErr) {
                     // If deletion fails here, escalate as server error
                     throw new ApiError(500, 'Like race resolution failed');
                 }
