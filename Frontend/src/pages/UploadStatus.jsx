@@ -34,8 +34,10 @@ export default function UploadStatus() {
 
   const isDone = upload.status === 'done';
   const isError = upload.status === 'error';
+  const isCanceled = upload.status === 'canceled';
+  const isQueued = upload.status === 'queued';
   const isUploading = upload.status === 'uploading';
-  const isCompressing = upload.status === 'compressing';
+  const needsReselect = Boolean(upload.requiresFileReselect);
 
   // Format bytes helper
   const formatBytes = (bytes) => {
@@ -64,7 +66,7 @@ export default function UploadStatus() {
             alt="" 
             className="w-full h-full object-cover opacity-20 scale-110 blur-3xl saturate-200"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/50 via-[#050505]/80 to-[#050505]" />
+          <div className="absolute inset-0 bg-linear-to-b from-[#050505]/50 via-[#050505]/80 to-[#050505]" />
         </div>
       )}
 
@@ -88,17 +90,18 @@ export default function UploadStatus() {
           <div className={`w-36 h-36 rounded-full flex items-center justify-center relative shadow-2xl
             ${isDone ? 'bg-indigo-600 shadow-indigo-500/20' : 
               isError ? 'bg-red-500/10 shadow-red-500/20' : 
-              isCompressing ? 'bg-amber-500/10 shadow-amber-500/20' :
+              isCanceled ? 'bg-zinc-700/40 shadow-zinc-700/20' :
+              isQueued ? 'bg-zinc-700/40 shadow-zinc-700/20' :
               'bg-zinc-800/50 shadow-black/50'}
           `}>
             
             {/* SVG Progress Ring */}
-            {(isUploading || isCompressing) && (
+            {(isUploading || isQueued) && (
               <svg className="absolute inset-0 w-full h-full -rotate-90">
                 <circle cx="72" cy="72" r="70" className="stroke-zinc-800" strokeWidth="4" fill="none" />
                 <motion.circle 
                   cx="72" cy="72" r="70" 
-                  className={isCompressing ? "stroke-amber-500" : "stroke-indigo-500"} 
+                  className={isQueued ? "stroke-zinc-500" : "stroke-indigo-500"} 
                   strokeWidth="4" fill="none" strokeLinecap="round"
                   strokeDasharray="439.8" 
                   initial={{ strokeDashoffset: 439.8 }}
@@ -113,10 +116,15 @@ export default function UploadStatus() {
               <CheckCircle className="w-16 h-16 text-white" />
             ) : isError ? (
               <AlertTriangle className="w-16 h-16 text-red-500" />
-            ) : isCompressing ? (
-              <div className="text-center mt-2">
-                <Zap className="w-8 h-8 text-amber-500 mx-auto mb-1 animate-pulse" />
-                <span className="text-xl font-black text-white">{upload.progress}%</span>
+            ) : isCanceled ? (
+              <div className="text-center mt-1">
+                <AlertTriangle className="w-8 h-8 text-zinc-300 mx-auto mb-1" />
+                <span className="text-sm font-bold text-zinc-200">Canceled</span>
+              </div>
+            ) : isQueued ? (
+              <div className="text-center mt-1">
+                <Upload className="w-8 h-8 text-zinc-300 mx-auto mb-1 animate-pulse" />
+                <span className="text-sm font-bold text-zinc-200">Queued</span>
               </div>
             ) : (
               <div className="text-center">
@@ -136,52 +144,69 @@ export default function UploadStatus() {
           {isDone ? (
             <p className="text-indigo-300 font-medium">Successfully published! AI is generating transcripts.</p>
           ) : isError ? (
-            <p className="text-red-400 font-medium">Upload failed. Please check your connection and retry.</p>
+            <div className="space-y-1">
+              <p className="text-red-400 font-medium">
+                {upload.errorMessage || 'Upload failed. Check your file format, size, or connection and retry.'}
+              </p>
+              {needsReselect ? (
+                <p className="text-sm text-zinc-500 font-medium">Reselect file to resume this upload after refresh.</p>
+              ) : null}
+            </div>
+          ) : isCanceled ? (
+            <div className="space-y-1">
+              <p className="text-zinc-300 font-medium">{upload.cancelReason || upload.errorMessage || 'Upload canceled.'}</p>
+              <p className="text-sm text-zinc-500 font-medium">You can retry this upload anytime.</p>
+            </div>
+          ) : isQueued ? (
+            <div className="space-y-1">
+              <p className="text-zinc-300 font-medium flex items-center justify-center gap-2">
+                <Upload className="w-4 h-4 animate-pulse" />
+                Waiting to start upload...
+              </p>
+              <p className="text-sm text-zinc-500 font-medium">Hold on, preparing your file.</p>
+            </div>
           ) : (
             <div className="space-y-1">
-              {isCompressing ? (
-                <>
-                  <p className="text-amber-400 font-medium flex items-center justify-center gap-2">
-                    <Zap className="w-4 h-4 animate-pulse" /> 
-                    Compressing video...
-                  </p>
-                  <p className="text-sm text-zinc-500 font-medium">
-                    {upload.eta || 'Preparing frames...'}
-                  </p>
-                </>
-              ) : (
-                <>
-                  <p className="text-indigo-400 font-medium flex items-center justify-center gap-2">
-                    <Zap className="w-4 h-4" /> 
-                    {formatETA(upload.eta)}
-                  </p>
-                  <p className="text-sm text-zinc-500 font-medium">
-                    {formatBytes(upload.loaded)} / {formatBytes(upload.total)} at {formatBytes(upload.speed)}/s
-                  </p>
-                </>
-              )}
+              <>
+                <p className="text-indigo-400 font-medium flex items-center justify-center gap-2">
+                  <Zap className="w-4 h-4" /> 
+                  {formatETA(upload.eta)}
+                </p>
+                <p className="text-sm text-zinc-500 font-medium">
+                  {formatBytes(upload.loaded)} / {formatBytes(upload.total)} at {formatBytes(upload.speed)}/s
+                </p>
+              </>
             </div>
           )}
         </div>
 
         {/* Actions */}
         <div className="space-y-3">
-          {isDone ? null : isError ? (
+          {isDone ? null : isError || isCanceled ? (
             <>
-              <button
-                onClick={() => retryUpload(upload.id)}
-                className="w-full py-4 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2"
-              >
-                <RefreshCw className="w-5 h-5" /> Retry Upload
-              </button>
+              {needsReselect ? (
+                <button
+                  onClick={() => navigate('/upload')}
+                  className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2"
+                >
+                  <Upload className="w-5 h-5" /> Reselect File to Resume
+                </button>
+              ) : (
+                <button
+                  onClick={() => retryUpload(upload.id)}
+                  className="w-full py-4 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2"
+                >
+                  <RefreshCw className="w-5 h-5" /> Retry Upload
+                </button>
+              )}
               <button
                 onClick={() => {
-                  dismissUpload(upload.id);
+                  dismissUpload(upload.id, 'Upload canceled from status page.');
                   navigate('/dashboard');
                 }}
                 className="w-full py-4 border border-zinc-700 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl font-bold transition-colors"
               >
-                Cancel and Dismiss
+                Back to Dashboard
               </button>
             </>
           ) : (

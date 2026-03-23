@@ -5,6 +5,13 @@ import { ArrowLeft, Upload, Film, FileText, Tag, Sparkles, Check, Image, Video, 
 import toast from 'react-hot-toast';
 import { useUpload } from '../context/UploadContext';
 import { compressImage } from '../utils/imageCompressor';
+import { validateImageFileType, validateVideoFileType } from '../utils/uploadFileValidation';
+import {
+  MAX_THUMBNAIL_UPLOAD_BYTES,
+  MAX_THUMBNAIL_UPLOAD_MB,
+  MAX_VIDEO_UPLOAD_BYTES,
+  MAX_VIDEO_UPLOAD_MB,
+} from '../constants/upload.constants';
 
 export default function UploadVideo() {
   const navigate = useNavigate();
@@ -28,8 +35,14 @@ export default function UploadVideo() {
   const processVideoFile = useCallback(async (file) => {
     if (!file) return;
 
-    if (file.size > 100 * 1024 * 1024) {
-      toast.error('Video file must be less than 100MB');
+    const typeValidation = validateVideoFileType(file);
+    if (!typeValidation.ok) {
+      toast.error(typeValidation.message);
+      return;
+    }
+
+    if (file.size > MAX_VIDEO_UPLOAD_BYTES) {
+      toast.error(`Video file must be less than ${MAX_VIDEO_UPLOAD_MB}MB`);
       return;
     }
 
@@ -40,7 +53,17 @@ export default function UploadVideo() {
 
   const processThumbnailFile = useCallback(async (file) => {
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) { toast.error('Thumbnail must be less than 5MB'); return; }
+
+    const typeValidation = validateImageFileType(file);
+    if (!typeValidation.ok) {
+      toast.error(typeValidation.message);
+      return;
+    }
+
+    if (file.size > MAX_THUMBNAIL_UPLOAD_BYTES) {
+      toast.error(`Thumbnail must be less than ${MAX_THUMBNAIL_UPLOAD_MB}MB`);
+      return;
+    }
     try {
       const compressed = await compressImage(file);
       setFormData(prev => ({ ...prev, thumbnail: compressed }));
@@ -76,8 +99,7 @@ export default function UploadVideo() {
   const onVideoDrop = (e) => {
     e.preventDefault(); e.stopPropagation(); setIsDraggingVideo(false);
     const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('video/')) processVideoFile(file);
-    else toast.error('Please drop a valid video file');
+    processVideoFile(file);
   };
 
   // ─── Drag-and-drop — Thumbnail ───────────────────────────────────────────────
@@ -88,8 +110,7 @@ export default function UploadVideo() {
   const onThumbDrop = (e) => {
     e.preventDefault(); e.stopPropagation(); setIsDraggingThumb(false);
     const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) processThumbnailFile(file);
-    else toast.error('Please drop a valid image file');
+    processThumbnailFile(file);
   };
 
   // ─── Submit ──────────────────────────────────────────────────────────────────
@@ -98,6 +119,20 @@ export default function UploadVideo() {
     e.preventDefault();
     if (!formData.title.trim()) { toast.error('Please enter a title'); return; }
     if (!formData.videoFile) { toast.error('Please select a video file'); return; }
+
+    const videoTypeValidation = validateVideoFileType(formData.videoFile);
+    if (!videoTypeValidation.ok) {
+      toast.error(videoTypeValidation.message);
+      return;
+    }
+
+    if (formData.thumbnail) {
+      const thumbTypeValidation = validateImageFileType(formData.thumbnail);
+      if (!thumbTypeValidation.ok) {
+        toast.error(thumbTypeValidation.message);
+        return;
+      }
+    }
 
     setIsSubmitting(true);
     
@@ -194,7 +229,7 @@ export default function UploadVideo() {
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-white">Video File</h3>
-                  <p className="text-sm text-zinc-500">Upload or drag-and-drop your video (max 100MB)</p>
+                  <p className="text-sm text-zinc-500">Upload or drag-and-drop your video (max {MAX_VIDEO_UPLOAD_MB}MB)</p>
                 </div>
               </div>
 
@@ -220,7 +255,7 @@ export default function UploadVideo() {
                       <p className="text-white font-semibold mb-1">
                         {isDraggingVideo ? '⚡ Drop to upload' : 'Click or drag to upload video'}
                       </p>
-                      <p className="text-sm text-zinc-500">All video formats supported · max 100MB</p>
+                      <p className="text-sm text-zinc-500">All video formats supported · max {MAX_VIDEO_UPLOAD_MB}MB</p>
                     </div>
                   </label>
 
@@ -354,7 +389,7 @@ export default function UploadVideo() {
                       <p className="text-white font-semibold mb-1 text-sm">
                         {isDraggingThumb ? '⚡ Drop image here' : 'Upload or drag custom thumbnail'}
                       </p>
-                      <p className="text-xs text-zinc-500">JPG, PNG, WebP · max 5MB</p>
+                      <p className="text-xs text-zinc-500">JPG, PNG, WebP · max {MAX_THUMBNAIL_UPLOAD_MB}MB</p>
                     </div>
                   </label>
                 </div>
