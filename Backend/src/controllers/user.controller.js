@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import { User } from "../models/user.model.js";
 import { Video } from "../models/video.model.js";
-import { Subscription } from "../models/subscription.model.js";
 import { ANONYMOUS_USER_NAME, COOKIE_OPTIONS } from "../constants.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -9,7 +8,8 @@ import asyncHandler from "../utils/asyncHandler.js";
 import { resolveIdentityMedia } from "../utils/identity.resolver.js";
 import { deleteFromCloudinary } from "../utils/cloudinary.js";
 import { sanitizeUser, maskIdentityStage } from "../utils/helper.js";
-import { buildUserFeed, getRecommendedVideos, getAllTags, getPopularTags } from "../utils/feedBuilder.js";
+import { buildUserFeed, getAllTags, getPopularTags } from "../utils/feedBuilder.js";
+import { logDebug } from "../utils/logger.js";
 
 
 // Search users by username or full name
@@ -240,6 +240,9 @@ export const updateProfile = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user?._id);
     if (!user) throw new ApiError(404, "User not found");
 
+    const previousAvatarPublicId = user.avatar?.public_id || null;
+    const previousCoverPublicId = user.coverImage?.public_id || null;
+
     if (username && username !== user.username) {
         const cleanUsername = username.toLowerCase().trim();
         const usernameExists = await User.findOne({ username: cleanUsername });
@@ -261,7 +264,10 @@ export const updateProfile = asyncHandler(async (req, res) => {
         }
     }
 
-    if (req.files?.avatar || avatarColor) {
+    const shouldUpdateAvatar = Boolean(req.files?.avatar || avatarColor);
+    const shouldUpdateCover = Boolean(req.files?.coverImage || coverColor);
+
+    if (shouldUpdateAvatar) {
         const avatarResult = await resolveIdentityMedia({
             localPath: req.files?.avatar ? req.files.avatar[0].path : null,
             type: "avatar",
@@ -271,14 +277,10 @@ export const updateProfile = asyncHandler(async (req, res) => {
             existingData: user.avatar,
         });
 
-        if (req.files?.avatar && user.avatar?.public_id && !user.avatar.public_id.includes("default_")) {
-            await deleteFromCloudinary(user.avatar.public_id, "image");
-        }
-
         user.avatar = { url: avatarResult.url, public_id: avatarResult.public_id };
     }
 
-    if (req.files?.coverImage || coverColor) {
+    if (shouldUpdateCover) {
         const coverResult = await resolveIdentityMedia({
             localPath: req.files?.coverImage ? req.files.coverImage[0].path : null,
             type: "cover",
@@ -287,17 +289,56 @@ export const updateProfile = asyncHandler(async (req, res) => {
             existingData: user.coverImage,
         });
 
-        if (req.files?.coverImage && user.coverImage?.public_id && !user.coverImage.public_id.includes("default_")) {
-            await deleteFromCloudinary(user.coverImage.public_id, "image");
-        }
-
         user.coverImage = {
             url: coverResult.url,
             public_id: coverResult.public_id,
         };
     }
 
-    await user.save();
+    try {
+        await user.save();
+    } catch (error) {
+        const currentAvatarPublicId = user.avatar?.public_id || null;
+        const currentCoverPublicId = user.coverImage?.public_id || null;
+
+        if (
+            shouldUpdateAvatar &&
+            currentAvatarPublicId &&
+            currentAvatarPublicId !== previousAvatarPublicId &&
+            !currentAvatarPublicId.includes("default_")
+        ) {
+            await deleteFromCloudinary(currentAvatarPublicId, "image");
+        }
+
+        if (
+            shouldUpdateCover &&
+            currentCoverPublicId &&
+            currentCoverPublicId !== previousCoverPublicId &&
+            !currentCoverPublicId.includes("default_")
+        ) {
+            await deleteFromCloudinary(currentCoverPublicId, "image");
+        }
+
+        throw error;
+    }
+
+    if (
+        shouldUpdateAvatar &&
+        previousAvatarPublicId &&
+        previousAvatarPublicId !== user.avatar?.public_id &&
+        !previousAvatarPublicId.includes("default_")
+    ) {
+        await deleteFromCloudinary(previousAvatarPublicId, "image");
+    }
+
+    if (
+        shouldUpdateCover &&
+        previousCoverPublicId &&
+        previousCoverPublicId !== user.coverImage?.public_id &&
+        !previousCoverPublicId.includes("default_")
+    ) {
+        await deleteFromCloudinary(previousCoverPublicId, "image");
+    }
 
     const updatedUser = sanitizeUser(user);
 
@@ -525,10 +566,10 @@ export const updateFeedPreferences = asyncHandler(async (req, res) => {
 // Build feed from watch history
 export const buildFeedFromHistory = asyncHandler(async (req, res) => {
     const userId = req.user._id;
-    console.log('Building feed for user:', userId);
+    logDebug('Building feed for user:', userId);
 
     const tags = await buildUserFeed(userId);
-    console.log('Tags from history:', tags);
+    logDebug('Tags from history:', tags);
 
     if (tags.length === 0) {
         return res.status(200).json(

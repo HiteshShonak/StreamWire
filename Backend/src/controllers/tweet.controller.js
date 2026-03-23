@@ -1,6 +1,5 @@
 import mongoose, { isValidObjectId } from "mongoose";
 import { Tweet } from "../models/tweet.model.js";
-import { User } from "../models/user.model.js";
 import { Subscription } from "../models/subscription.model.js";
 import { PollVote } from "../models/pollVote.model.js";
 import { Like } from "../models/like.model.js";
@@ -12,6 +11,8 @@ import asyncHandler from "../utils/asyncHandler.js";
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
 import { updateTweetTrendScore } from "../utils/trendScore.js"; // TrendScore
 import { ANONYMOUS_USER_NAME } from "../constants.js";
+import { logDebug } from "../utils/logger.js";
+import { safeUnlink } from "../utils/tempFileCleanup.js";
 
 // Helper: common tweet aggregation pipeline (handles identity, likes, comments, polls, subscription)
 const getTweetAggregation = (userId) => {
@@ -246,78 +247,92 @@ export const getAllTweets = asyncHandler(async (req, res) => {
 // Create tweet
 export const createTweet = asyncHandler(async (req, res) => {
     const { content, isPoll, pollQuestion, pollOptions, isStealthMode } = req.body;
+    const localImagePath = req.file?.path;
+    let uploadedImagePublicId = null;
 
-    // Debug logging
-    console.log('CREATE TWEET - Request Body:', req.body);
-    console.log('CREATE TWEET - File Present:', !!req.file);
-    if (req.file) {
-        console.log('File Details:', {
-            fieldname: req.file.fieldname,
-            originalname: req.file.originalname,
-            mimetype: req.file.mimetype,
-            size: req.file.size,
-            path: req.file.path
-        });
-    }
-
-    if (!content?.trim()) throw new ApiError(400, "Content is required");
-
-    let image = null;
-    if (req.file) {
-        console.log('Uploading to Cloudinary:', req.file.path);
-
-        // Generate custom filename: first 10 chars of content + username + timestamp
-        const contentPrefix = content.trim()
-            .substring(0, 10)
-            .replace(/\s+/g, '_')
-            .replace(/[^a-zA-Z0-9_]/g, '');
-        const customFilename = `${contentPrefix}_${req.user.username}_${Date.now()}`;
-
-        console.log('Custom filename:', customFilename);
-        const uploadedImage = await uploadOnCloudinary(req.file.path, "tweet", customFilename);
-        if (!uploadedImage) {
-            throw new ApiError(500, "Image upload failed");
+    try {
+        // Debug logging
+        logDebug('CREATE TWEET - Request Body:', req.body);
+        logDebug('CREATE TWEET - File Present:', !!localImagePath);
+        if (req.file) {
+            logDebug('File Details:', {
+                fieldname: req.file.fieldname,
+                originalname: req.file.originalname,
+                mimetype: req.file.mimetype,
+                size: req.file.size,
+                path: req.file.path
+            });
         }
-        console.log('Cloudinary upload successful:', uploadedImage.secure_url);
-        image = { url: uploadedImage.secure_url, public_id: uploadedImage.public_id };
-    } else {
-        console.log('No file attached to request');
+
+        if (!content?.trim()) throw new ApiError(400, "Content is required");
+
+        let image = null;
+        if (localImagePath) {
+            logDebug('Uploading to Cloudinary:', localImagePath);
+
+            // Generate custom filename: first 10 chars of content + username + timestamp
+            const contentPrefix = content.trim()
+                .substring(0, 10)
+                .replace(/\s+/g, '_')
+                .replace(/[^a-zA-Z0-9_]/g, '');
+            const customFilename = `${contentPrefix}_${req.user.username}_${Date.now()}`;
+
+            logDebug('Custom filename:', customFilename);
+            const uploadedImage = await uploadOnCloudinary(localImagePath, "tweet", customFilename);
+            if (!uploadedImage) {
+                throw new ApiError(500, "Image upload failed");
+            }
+            uploadedImagePublicId = uploadedImage.public_id;
+            logDebug('Cloudinary upload successful:', uploadedImage.secure_url);
+            image = { url: uploadedImage.secure_url, public_id: uploadedImage.public_id };
+        } else {
+            logDebug('No file attached to request');
+        }
+
+        let poll = null;
+        if (isPoll === "true" || isPoll === true) {
+            if (!pollQuestion?.trim()) throw new ApiError(400, "Poll question is required");
+
+            let parsedOptions = typeof pollOptions === "string" ? JSON.parse(pollOptions) : pollOptions;
+            if (!Array.isArray(parsedOptions) || parsedOptions.length < 2) throw new ApiError(400, "Poll must have 2+ options");
+
+            poll = {
+                question: pollQuestion,
+                options: parsedOptions.map(opt => ({ text: opt.toString().trim(), votes: 0 }))
+            };
+        }
+
+        let finalStealthMode = req.user.isIdentityCloaked;
+        if (isStealthMode !== undefined) finalStealthMode = isStealthMode === "true" || isStealthMode === true;
+
+        const tweet = await Tweet.create({
+            content,
+            image,
+            poll,
+            owner: req.user._id,
+            isStealthMode: finalStealthMode
+        });
+
+        // Set trendScore (new tweets get recency boost)
+        updateTweetTrendScore(tweet._id);
+
+        const pipeline = [
+            { $match: { _id: tweet._id } },
+            ...getTweetAggregation(req.user._id)
+        ];
+        const aggregatedTweet = await Tweet.aggregate(pipeline);
+
+        return res.status(201).json(new ApiResponse(201, aggregatedTweet[0], "Tweet created successfully"));
+    } catch (error) {
+        if (uploadedImagePublicId) {
+            deleteFromCloudinary(uploadedImagePublicId, "image").catch((deleteErr) => {
+                console.error('Rollback failed for uploaded tweet image:', deleteErr.message);
+            });
+        }
+
+        safeUnlink(localImagePath, { reason: 'tweet-create-error' });
+        throw error;
     }
-
-    let poll = null;
-    if (isPoll === "true" || isPoll === true) {
-        if (!pollQuestion?.trim()) throw new ApiError(400, "Poll question is required");
-
-        let parsedOptions = typeof pollOptions === "string" ? JSON.parse(pollOptions) : pollOptions;
-        if (!Array.isArray(parsedOptions) || parsedOptions.length < 2) throw new ApiError(400, "Poll must have 2+ options");
-
-        poll = {
-            question: pollQuestion,
-            options: parsedOptions.map(opt => ({ text: opt.toString().trim(), votes: 0 }))
-        };
-    }
-
-    let finalStealthMode = req.user.isIdentityCloaked;
-    if (isStealthMode !== undefined) finalStealthMode = isStealthMode === "true" || isStealthMode === true;
-
-    const tweet = await Tweet.create({
-        content,
-        image,
-        poll,
-        owner: req.user._id,
-        isStealthMode: finalStealthMode
-    });
-
-    // Set trendScore (new tweets get recency boost)
-    updateTweetTrendScore(tweet._id);
-
-    const pipeline = [
-        { $match: { _id: tweet._id } },
-        ...getTweetAggregation(req.user._id)
-    ];
-    const aggregatedTweet = await Tweet.aggregate(pipeline);
-
-    return res.status(201).json(new ApiResponse(201, aggregatedTweet[0], "Tweet created successfully"));
 });
 
 // Get tweet by ID
@@ -392,7 +407,7 @@ export const deleteTweet = asyncHandler(async (req, res) => {
     // Delete orphaned image from Cloudinary
     if (tweet.image?.public_id) {
         deleteFromCloudinary(tweet.image.public_id, "image")
-            .then(() => console.log('Tweet image deleted from Cloudinary:', tweet.image.public_id))
+            .then(() => logDebug('Tweet image deleted from Cloudinary:', tweet.image.public_id))
             .catch(err => console.error('Failed to delete tweet image from Cloudinary:', err.message));
     }
 
@@ -402,7 +417,7 @@ export const deleteTweet = asyncHandler(async (req, res) => {
         Like.deleteMany({ tweet: tweetId }),
         Comment.deleteMany({ tweet: tweetId })
     ])
-        .then(() => console.log('Related records deleted for tweet:', tweetId))
+        .then(() => logDebug('Related records deleted for tweet:', tweetId))
         .catch(err => console.error('Failed to delete related records:', err.message));
 
     return response;
