@@ -17,16 +17,13 @@ function App() {
 
   const path = location.pathname
 
-  const { isLanding, isAuthPage, isGateway, showHeader, showSidebar } = useMemo(() => {
+  const { showHeader, showSidebar } = useMemo(() => {
     const isLanding = path === '/'
     const isAuthPage = ['/login', '/register', '/forgot-password'].includes(path)
     const isGateway = path === '/home'
     const isOnboarding = path === '/customize' && location.search.includes('onboarding=true')
 
     return {
-      isLanding,
-      isAuthPage,
-      isGateway,
       showHeader: !isLanding && !isOnboarding,
       showSidebar: !isLanding && !isAuthPage && !isGateway && !isOnboarding
     }
@@ -50,7 +47,7 @@ function App() {
         } else {
           dispatch(logout())
         }
-      } catch (error) {
+      } catch (_error) {
         dispatch(logout())
       } finally {
         dispatch(setLoading(false))
@@ -62,7 +59,7 @@ function App() {
   useEffect(() => {
     try {
       window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-    } catch (e) {
+    } catch (_e) {
     }
   }, [location.pathname]);
 

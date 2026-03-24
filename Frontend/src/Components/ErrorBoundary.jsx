@@ -1,12 +1,14 @@
 import React from 'react';
 
+const isDev = import.meta.env.DEV;
+
 class ErrorBoundary extends React.Component {
     constructor(props) {
         super(props);
         this.state = { hasError: false, error: null, errorInfo: null };
     }
 
-    static getDerivedStateFromError(error) {
+    static getDerivedStateFromError(_error) {
         return { hasError: true };
     }
 
@@ -77,7 +79,7 @@ class ErrorBoundary extends React.Component {
                             Reload Page
                         </button>
 
-                        {process.env.NODE_ENV === 'development' && this.state.error && (
+                        {isDev && this.state.error && (
                             <details style={{
                                 marginTop: '2rem',
                                 textAlign: 'left',

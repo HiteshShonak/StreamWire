@@ -13,7 +13,7 @@ import WireIcon from '../assets/TheWireLogo.webp';
 import ShadowsIcon from '../assets/TheShadowsLogo.webp';
 import gatewayIcon from '../assets/favicon.webp';
 
-export default function Header({ variant = 'gateway', onUploadClick }) {
+export default function Header({ variant = 'gateway', onUploadClick: _onUploadClick }) {
   const { status, userData, loading } = useSelector((state) => state.auth)
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false)
   const [showTooltip, setShowTooltip] = useState(false)
@@ -121,7 +121,7 @@ export default function Header({ variant = 'gateway', onUploadClick }) {
       logoColor: "text-emerald-500 tracking-tight font-medium",
       actionLabel: "Secure Drop",
       ActionIcon: ShieldCheck,
-      inputStyle: "bg-[#18181b] border-zinc-800 text-zinc-300 placeholder:text-zinc-600 focus:border-emerald-500/30 focus:bg-[#202023]",
+      inputStyle: "bg-text-main border-zinc-800 text-zinc-300 placeholder:text-zinc-600 focus:border-emerald-500/30 focus:bg-[#202023]",
       buttonStyle: "bg-emerald-600 text-white hover:bg-emerald-500 shadow-lg shadow-emerald-900/20",
       isStealth: true
     }
@@ -138,7 +138,7 @@ export default function Header({ variant = 'gateway', onUploadClick }) {
       className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 pt-4 pointer-events-none gpu-layer will-change-transform"
     >
       <div className={`
-        pointer-events-auto w-full max-w-[1400px] rounded-full transition-all duration-500 ease-out
+        pointer-events-auto w-full max-w-350 rounded-full transition-all duration-500 ease-out
         border ${current.theme}
         ${isMobileSearchOpen ? 'p-2' : 'p-2 pl-6'}
       `}>
@@ -270,9 +270,9 @@ export default function Header({ variant = 'gateway', onUploadClick }) {
                         <div className="w-10 h-10 rounded-full skeleton" />
                       ) : (
                         <Link to="/dashboard" className="group/avatar block">
-                          <div className={`w-10 h-10 rounded-full p-[2px] bg-gradient-to-tr ${current.accent} hover:scale-110 transition-all duration-300 cursor-pointer relative group-hover/avatar:shadow-lg group-hover/avatar:shadow-indigo-500/50`}>
+                          <div className={`w-10 h-10 rounded-full p-0.5 bg-linear-to-tr ${current.accent} hover:scale-110 transition-all duration-300 cursor-pointer relative group-hover/avatar:shadow-lg group-hover/avatar:shadow-indigo-500/50`}>
                             {/* Glow effect on hover */}
-                            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 opacity-0 group-hover/avatar:opacity-30 blur-md transition-opacity duration-300" />
+                            <div className="absolute inset-0 rounded-full bg-linear-to-tr from-indigo-500 to-purple-600 opacity-0 group-hover/avatar:opacity-30 blur-md transition-opacity duration-300" />
 
                             <div className="w-full h-full rounded-full overflow-hidden bg-black flex items-center justify-center border-2 border-black relative z-10">
                               {isStealth ? (
