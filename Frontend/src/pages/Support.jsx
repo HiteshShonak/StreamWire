@@ -19,7 +19,7 @@ const faqs = [
    },
    {
       question: "How do I upload videos to Cinema?",
-      answer: "Navigate to Cinema and click the upload button. You can drag and drop your video file, add a title and description, and optionally enable Stealth Mode. We support most video formats up to 2GB.",
+      answer: "Navigate to Cinema and click the upload button. You can drag and drop your video file, add a title and description, and optionally enable Stealth Mode. We support most video formats up to 100MB.",
       icon: Film
    },
    {
@@ -66,7 +66,7 @@ export default function Support() {
       <div className="relative min-h-screen bg-[#050505] text-white">
 
          {/* Background Glow */}
-         <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-cyan-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
+         <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-cyan-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
 
          <div className="relative z-10 px-4 sm:px-6 lg:pl-72 lg:pr-72 pt-20 sm:pt-24 pb-20">
             <div className="max-w-4xl mx-auto">
@@ -90,7 +90,7 @@ export default function Support() {
                <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-cyan-500/30 bg-gradient-to-r from-cyan-500/10 to-transparent mb-8 sm:mb-12"
+                  className="p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-cyan-500/30 bg-linear-to-r from-cyan-500/10 to-transparent mb-8 sm:mb-12"
                >
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                      <div className="flex items-center gap-4">
