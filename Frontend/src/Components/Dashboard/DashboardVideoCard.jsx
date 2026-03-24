@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { Play, Ghost, MoreHorizontal, Eye, EyeOff, Trash2, Upload, AlertTriangle, X, RefreshCw, Zap } from 'lucide-react'
+import { Play, Ghost, MoreHorizontal, Eye, EyeOff, Trash2, Upload, AlertTriangle, X, RefreshCw } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { formatViews, formatDuration } from '../../utils/formatters'
 import { useUpload } from '../../context/UploadContext'
@@ -15,7 +15,7 @@ function DeleteModal({ title, onConfirm, onCancel }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[99999] flex items-center justify-center px-4"
+            className="fixed inset-0 z-99999 flex items-center justify-center px-4"
             onClick={onCancel}
         >
             <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
@@ -73,7 +73,8 @@ function UploadingGhostCard({ upload }) {
     const { retryUpload, dismissUpload } = useUpload()
     const navigate = useNavigate()
     const isError = upload.status === 'error'
-    const isCompressing = upload.status === 'compressing'
+    const isCanceled = upload.status === 'canceled'
+    const isQueued = upload.status === 'queued'
 
     return (
         <motion.div
@@ -82,8 +83,9 @@ function UploadingGhostCard({ upload }) {
             exit={{ opacity: 0, scale: 0.95 }}
             onClick={() => navigate(`/uploading/${upload.id}`)}
             className={`relative rounded-xl overflow-hidden border cursor-pointer hover:border-indigo-500/50 transition-colors ${
-                isError ? 'border-red-500/30 bg-red-950/20' : 
-                isCompressing ? 'border-amber-500/30 bg-amber-950/10' :
+                isError ? 'border-red-500/30 bg-red-950/20' :
+                isCanceled ? 'border-zinc-500/30 bg-zinc-900/60' :
+                isQueued ? 'border-zinc-500/30 bg-zinc-900/60' :
                 'border-indigo-500/30 bg-indigo-950/10'
             }`}
         >
@@ -93,36 +95,37 @@ function UploadingGhostCard({ upload }) {
                     <img src={upload.thumbnailUrl} alt="Uploading" className="w-full h-full object-cover opacity-40" />
                 ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                        <Upload className={`w-10 h-10 ${isError ? 'text-red-500/50' : 'text-indigo-500/50'}`} />
+                        <Upload className={`w-10 h-10 ${isError ? 'text-red-500/50' : isCanceled ? 'text-zinc-500/70' : 'text-indigo-500/50'}`} />
                     </div>
                 )}
 
                 {/* Status badge */}
-                <div className={`absolute top-2 left-2 px-2 py-1 rounded-lg flex items-center gap-1.5 text-[10px] font-bold ${isError ? 'bg-red-500/90' : isCompressing ? 'bg-amber-600/90' : 'bg-indigo-600/90'}`}>
+                <div className={`absolute top-2 left-2 px-2 py-1 rounded-lg flex items-center gap-1.5 text-[10px] font-bold ${isError ? 'bg-red-500/90' : isCanceled ? 'bg-zinc-600/90' : isQueued ? 'bg-zinc-700/90' : 'bg-indigo-600/90'}`}>
                     {isError ? (
                         <><AlertTriangle className="w-3 h-3" /> FAILED</>
-                    ) : isCompressing ? (
-                        <><Zap className="w-3 h-3 animate-pulse" /> COMPRESSING</>
+                    ) : isCanceled ? (
+                        <><X className="w-3 h-3" /> CANCELED</>
+                    ) : isQueued ? (
+                        <><Upload className="w-3 h-3" /> QUEUED</>
                     ) : (
                         <><Upload className="w-3 h-3 animate-bounce" /> UPLOADING</>
                     )}
                 </div>
 
                 {/* Progress bar overlay */}
-                {!isError && upload.progress > 0 && (
+                {!isError && !isCanceled && !isQueued && upload.progress > 0 && (
                     <div className="absolute bottom-0 left-0 right-0 h-1 bg-zinc-800">
                         <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${upload.progress}%` }}
                             transition={{ duration: 0.4, ease: 'easeOut' }}
-                            className={`h-full ${isCompressing ? 'bg-amber-500' : 'bg-indigo-500'}`}
+                            className="h-full bg-indigo-500"
                         />
                     </div>
                 )}
 
-                {/* Shimmer overlay when uploading */}
-                {!isError && (
-                    <div className={`absolute inset-0 bg-gradient-to-r ${isCompressing ? 'from-transparent via-amber-500/5 to-transparent' : 'from-transparent via-indigo-500/5 to-transparent'} animate-pulse`} />
+                {!isError && !isCanceled && !isQueued && (
+                    <div className="absolute inset-0 bg-linear-to-r from-transparent via-indigo-500/5 to-transparent animate-pulse" />
                 )}
             </div>
 
@@ -132,8 +135,8 @@ function UploadingGhostCard({ upload }) {
                     <p className="text-sm font-medium text-white line-clamp-2">{upload.title}</p>
 
                     <button
-                        onClick={(e) => { e.stopPropagation(); dismissUpload(upload.id); }}
-                        className="p-1 text-zinc-600 hover:text-zinc-400 transition-colors flex-shrink-0"
+                        onClick={(e) => { e.stopPropagation(); dismissUpload(upload.id, 'Upload canceled from dashboard.'); }}
+                        className="p-1 text-zinc-600 hover:text-zinc-400 transition-colors shrink-0"
                         title="Dismiss"
                     >
                         <X className="w-3.5 h-3.5" />
@@ -141,15 +144,31 @@ function UploadingGhostCard({ upload }) {
                 </div>
 
                 {isError ? (
-                    <button
-                        onClick={(e) => { e.stopPropagation(); retryUpload(upload.id); }}
-                        className="mt-2 flex items-center gap-1.5 text-xs text-red-400 hover:text-red-300 transition-colors font-medium"
-                    >
-                        <RefreshCw className="w-3 h-3" /> Retry upload
-                    </button>
+                    <div className="mt-2 space-y-1">
+                        <p className="text-[11px] text-red-300/90 line-clamp-2">{upload.errorMessage || 'Upload failed. Retry this upload.'}</p>
+                        {upload.requiresFileReselect ? (
+                            <button
+                                onClick={(e) => { e.stopPropagation(); navigate('/upload'); }}
+                                className="flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 transition-colors font-medium"
+                            >
+                                <Upload className="w-3 h-3" /> Reselect file to resume
+                            </button>
+                        ) : (
+                            <button
+                                onClick={(e) => { e.stopPropagation(); retryUpload(upload.id); }}
+                                className="flex items-center gap-1.5 text-xs text-red-400 hover:text-red-300 transition-colors font-medium"
+                            >
+                                <RefreshCw className="w-3 h-3" /> Retry upload
+                            </button>
+                        )}
+                    </div>
+                ) : isCanceled ? (
+                    <p className="text-xs mt-1 text-zinc-400">{upload.cancelReason || upload.errorMessage || 'Upload canceled.'}</p>
+                ) : isQueued ? (
+                    <p className="text-xs mt-1 text-zinc-400">Queued and starting soon...</p>
                 ) : (
-                    <p className={`text-xs mt-1 ${isCompressing ? 'text-amber-400' : 'text-indigo-400'}`}>
-                        {upload.progress > 0 ? `${upload.progress}% ${isCompressing ? 'compressed' : 'uploaded'}` : 'Preparing…'}
+                    <p className="text-xs mt-1 text-indigo-400">
+                        {upload.progress > 0 ? `${upload.progress}% uploaded` : 'Preparing…'}
                     </p>
                 )}
             </div>

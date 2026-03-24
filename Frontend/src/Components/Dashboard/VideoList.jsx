@@ -13,6 +13,8 @@ const VideoList = ({
     deleteVideoMutation
 }) => {
     const { pendingUploads } = useUpload()
+    const visiblePendingUploads = pendingUploads.filter((u) => ['queued', 'uploading', 'error', 'canceled'].includes(u.status))
+    const activeUploadCount = pendingUploads.filter((u) => ['queued', 'uploading'].includes(u.status)).length
 
     return (
         <motion.div
@@ -24,9 +26,9 @@ const VideoList = ({
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                     <h2 className="text-2xl font-bold text-white">All Videos</h2>
-                    {pendingUploads.filter(u => u.status !== 'done').length > 0 && (
+                    {activeUploadCount > 0 && (
                         <span className="px-2 py-0.5 bg-indigo-500/20 border border-indigo-500/30 rounded-full text-xs font-bold text-indigo-400 animate-pulse">
-                            {pendingUploads.filter(u => u.status !== 'done').length} uploading…
+                            {activeUploadCount} uploading…
                         </span>
                     )}
                 </div>
@@ -57,7 +59,7 @@ const VideoList = ({
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     {/* Ghost uploading cards at top */}
                     <AnimatePresence>
-                        {pendingUploads.filter(u => u.status !== 'done').map(upload => (
+                        {visiblePendingUploads.map(upload => (
                             <UploadingGhostCard key={`ghost-${upload.id}`} upload={upload} />
                         ))}
                     </AnimatePresence>
