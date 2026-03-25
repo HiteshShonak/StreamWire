@@ -39,7 +39,7 @@ const AuthLock = ({
 
     if (size === "compact") {
         return (
-            <div className={`relative w-full overflow-hidden rounded-xl border backdrop-blur-sm bg-gradient-to-br ${style} p-4`}>
+            <div className={`relative w-full overflow-hidden rounded-xl border backdrop-blur-sm bg-linear-to-br ${style} p-4`}>
                 <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
                     <div className="flex items-center gap-3">
                         <div className="p-2 rounded-lg bg-white/5 border border-white/10 backdrop-blur-md">
@@ -54,7 +54,7 @@ const AuthLock = ({
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={handleAction}
-                        className={`px-5 py-2 rounded-lg text-xs font-bold text-white shadow-lg transition-all flex items-center gap-2 flex-shrink-0 ${btnStyle}`}
+                        className={`px-5 py-2 rounded-lg text-xs font-bold text-white shadow-lg transition-all flex items-center gap-2 shrink-0 ${btnStyle}`}
                     >
                         <Sparkles className="w-3.5 h-3.5" />
                         Sign In
@@ -65,7 +65,7 @@ const AuthLock = ({
     }
 
     return (
-        <div className={`relative w-full overflow-hidden rounded-xl border backdrop-blur-sm bg-gradient-to-br ${style} p-8`}>
+        <div className={`relative w-full overflow-hidden rounded-xl border backdrop-blur-sm bg-linear-to-br ${style} p-8`}>
             {/* Background Glow Effects */}
             <div className="absolute top-0 right-0 -mt-8 -mr-8 w-32 h-32 bg-white/5 rounded-full blur-2xl" />
             <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-32 h-32 bg-white/5 rounded-full blur-2xl" />

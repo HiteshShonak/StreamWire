@@ -18,7 +18,7 @@ const ChannelCard = memo(function ChannelCard({ channel, subscriberCount, onUnsu
          className="group relative overflow-hidden"
       >
          {/* Gradient Background */}
-         <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+         <div className="absolute inset-0 bg-linear-to-br from-purple-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
          {/* Card Content */}
          <div className="relative p-6 rounded-2xl bg-zinc-900/50 border border-zinc-800 group-hover:border-purple-500/50 group-hover:bg-zinc-900/80 transition-all duration-300 shadow-lg">
@@ -41,7 +41,7 @@ const ChannelCard = memo(function ChannelCard({ channel, subscriberCount, onUnsu
                         />
                      </div>
                      {isPrivate && (
-                        <div className="absolute -top-2 -right-2 w-7 h-7 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center border-2 border-[#050505] shadow-lg">
+                        <div className="absolute -top-2 -right-2 w-7 h-7 bg-linear-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center border-2 border-[#050505] shadow-lg">
                            <Lock className="w-3.5 h-3.5 text-black" />
                         </div>
                      )}

@@ -57,7 +57,7 @@ const NavItem = ({ icon: Icon, label, path, isDanger = false, isCollapsed = fals
             />
           )}
 
-          <Icon className={`w-5 h-5 transition-transform duration-300 flex-shrink-0 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} />
+          <Icon className={`w-5 h-5 transition-transform duration-300 shrink-0 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} />
 
           {!isCollapsed && (
             <span className={`text-sm font-bold tracking-wide whitespace-nowrap ${isActive ? 'font-extrabold' : 'font-medium'}`}>
@@ -66,7 +66,7 @@ const NavItem = ({ icon: Icon, label, path, isDanger = false, isCollapsed = fals
           )}
 
           {/* Hover Glow Background (Subtle) */}
-          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+          <div className="absolute inset-0 rounded-xl bg-linear-to-r from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
           {/* Tooltip for Collapsed State */}
           {isCollapsed && (

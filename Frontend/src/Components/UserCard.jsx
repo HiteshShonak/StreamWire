@@ -1,7 +1,6 @@
 import { memo } from 'react'
 import { Link } from 'react-router-dom'
 import { UserPlus, UserCheck, Ghost, Shield } from 'lucide-react'
-import { motion } from 'framer-motion'
 
 const UserCard = memo(function UserCard({ user, onSubscribe }) {
   // Check if this is a "Ghost" profile (already masked by backend, but we style it)
@@ -10,7 +9,7 @@ const UserCard = memo(function UserCard({ user, onSubscribe }) {
   return (
     <div className={`flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl border transition-all gap-4 ${isGhost ? "bg-zinc-900/50 border-green-900/20" : "bg-zinc-900 border-zinc-800 hover:border-zinc-700"}`}>
       <Link to={`/c/${user.username}`} className="flex items-center gap-4 flex-1 min-w-0">
-        <div className="relative flex-shrink-0">
+        <div className="relative shrink-0">
           <img
             src={user.avatar?.url}
             alt={user.fullName}
@@ -41,7 +40,7 @@ const UserCard = memo(function UserCard({ user, onSubscribe }) {
 
       <button
         onClick={() => onSubscribe(user._id)}
-        className={`w-full sm:w-auto px-4 py-2 sm:py-1.5 rounded-full text-xs font-bold transition-all flex items-center justify-center gap-2 flex-shrink-0
+        className={`w-full sm:w-auto px-4 py-2 sm:py-1.5 rounded-full text-xs font-bold transition-all flex items-center justify-center gap-2 shrink-0
           ${user.isSubscribed
             ? "bg-zinc-800 text-zinc-400 hover:text-red-400 border border-zinc-700"
             : "bg-white text-black hover:bg-zinc-200 border border-transparent"

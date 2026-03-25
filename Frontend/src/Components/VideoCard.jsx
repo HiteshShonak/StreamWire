@@ -1,7 +1,6 @@
 import { memo } from 'react'
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { motion } from 'framer-motion'
 import { Play, Clock, Ghost, UserCheck } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 
@@ -62,7 +61,7 @@ const VideoCard = memo(function VideoCard({ video }) {
         {/* Avatar */}
         <Link
           to={isStealth ? "#" : `/c/${video.owner?.username}`}
-          className="flex-shrink-0"
+          className="shrink-0"
           onClick={(e) => { if (isStealth) e.preventDefault(); }}
         >
           <img

@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React from 'react'
 
 // Skeleton components library
 
@@ -155,8 +155,8 @@ export const ChannelPageSkeleton = () => (
 
 // Video player page
 export const VideoPlayerSkeleton = () => (
-    <div className="lg:pl-[280px] pt-24 pb-20 px-4 md:px-6">
-        <div className="max-w-[1800px] mx-auto">
+    <div className="lg:pl-70 pt-24 pb-20 px-4 md:px-6">
+        <div className="max-w-450 mx-auto">
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                 <div className="xl:col-span-2 space-y-6">
                     <div className="skeleton aspect-video w-full rounded-2xl" />
@@ -460,7 +460,7 @@ export const ContentSkeleton = ({ lines = 3 }) => (
 export const CinemaFeedSkeleton = () => (
     <div className="space-y-8">
         {/* Hero Section Skeleton */}
-        <div className="skeleton h-[400px] md:h-[500px] rounded-3xl" />
+        <div className="skeleton h-[400px] md:h-125 rounded-3xl" />
 
         {/* Category Tabs */}
         <div className="flex gap-3 overflow-x-auto pb-2">
@@ -530,9 +530,9 @@ export const TrendingPageSkeleton = () => (
 export const AuthFormSkeleton = ({ fieldCount = 2 }) => (
     <div className="min-h-screen w-full bg-[#050505] flex items-center justify-center p-4 relative overflow-hidden">
         <div className="w-full max-w-md relative z-20">
-            <div className="bg-zinc-900/40 backdrop-blur-2xl border border-white/10 p-8 rounded-[2rem] shadow-2xl shadow-black/50 overflow-hidden relative">
+            <div className="bg-zinc-900/40 backdrop-blur-2xl border border-white/10 p-8 rounded-4xl shadow-2xl shadow-black/50 overflow-hidden relative">
                 {/* Top Glow Accent */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent blur-sm" />
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-linear-to-r from-transparent via-indigo-500/50 to-transparent blur-sm" />
 
                 {/* Header: icon + title + subtitle */}
                 <div className="text-center mb-8">
@@ -1124,7 +1124,7 @@ export const HomePageSkeleton = () => (
             {/* 3 SpotlightCards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
                 {[...Array(3)].map((_, i) => (
-                    <div key={i} className="rounded-[2.5rem] border border-white/10 bg-zinc-900/40 p-8 md:p-10 h-[450px] md:h-[500px] flex flex-col justify-between">
+                    <div key={i} className="rounded-[2.5rem] border border-white/10 bg-zinc-900/40 p-8 md:p-10 h-112.5 md:h-125 flex flex-col justify-between">
                         {/* Top: icon + title + desc */}
                         <div>
                             <div className="skeleton w-14 h-14 rounded-2xl mb-6" />
@@ -1134,7 +1134,7 @@ export const HomePageSkeleton = () => (
                         </div>
                         {/* Bottom: divider + row */}
                         <div>
-                            <div className="h-[1px] w-full bg-white/10 mb-6" />
+                            <div className="h-px w-full bg-white/10 mb-6" />
                             <div className="flex items-center justify-between">
                                 <div className="skeleton h-3 w-24 rounded" />
                                 <div className="skeleton w-10 h-10 rounded-full" />
@@ -1230,7 +1230,7 @@ export const LandingPageSkeleton = () => (
                 {/* 3 cards: 1 large (2×2) + 2 tall */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                     {/* Large card — spans 2 cols, 2 rows */}
-                    <div className="md:col-span-2 md:row-span-2 h-[420px] sm:h-[450px] rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-indigo-100 bg-gradient-to-br from-indigo-50/50 via-white to-violet-50/50">
+                    <div className="md:col-span-2 md:row-span-2 h-[420px] sm:h-112.5 rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-indigo-100 bg-linear-to-br from-indigo-50/50 via-white to-violet-50/50">
                         <div className="flex items-center gap-2 sm:gap-3 mb-3">
                             <div className="skeleton-light w-9 h-9 sm:w-10 sm:h-10 rounded-xl" />
                             <div className="skeleton-light h-6 w-40 rounded" />
@@ -1240,7 +1240,7 @@ export const LandingPageSkeleton = () => (
                     </div>
 
                     {/* Tall card 1 */}
-                    <div className="h-[420px] sm:h-[450px] rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-emerald-200 bg-gradient-to-br from-emerald-50/50 via-white to-green-50/50">
+                    <div className="h-[420px] sm:h-112.5 rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-emerald-200 bg-linear-to-br from-emerald-50/50 via-white to-green-50/50">
                         <div className="skeleton-light w-11 h-11 sm:w-12 sm:h-12 rounded-xl mb-3 sm:mb-4" />
                         <div className="skeleton-light h-5 w-28 rounded mb-2" />
                         <div className="skeleton-light h-4 w-full rounded mb-4" />
@@ -1249,7 +1249,7 @@ export const LandingPageSkeleton = () => (
                     </div>
 
                     {/* Tall card 2 */}
-                    <div className="h-[420px] sm:h-[450px] rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-red-100 bg-gradient-to-br from-red-50/50 via-white to-orange-50/50">
+                    <div className="h-[420px] sm:h-112.5 rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-red-100 bg-linear-to-br from-red-50/50 via-white to-orange-50/50">
                         <div className="skeleton-light w-11 h-11 sm:w-12 sm:h-12 rounded-xl mb-3 sm:mb-4" />
                         <div className="skeleton-light h-5 w-28 rounded mb-2" />
                         <div className="skeleton-light h-4 w-full rounded mb-4" />
