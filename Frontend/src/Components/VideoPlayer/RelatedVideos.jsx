@@ -30,7 +30,7 @@ const RelatedVideos = React.memo(({
                         onClick={() => navigate(`/cinema/${recVideo._id}`)}
                         className="flex gap-3 cursor-pointer group p-2 -mx-2 rounded-lg hover:bg-zinc-900/50 transition-colors"
                     >
-                        <div className="relative w-36 md:w-40 aspect-video rounded-lg overflow-hidden flex-shrink-0 bg-zinc-900">
+                        <div className="relative w-36 md:w-40 aspect-video rounded-lg overflow-hidden shrink-0 bg-zinc-900">
                             <img
                                 src={recVideo.thumbnail?.url}
                                 alt={recVideo.title}

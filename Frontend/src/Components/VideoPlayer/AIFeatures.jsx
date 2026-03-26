@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
 import { FileText, Sparkles, ChevronUp, ChevronDown, Brain, MessageSquare, User, Send } from 'lucide-react'
@@ -30,7 +30,7 @@ const AIFeatures = React.memo(({
             if (chatEndRef?.current) {
                 chatEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
-        } catch (e) {
+        } catch (_e) {
             // swallow any errors silently
         }
     }, [chatMessages.length, chatEndRef]);
@@ -88,7 +88,7 @@ const AIFeatures = React.memo(({
             </div>
 
             {/* AI Summary Button & Display */}
-            <div className="p-4 bg-gradient-to-br from-violet-900/20 to-indigo-900/20 border border-violet-500/30 rounded-xl">
+            <div className="p-4 bg-linear-to-br from-violet-900/20 to-indigo-900/20 border border-violet-500/30 rounded-xl">
                 {!userData ? (
                     <AuthLock
                         message="Sign in to generate Video Summaries"
@@ -178,7 +178,7 @@ const AIFeatures = React.memo(({
             </div>
 
             {/* AI Q&A Chat */}
-            <div className="p-4 bg-gradient-to-br from-emerald-900/20 to-teal-900/20 border border-emerald-500/30 rounded-xl">
+            <div className="p-4 bg-linear-to-br from-emerald-900/20 to-teal-900/20 border border-emerald-500/30 rounded-xl">
                 {!userData ? (
                     <AuthLock
                         message="Sign in to chat with this video"
@@ -275,7 +275,7 @@ const AIFeatures = React.memo(({
                                             <button
                                                 type="submit"
                                                 disabled={askQuestionMutation.isPending || !aiQuestion.trim()}
-                                                className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                                className="px-4 py-2 bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                                             >
                                                 {askQuestionMutation.isPending ? (
                                                     <LoadingDots size="xs" />

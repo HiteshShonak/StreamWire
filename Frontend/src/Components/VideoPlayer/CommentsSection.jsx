@@ -25,10 +25,10 @@ const CommentsSection = React.memo(({
     deleteCommentMutation,
     togglePinMutation,
     toggleCommentStealthMutation,
-    showAllComments,
-    setShowAllComments,
+    showAllComments: _showAllComments,
+    setShowAllComments: _setShowAllComments,
     isOwner,
-    navigate // passed from parent
+    navigate: _navigate // passed from parent
 }) => {
     const pinnedCommentIds = useMemo(() =>
         new Set(pinnedComments.map(c => c._id)),
@@ -69,7 +69,7 @@ const CommentsSection = React.memo(({
                                 : userData?.avatar?.url || `https://ui-avatars.com/api/?name=${userData?.fullName}&background=6366f1&color=fff`
                             }
                             alt="Your avatar"
-                            className="w-10 h-10 rounded-full object-cover border border-zinc-800 flex-shrink-0"
+                            className="w-10 h-10 rounded-full object-cover border border-zinc-800 shrink-0"
                         />
                         <div className="flex-1 space-y-3">
                             <textarea
@@ -156,7 +156,7 @@ const CommentsSection = React.memo(({
                                         <img
                                             src={commentAvatar}
                                             alt={commentName}
-                                            className="w-9 h-9 rounded-full object-cover border-2 border-amber-500/30 flex-shrink-0"
+                                            className="w-9 h-9 rounded-full object-cover border-2 border-amber-500/30 shrink-0"
                                         />
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2 mb-1">
@@ -218,7 +218,7 @@ const CommentsSection = React.memo(({
                                 <img
                                     src={commentAvatar}
                                     alt={commentName}
-                                    className="w-9 h-9 rounded-full object-cover border border-zinc-800 flex-shrink-0"
+                                    className="w-9 h-9 rounded-full object-cover border border-zinc-800 shrink-0"
                                 />
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2 mb-1">

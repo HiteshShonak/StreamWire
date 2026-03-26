@@ -34,7 +34,7 @@ const VideoPlayerControls = React.memo(({
     setShowControls,
     isFullscreen,
     toggleFullscreen,
-    skipTime,
+    skipTime: _skipTime,
     togglePiP,
     playbackSpeed,
     changePlaybackSpeed,
@@ -51,15 +51,6 @@ const VideoPlayerControls = React.memo(({
     const [hoverTime, setHoverTime] = useState(0);
     const [hoverPos, setHoverPos] = useState(0); // in pixels
     const [showPreview, setShowPreview] = useState(false);
-
-    // Sync state with native video events (fixes autoplay button issue)
-    const onPlayHandler = () => {
-        if (!isPlaying) togglePlay() // Ensure parent state matches
-    }
-
-    const onPauseHandler = () => {
-        if (isPlaying) togglePlay()
-    }
 
     // Dynamic source generation
     // Cloudinary allows on-the-fly transformations. We inject params into the URL.
@@ -237,7 +228,7 @@ const VideoPlayerControls = React.memo(({
                     setHasPlayed(true);
                 }}
                 onPause={() => isPlaying && togglePlay()}
-                onError={(e) => {
+                onError={(_e) => {
                     // If quality switch fails (Cloudinary transformation timeout), fallback to auto
                     if (quality !== 'auto') {
                         console.warn('Quality switch failed, falling back to auto');
@@ -265,7 +256,7 @@ const VideoPlayerControls = React.memo(({
 
             {/* Cinematic gradient overlays */}
             {/* Top Shadow for visibility */}
-            <div className={`absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/80 to-transparent pointer-events-none transition-opacity duration-500 ${showControls ? 'opacity-100' : 'opacity-0'}`} />
+            <div className={`absolute inset-x-0 top-0 h-32 bg-linear-to-b from-black/80 to-transparent pointer-events-none transition-opacity duration-500 ${showControls ? 'opacity-100' : 'opacity-0'}`} />
 
             {/* Center Play Button (Modern Glass) */}
             <AnimatePresence>
@@ -291,7 +282,7 @@ const VideoPlayerControls = React.memo(({
             {/* Controls bar */}
             <div className={`
                 absolute inset-x-0 bottom-0 px-4 md:px-6 pb-4 md:pb-6 pt-24
-                bg-gradient-to-t from-black/95 via-black/80 to-transparent 
+                bg-linear-to-t from-black/95 via-black/80 to-transparent 
                 transition-opacity duration-300 ease-out
                 ${showControls || !isPlaying ? 'opacity-100' : 'opacity-0'}
             `}>
@@ -313,7 +304,7 @@ const VideoPlayerControls = React.memo(({
                                 className="absolute bottom-8 flex flex-col items-center z-30 pointer-events-none"
                                 style={{ left: hoverPos, transform: 'translateX(-50%)' }}
                             >
-                                <div className="w-40 h-[90px] bg-black rounded-lg border border-white/30 overflow-hidden shadow-2xl relative flex items-center justify-center">
+                                <div className="w-40 h-22.5 bg-black rounded-lg border border-white/30 overflow-hidden shadow-2xl relative flex items-center justify-center">
                                     {previewUrl ? (
                                         <img
                                             src={previewUrl}
@@ -328,7 +319,7 @@ const VideoPlayerControls = React.memo(({
                                             <LoadingDots size="sm" className="text-white/40" />
                                         </div>
                                     )}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                                    <div className="absolute inset-0 bg-linear-to-t from-black/80 to-transparent" />
                                     <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-black/90 rounded text-xs font-mono font-bold text-white shadow-lg">
                                         {formatDuration(hoverTime)}
                                     </span>
@@ -351,13 +342,13 @@ const VideoPlayerControls = React.memo(({
                             style={{ width: `${progress}%` }}
                         >
                             {/* Glow Effect */}
-                            <div className="absolute right-0 top-0 bottom-0 w-4 bg-indigo-400 blur-[4px]" />
+                            <div className="absolute right-0 top-0 bottom-0 w-4 bg-indigo-400 blur-xs" />
                         </div>
                     </div>
 
                     {/* Scrubber Knob - clamped to prevent overflow at edges */}
                     <div
-                        className="absolute top-1/2 -mt-[6px] w-3 h-3 bg-white rounded-full shadow-lg opacity-0 group-hover/timeline:opacity-100 transition-opacity duration-200 pointer-events-none"
+                        className="absolute top-1/2 -mt-1.5 w-3 h-3 bg-white rounded-full shadow-lg opacity-0 group-hover/timeline:opacity-100 transition-opacity duration-200 pointer-events-none"
                         style={{ left: `clamp(6px, ${progress}%, calc(100% - 6px))`, transform: 'translateX(-50%)' }}
                     />
                 </div>
