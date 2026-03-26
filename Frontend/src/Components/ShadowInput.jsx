@@ -6,6 +6,7 @@ import { LoadingDots } from './Common/LoadingIndicator'
 import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
 import { compressImage, isValidImage } from '../utils/imageCompressor'
+import { toActionError } from '../utils/errorMessages'
 
 export default function ShadowInput({ onSuccess }) {
     const [content, setContent] = useState("")
@@ -52,7 +53,12 @@ export default function ShadowInput({ onSuccess }) {
         },
         onError: (err) => {
             console.error('ShadowInput - Mutation error:', err);
-            toast.error(err.message || "Shadow failed to materialize")
+            toast.error(toActionError(err, 'Could not post this shadow. Please try again.', [
+                {
+                    when: ['unauthorized', 'login'],
+                    message: 'Please sign in to post in Shadows.'
+                }
+            ]))
         }
     })
 
@@ -111,7 +117,7 @@ export default function ShadowInput({ onSuccess }) {
         } catch (error) {
             setIsUploadingImage(false)
             console.error('Image compression error:', error)
-            toast.error(error.message || 'Failed to process image')
+            toast.error(toActionError(error, 'Failed to process image. Please try a different file.'))
         }
     }
 
@@ -288,7 +294,7 @@ export default function ShadowInput({ onSuccess }) {
                         setContent(newText)
                     }}
                     placeholder="Whisper into the shadows..."
-                    className="w-full bg-transparent outline-none text-zinc-200 placeholder:text-zinc-600 resize-none min-h-[100px]"
+                    className="w-full bg-transparent outline-none text-zinc-200 placeholder:text-zinc-600 resize-none min-h-25"
                 />
 
                 {/* Poll Creator Interface */}
@@ -349,7 +355,7 @@ export default function ShadowInput({ onSuccess }) {
                                     initial={{ opacity: 0, scale: 0.8 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     exit={{ opacity: 0, scale: 0.8 }}
-                                    className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 group border border-zinc-900"
+                                    className="relative w-20 h-20 rounded-lg overflow-hidden shrink-0 group border border-zinc-900"
                                 >
                                     <img src={img.url} alt="preview" className="w-full h-full object-cover opacity-90" />
                                     <button

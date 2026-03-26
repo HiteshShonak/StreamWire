@@ -1,10 +1,11 @@
-import { useEffect, useCallback } from 'react'
+import { useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useSelector } from 'react-redux'
 import { motion } from 'framer-motion'
 import { Zap } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { toActionError } from '../utils/errorMessages'
 
 // API Services
 import { tweetService } from '../api/services/tweet.service'
@@ -29,6 +30,7 @@ export default function WireFeed() {
         hasNextPage,
         isFetchingNextPage,
         status,
+        error,
     } = useInfiniteQuery({
         queryKey: ['wire'],
         queryFn: async ({ pageParam = 1 }) => {
@@ -91,7 +93,12 @@ export default function WireFeed() {
             if (context?.previousFeed) {
                 queryClient.setQueryData(['wire'], context.previousFeed)
             }
-            toast.error("Like failed")
+            toast.error(toActionError(err, 'Could not update like. Please try again.', [
+                {
+                    when: ['unauthorized', 'login'],
+                    message: 'Please sign in to like this wire.'
+                }
+            ]))
         },
         onSettled: () => {
             // Sync with server eventually
@@ -104,17 +111,26 @@ export default function WireFeed() {
         onSuccess: () => {
             toast.success("Wire deleted")
             queryClient.invalidateQueries(['wire'])
-        }
+        },
+        onError: (err) => {
+            toast.error(toActionError(err, 'Could not delete wire. Please try again.'))
+        },
     })
 
     // Memoized handlers for WireCard (prevents memo from breaking)
-    const handleLike = useCallback((id) => likeMutation.mutate(id), [likeMutation.mutate])
-    const handleDelete = useCallback((id) => deleteMutation.mutate(id), [deleteMutation.mutate])
+    const handleLike = (id) => likeMutation.mutate(id)
+    const handleDelete = (id) => deleteMutation.mutate(id)
+    const wireFeedErrorMessage = toActionError(error, 'Could not load the wire feed. Please refresh and try again.', [
+        {
+            when: ['unauthorized', 'login'],
+            message: 'Please sign in to view the Wire feed.'
+        }
+    ])
 
     return (
         <div className="min-h-screen bg-[#050505] text-white">
             {/* Background Glow */}
-            <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-sky-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
+            <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-sky-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
 
             <div className="relative z-10 px-3 sm:px-6 lg:pl-6 pt-24 sm:pt-28 pb-20 lg:px-6">
                 <div className="max-w-2xl mx-auto">
@@ -149,7 +165,7 @@ export default function WireFeed() {
                             <WireListSkeleton count={5} />
                         ) : status === 'error' ? (
                             <div className="py-20 text-center text-red-400">
-                                Error loading wire feed.
+                                {wireFeedErrorMessage}
                             </div>
                         ) : (
                             <>

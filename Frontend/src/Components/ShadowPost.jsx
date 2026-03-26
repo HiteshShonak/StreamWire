@@ -10,6 +10,7 @@ import {
 import { LoadingDots } from './Common/LoadingIndicator'
 import { formatDistanceToNow } from 'date-fns'
 import toast from 'react-hot-toast'
+import { toActionError } from '../utils/errorMessages'
 
 // Services
 import { tweetService } from '../api/services/tweet.service'
@@ -32,11 +33,15 @@ export default function ShadowPost() {
 
   const handleShare = () => {
     const url = `${window.location.origin}/shadow/${shadowId}`
-    navigator.clipboard.writeText(url).then(() => {
-      setCopied(true)
-      toast.success('Link copied to clipboard')
-      setTimeout(() => setCopied(false), 2000)
-    })
+    navigator.clipboard.writeText(url)
+      .then(() => {
+        setCopied(true)
+        toast.success('Link copied to clipboard')
+        setTimeout(() => setCopied(false), 2000)
+      })
+      .catch((error) => {
+        toast.error(toActionError(error, 'Could not copy shadow link. Please try again.'))
+      })
   }
 
   // Fetch Shadow
@@ -73,11 +78,16 @@ export default function ShadowPost() {
       })
       return { previousShadow }
     },
-    onError: (err, newTodo, context) => {
+    onError: (err, _variables, context) => {
       if (context?.previousShadow) {
         queryClient.setQueryData(['shadow', shadowId], context.previousShadow)
       }
-      toast.error("Like failed")
+      toast.error(toActionError(err, 'Could not update like. Please try again.', [
+        {
+          when: ['unauthorized', 'login'],
+          message: 'Please sign in to like this shadow.'
+        }
+      ]))
     },
     onSettled: () => {
       queryClient.invalidateQueries(['shadow', shadowId])
@@ -112,7 +122,12 @@ export default function ShadowPost() {
       if (context?.previousShadow) {
         queryClient.setQueryData(['shadow', shadowId], context.previousShadow)
       }
-      toast.error(err.message || 'Vote failed')
+      toast.error(toActionError(err, 'Could not submit your vote. Please try again.', [
+        {
+          when: ['unauthorized', 'login'],
+          message: 'Please sign in to vote on this poll.'
+        }
+      ]))
     },
     onSettled: () => {
       queryClient.invalidateQueries(['shadow', shadowId])
@@ -128,7 +143,9 @@ export default function ShadowPost() {
       queryClient.invalidateQueries(['shadows'])
       toast.success("Shadow claimed and made public")
     },
-    onError: () => toast.error("Failed to claim shadow")
+    onError: (err) => {
+      toast.error(toActionError(err, 'Could not claim this shadow. Please try again.'))
+    }
   })
 
   const deleteMutation = useMutation({
@@ -145,7 +162,7 @@ export default function ShadowPost() {
     onError: (err) => {
       // Revert navigation on error
       navigate(`/shadows/${shadowId}`)
-      toast.error(err.message || 'Failed to delete shadow')
+      toast.error(toActionError(err, 'Could not delete shadow. Please try again.'))
       queryClient.invalidateQueries(['shadow', shadowId])
     }
   })
@@ -188,7 +205,12 @@ export default function ShadowPost() {
       if (context?.previousComments) {
         queryClient.setQueryData(['shadowComments', shadowId], context.previousComments)
       }
-      toast.error(err.message || 'Failed to add comment')
+      toast.error(toActionError(err, 'Could not add your comment. Please try again.', [
+        {
+          when: ['unauthorized', 'login'],
+          message: 'Please sign in to comment in Shadows.'
+        }
+      ]))
     },
     onSettled: () => {
       // Refresh to get real data from server
@@ -221,7 +243,7 @@ export default function ShadowPost() {
       if (context?.previousComments) {
         queryClient.setQueryData(['shadowComments', shadowId], context.previousComments)
       }
-      toast.error(err.message || 'Failed to delete comment')
+      toast.error(toActionError(err, 'Could not delete this comment. Please try again.'))
     },
     onSettled: () => {
       // Refresh data
@@ -258,7 +280,7 @@ export default function ShadowPost() {
       if (context?.previousComments) {
         queryClient.setQueryData(['shadowComments', shadowId], context.previousComments)
       }
-      toast.error(err.message || 'Failed to update comment privacy')
+      toast.error(toActionError(err, 'Could not update comment privacy. Please try again.'))
     },
     onSuccess: (data, variables) => {
       const message = variables.currentStealth ? "Comment claimed (Public)" : "Comment masked (Stealth)"
@@ -283,7 +305,7 @@ export default function ShadowPost() {
   if (shadowLoading) {
     return (
       <div className="min-h-screen bg-[#050505] text-white">
-        <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-emerald-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
+        <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-emerald-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
         <div className="relative z-10 px-3 sm:px-6 lg:pl-6 pt-24 sm:pt-28 pb-20 lg:px-6">
           <WirePostSkeleton />
         </div>
@@ -304,7 +326,6 @@ export default function ShadowPost() {
   // ALL shadows are anonymous
   const displayName = "Shadow User"
   const displayHandle = "@redacted"
-  const avatarUrl = `https://ui-avatars.com/api/?name=S&background=0a0a0c&color=10b981`
 
   // Poll Data Logic
   const totalVotes = shadow.poll?.options.reduce((acc, curr) => acc + curr.votes, 0) || 0
@@ -313,7 +334,7 @@ export default function ShadowPost() {
   return (
     <div className="min-h-screen bg-[#050505] text-white">
       {/* Background Glow - Emerald theme */}
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-emerald-500 opacity-[0.03] blur-[120px] pointer-events-none gpu-layer" />
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-emerald-500 opacity-3 blur-[120px] pointer-events-none gpu-layer" />
 
       {/* Main Content */}
       <div className="relative z-10 px-3 sm:px-6 lg:pl-6 pt-24 sm:pt-28 pb-20 lg:px-6">
@@ -336,7 +357,7 @@ export default function ShadowPost() {
           >
             <div className="flex gap-4">
               {/* Avatar - Ghost Icon */}
-              <div className="w-10 h-10 rounded-full bg-zinc-900 border border-emerald-900/30 flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 rounded-full bg-zinc-900 border border-emerald-900/30 flex items-center justify-center shrink-0">
                 <Ghost className="w-5 h-5 text-emerald-500/70" />
               </div>
 
@@ -403,7 +424,7 @@ export default function ShadowPost() {
                 {/* Image Attachment */}
                 {shadow.image?.url && (
                   <div className="rounded-xl overflow-hidden border border-zinc-900 mt-3 mb-3">
-                    <img src={shadow.image.url} alt="Attachment" className="w-full h-auto max-h-[400px] object-cover opacity-90" />
+                    <img src={shadow.image.url} alt="Attachment" className="w-full h-auto max-h-100 object-cover opacity-90" />
                   </div>
                 )}
 
@@ -511,7 +532,7 @@ export default function ShadowPost() {
                   <img
                     src={isStealthComment ? "https://ui-avatars.com/api/?name=S&background=18181b&color=22c55e" : (userData?.avatar?.url || `https://ui-avatars.com/api/?name=${userData?.fullName}`)}
                     alt="Your avatar"
-                    className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover flex-shrink-0 ${isStealthComment ? "border border-green-500/50" : ""}`}
+                    className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0 ${isStealthComment ? "border border-green-500/50" : ""}`}
                   />
                   <div className="flex-1">
                     <textarea
@@ -592,14 +613,14 @@ export default function ShadowPost() {
                     >
                       <div className="flex gap-4">
                         {commentIsStealth ? (
-                          <div className="w-11 h-11 rounded-full bg-zinc-900 border border-emerald-900/30 flex items-center justify-center flex-shrink-0">
+                          <div className="w-11 h-11 rounded-full bg-zinc-900 border border-emerald-900/30 flex items-center justify-center shrink-0">
                             <Ghost className="w-5 h-5 text-emerald-500/70" />
                           </div>
                         ) : (
                           <img
                             src={commentAvatarUrl}
                             alt="Commenter"
-                            className="w-11 h-11 rounded-full object-cover flex-shrink-0"
+                            className="w-11 h-11 rounded-full object-cover shrink-0"
                           />
                         )}
                         <div className="flex-1">
