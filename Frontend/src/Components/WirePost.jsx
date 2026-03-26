@@ -10,6 +10,7 @@ import {
 import { LoadingDots } from './Common/LoadingIndicator'
 import { formatDistanceToNow } from 'date-fns'
 import toast from 'react-hot-toast'
+import { toActionError } from '../utils/errorMessages'
 
 // Services
 import { tweetService } from '../api/services/tweet.service'
@@ -32,15 +33,19 @@ export default function WirePost() {
 
   const handleShare = () => {
     const url = `${window.location.origin}/wire/${wireId}`
-    navigator.clipboard.writeText(url).then(() => {
-      setCopied(true)
-      toast.success('Link copied to clipboard')
-      setTimeout(() => setCopied(false), 2000)
-    })
+    navigator.clipboard.writeText(url)
+      .then(() => {
+        setCopied(true)
+        toast.success('Link copied to clipboard')
+        setTimeout(() => setCopied(false), 2000)
+      })
+      .catch((error) => {
+        toast.error(toActionError(error, 'Could not copy wire link. Please try again.'))
+      })
   }
 
   // Fetch Wire
-  const { data: wire, isLoading: wireLoading, error: wireError } = useQuery({
+  const { data: wire, isLoading: wireLoading } = useQuery({
     queryKey: ['wire', wireId],
     queryFn: async () => await tweetService.getTweetById(wireId),
     retry: 1
@@ -73,11 +78,16 @@ export default function WirePost() {
       })
       return { previousWire }
     },
-    onError: (err, newTodo, context) => {
+    onError: (err, _variables, context) => {
       if (context?.previousWire) {
         queryClient.setQueryData(['wire', wireId], context.previousWire)
       }
-      toast.error("Like failed")
+      toast.error(toActionError(err, 'Could not update like. Please try again.', [
+        {
+          when: ['unauthorized', 'login'],
+          message: 'Please sign in to like this wire.'
+        }
+      ]))
     },
     onSettled: () => {
       queryClient.invalidateQueries(['wire', wireId])
@@ -112,7 +122,12 @@ export default function WirePost() {
       if (context?.previousWire) {
         queryClient.setQueryData(['wire', wireId], context.previousWire)
       }
-      toast.error(err.message || 'Vote failed')
+      toast.error(toActionError(err, 'Could not submit your vote. Please try again.', [
+        {
+          when: ['unauthorized', 'login'],
+          message: 'Please sign in to vote on this poll.'
+        }
+      ]))
     },
     onSettled: () => {
       queryClient.invalidateQueries(['wire', wireId])
@@ -129,7 +144,9 @@ export default function WirePost() {
       const message = wire.isStealthMode ? "Wire claimed (Public)" : "Wire masked (Stealth)"
       toast.success(message)
     },
-    onError: () => toast.error("Failed to update privacy")
+    onError: (err) => {
+      toast.error(toActionError(err, 'Could not update wire privacy. Please try again.'))
+    }
   })
 
   const deleteMutation = useMutation({
@@ -146,7 +163,7 @@ export default function WirePost() {
     onError: (err) => {
       // Revert navigation on error
       navigate(`/wire/${wireId}`)
-      toast.error(err.message || 'Failed to delete wire')
+      toast.error(toActionError(err, 'Could not delete wire. Please try again.'))
       queryClient.invalidateQueries(['wire', wireId])
     }
   })
@@ -190,7 +207,12 @@ export default function WirePost() {
       if (context?.previousComments) {
         queryClient.setQueryData(['wireComments', wireId], context.previousComments)
       }
-      toast.error(err.message || 'Failed to add comment')
+      toast.error(toActionError(err, 'Could not add your comment. Please try again.', [
+        {
+          when: ['unauthorized', 'login'],
+          message: 'Please sign in to comment on this wire.'
+        }
+      ]))
     },
     onSettled: () => {
       // Refresh to get real data from server
@@ -223,7 +245,7 @@ export default function WirePost() {
       if (context?.previousComments) {
         queryClient.setQueryData(['wireComments', wireId], context.previousComments)
       }
-      toast.error(err.message || 'Failed to delete comment')
+      toast.error(toActionError(err, 'Could not delete this comment. Please try again.'))
     },
     onSettled: () => {
       // Refresh data
@@ -260,7 +282,7 @@ export default function WirePost() {
       if (context?.previousComments) {
         queryClient.setQueryData(['wireComments', wireId], context.previousComments)
       }
-      toast.error(err.message || 'Failed to update comment privacy')
+      toast.error(toActionError(err, 'Could not update comment privacy. Please try again.'))
     },
     onSuccess: (data, variables) => {
       const message = variables.currentStealth ? "Comment claimed (Public)" : "Comment masked (Stealth)"
@@ -285,7 +307,18 @@ export default function WirePost() {
         toast.success('Unsubscribed')
       }
     },
-    onError: (err) => toast.error(err.message || 'Failed to update subscription')
+    onError: (err) => {
+      toast.error(toActionError(err, 'Could not update subscription. Please try again.', [
+        {
+          when: ['unauthorized', 'login'],
+          message: 'Please sign in to manage subscriptions.'
+        },
+        {
+          when: ['yourself'],
+          message: 'You cannot subscribe to your own channel.'
+        }
+      ]))
+    }
   })
 
   // Subscribe mutation (for comment authors)
@@ -316,7 +349,16 @@ export default function WirePost() {
       if (context?.previousComments) {
         queryClient.setQueryData(['wireComments', wireId], context.previousComments)
       }
-      toast.error(err.message || 'Failed to update subscription')
+      toast.error(toActionError(err, 'Could not update subscription. Please try again.', [
+        {
+          when: ['unauthorized', 'login'],
+          message: 'Please sign in to manage subscriptions.'
+        },
+        {
+          when: ['yourself'],
+          message: 'You cannot subscribe to your own channel.'
+        }
+      ]))
     },
     onSuccess: (data) => {
       if (data.isPending) {
@@ -345,7 +387,7 @@ export default function WirePost() {
   if (wireLoading) {
     return (
       <div className="min-h-screen bg-[#050505] text-white">
-        <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-sky-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
+        <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-sky-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
         <div className="relative z-10 px-3 sm:px-6 lg:pl-6 pt-24 sm:pt-28 pb-20 lg:px-6">
           <WirePostSkeleton />
         </div>
@@ -376,7 +418,7 @@ export default function WirePost() {
   return (
     <div className="min-h-screen bg-[#050505] text-white">
       {/* Background Glow */}
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-sky-500 opacity-5 blur-[120px] pointer-events-none" />
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-sky-500 opacity-5 blur-[120px] pointer-events-none" />
 
       {/* Main Content */}
       <div className="relative z-10 px-3 sm:px-6 lg:pl-6 pt-24 sm:pt-28 pb-20 lg:px-6">
@@ -395,13 +437,13 @@ export default function WirePost() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`bg-[#0a0a0c] border border-zinc-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 mb-6 ${isStealth ? "border-l-2 border-l-green-500/30 pl-[14px]" : ""}`}
+            className={`bg-[#0a0a0c] border border-zinc-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 mb-6 ${isStealth ? "border-l-2 border-l-green-500/30 pl-3.5" : ""}`}
           >
             <div className="flex gap-4">
               {/* Avatar */}
               <Link
                 to={isStealth ? "#" : `/c/${wire.owner?.username}`}
-                className="flex-shrink-0"
+                className="shrink-0"
               >
                 <img
                   src={avatarUrl}
@@ -460,7 +502,7 @@ export default function WirePost() {
 
                       {/* Dropdown Menu */}
                       <div className="absolute right-0 top-0 hidden group-hover/menu:block pt-6 z-20">
-                        <div className="bg-[#18181b] border border-zinc-800 rounded-xl p-1 shadow-xl w-36 overflow-hidden">
+                        <div className="bg-text-main border border-zinc-800 rounded-xl p-1 shadow-xl w-36 overflow-hidden">
 
                           {/* Claim / Go Stealth Button - Hidden when identity is globally cloaked */}
                           {!wire.owner?.isIdentityCloaked && (
@@ -498,7 +540,7 @@ export default function WirePost() {
                 {/* Image Attachment */}
                 {wire.image?.url && (
                   <div className="rounded-xl overflow-hidden border border-zinc-800 mt-3 mb-3">
-                    <img src={wire.image.url} alt="Attachment" className="w-full h-auto max-h-[400px] object-cover" />
+                    <img src={wire.image.url} alt="Attachment" className="w-full h-auto max-h-100 object-cover" />
                   </div>
                 )}
 
@@ -603,7 +645,7 @@ export default function WirePost() {
                   <img
                     src={isStealthComment ? "https://ui-avatars.com/api/?name=S&background=18181b&color=22c55e" : (userData?.avatar?.url || `https://ui-avatars.com/api/?name=${userData?.fullName}`)}
                     alt="Your avatar"
-                    className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover flex-shrink-0 ${isStealthComment ? "border border-green-500/50" : ""}`}
+                    className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0 ${isStealthComment ? "border border-green-500/50" : ""}`}
                   />
                   <div className="flex-1">
                     <textarea
@@ -686,7 +728,7 @@ export default function WirePost() {
                         <Link
                           to={commentIsStealth ? "#" : `/c/${comment.owner?.username}`}
                           onClick={(e) => { e.stopPropagation(); if (commentIsStealth) e.preventDefault(); }}
-                          className="flex-shrink-0"
+                          className="shrink-0"
                         >
                           <img
                             src={commentAvatarUrl}

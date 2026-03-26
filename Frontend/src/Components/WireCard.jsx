@@ -1,4 +1,4 @@
-import { useState, useCallback, memo } from 'react'
+import { useState, memo } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import toast from 'react-hot-toast'
+import { toActionError } from '../utils/errorMessages'
 
 // Services (Imported for local mutation)
 import { tweetService } from '../api/services/tweet.service'
@@ -21,45 +22,56 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
     const queryClient = useQueryClient()
     const [copied, setCopied] = useState(false)
     const [lightboxSrc, setLightboxSrc] = useState(null)
+    const wireId = wire?._id
+    const ownerId = wire?.owner?._id
+
+    // Check ownership
+    const isOwner = userData?._id === ownerId
+
+    // Identity logic
+    const isStealth = Boolean(wire?.isStealthMode || wire?.owner?.isIdentityCloaked)
+    const displayName = isStealth ? "StreamWire User" : wire?.owner?.fullName
+    const displayHandle = isStealth ? "@anonymous" : `@${wire?.owner?.username}`
+    const avatarUrl = isStealth
+        ? `https://ui-avatars.com/api/?name=S&background=18181b&color=22c55e`
+        : wire?.owner?.avatar?.url
 
     const handleShare = (e) => {
         e.stopPropagation()
-        const url = `${window.location.origin}/wire/${wire._id}`
-        navigator.clipboard.writeText(url).then(() => {
-            setCopied(true)
-            toast.success('Link copied to clipboard')
-            setTimeout(() => setCopied(false), 2000)
-        })
+        const url = `${window.location.origin}/wire/${wireId}`
+        navigator.clipboard.writeText(url)
+            .then(() => {
+                setCopied(true)
+                toast.success('Link copied to clipboard')
+                setTimeout(() => setCopied(false), 2000)
+            })
+            .catch((error) => {
+                toast.error(toActionError(error, 'Could not copy wire link. Please try again.'))
+            })
     }
-
-    // Guard against undefined wire
-    if (!wire) return null
-
-    // Check ownership
-    const isOwner = userData?._id === wire.owner?._id
-
-    // Identity logic
-    const isStealth = wire.isStealthMode || wire.owner?.isIdentityCloaked
-    const displayName = isStealth ? "StreamWire User" : wire.owner?.fullName
-    const displayHandle = isStealth ? "@anonymous" : `@${wire.owner?.username}`
-    const avatarUrl = isStealth
-        ? `https://ui-avatars.com/api/?name=S&background=18181b&color=22c55e`
-        : wire.owner?.avatar?.url
 
     // Stealth / claim mutation
     const toggleStealthMutation = useMutation({
-        mutationFn: () => tweetService.updateTweet(wire._id, { isStealthMode: !isStealth }),
+        mutationFn: () => {
+            if (!wireId) throw new Error('Wire not available')
+            return tweetService.updateTweet(wireId, { isStealthMode: !isStealth })
+        },
         onSuccess: () => {
             queryClient.invalidateQueries(['wire'])
             const message = isStealth ? "Wire claimed (Public)" : "Wire masked (Stealth)"
             toast.success(message)
         },
-        onError: () => toast.error("Failed to update privacy")
+        onError: (err) => {
+            toast.error(toActionError(err, 'Could not update wire privacy. Please try again.'))
+        }
     })
 
     // Subscribe mutation
     const subscribeMutation = useMutation({
-        mutationFn: () => subscriptionService.toggleSubscription(wire.owner?._id),
+        mutationFn: () => {
+            if (!ownerId) throw new Error('Channel not available')
+            return subscriptionService.toggleSubscription(ownerId)
+        },
         onSuccess: (data) => {
             queryClient.invalidateQueries(['wire'])
             if (data.isPending) {
@@ -70,14 +82,29 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
                 toast.success('Unsubscribed')
             }
         },
-        onError: (err) => toast.error(err.message || 'Failed to update subscription')
+        onError: (err) => {
+            toast.error(toActionError(err, 'Could not update subscription. Please try again.', [
+                {
+                    when: ['unauthorized', 'login'],
+                    message: 'Please sign in to manage subscriptions.'
+                },
+                {
+                    when: ['yourself'],
+                    message: 'You cannot subscribe to your own channel.'
+                }
+            ]))
+        }
     })
 
     // Navigation Handler
     const handleCardClick = (e) => {
+        if (!wireId) return
         if (e.target.closest('button') || window.getSelection().toString().length > 0) return
-        navigate(`/wire/${wire._id}`)
+        navigate(`/wire/${wireId}`)
     }
+
+    // Guard against undefined wire
+    if (!wire) return null
 
     return (
         <>
@@ -88,14 +115,14 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
             onClick={handleCardClick}
             className={`
                 relative border-b border-zinc-800 bg-[#0a0a0c] hover:bg-zinc-900/40 transition-colors cursor-pointer p-3 sm:p-4 contain-content
-                ${isStealth ? "border-l-2 border-l-green-500/30 pl-[14px]" : ""} 
+                ${isStealth ? "border-l-2 border-l-green-500/30 pl-3.5" : ""} 
             `}
         >
             <div className="flex gap-3 sm:gap-4">
                 {/* Avatar Column */}
                 <Link
                     to={isStealth ? "#" : `/c/${wire.owner?.username}`}
-                    className="flex-shrink-0"
+                    className="shrink-0"
                     onClick={(e) => { e.stopPropagation(); if (isStealth) e.preventDefault(); }}
                 >
                     <img
@@ -120,8 +147,8 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
                                 {displayName}
                             </Link>
 
-                            {!isStealth && <BadgeCheck className="w-3.5 h-3.5 text-sky-500 flex-shrink-0" />}
-                            {isStealth && <ShieldCheck className="w-3.5 h-3.5 text-green-500 flex-shrink-0" />}
+                            {!isStealth && <BadgeCheck className="w-3.5 h-3.5 text-sky-500 shrink-0" />}
+                            {isStealth && <ShieldCheck className="w-3.5 h-3.5 text-green-500 shrink-0" />}
 
                             {isOwner && (
                                 <span className="px-1.5 py-0.5 bg-indigo-500/20 text-indigo-400 text-[10px] font-bold rounded border border-indigo-500/30">YOU</span>
@@ -162,7 +189,7 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
 
                                 {/* Dropdown Menu */}
                                 <div className="absolute right-0 top-0 hidden group-hover/menu:block pt-6 z-20">
-                                    <div className="bg-[#18181b] border border-zinc-800 rounded-xl p-1 shadow-xl w-36 overflow-hidden">
+                                    <div className="bg-text-main border border-zinc-800 rounded-xl p-1 shadow-xl w-36 overflow-hidden">
 
                                         {/* Claim / Go Stealth Button - Hidden when identity is globally cloaked */}
                                         {!wire.owner?.isIdentityCloaked && (
@@ -186,7 +213,7 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation()
-                                                onDelete(wire._id)
+                                                onDelete(wireId)
                                             }}
                                             className="flex items-center gap-2 w-full px-3 py-2 text-xs font-medium text-red-400 hover:bg-red-500/10 rounded-lg text-left transition-colors"
                                         >
@@ -214,7 +241,7 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
                             <img
                                 src={wire.image.url}
                                 alt="Attachment"
-                                className="w-full h-auto max-h-[500px] object-cover hover:opacity-90 transition-opacity"
+                                className="w-full h-auto max-h-125 object-cover hover:opacity-90 transition-opacity"
                                 loading="lazy"
                             />
                         </div>
@@ -245,10 +272,10 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
                             className="group/btn flex items-center gap-1.5 p-2 rounded-full transition-colors hover:bg-sky-500/10 hover:text-sky-500"
                             onClick={(e) => {
                                 e.stopPropagation();
-                                navigate(`/wire/${wire._id}`);
+                                navigate(`/wire/${wireId}`);
                             }}
                         >
-                            <MessageSquare className="w-[18px] h-[18px] transition-colors" />
+                            <MessageSquare className="w-4.5 h-4.5 transition-colors" />
                             <span className="text-xs font-medium">
                                 {wire.commentsCount || 0}
                             </span>
@@ -262,11 +289,11 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
                                     navigate('/login')
                                     return
                                 }
-                                onLike(wire._id)
+                                onLike(wireId)
                             }}
                             className={`group/btn flex items-center gap-1.5 p-2 rounded-full transition-colors hover:bg-pink-500/10 hover:text-pink-500 ${wire.isLiked ? 'text-pink-500' : ''}`}
                         >
-                            <Heart className={`w-[18px] h-[18px] transition-colors ${wire.isLiked ? "fill-pink-500" : ""}`} />
+                            <Heart className={`w-4.5 h-4.5 transition-colors ${wire.isLiked ? "fill-pink-500" : ""}`} />
                             <span className="text-xs font-medium">
                                 {wire.likesCount || 0}
                             </span>
@@ -274,7 +301,7 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
 
                         {/* Views */}
                         <div className="flex items-center gap-1.5 p-2">
-                            <BarChart2 className="w-[18px] h-[18px]" />
+                            <BarChart2 className="w-4.5 h-4.5" />
                             <span className="text-xs font-medium">
                                 {wire.views || 0}
                             </span>
@@ -286,9 +313,9 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
                             className="group/btn flex items-center gap-1.5 p-2 rounded-full transition-colors hover:bg-indigo-500/10 hover:text-indigo-500"
                         >
                             {copied ? (
-                                <Check className="w-[18px] h-[18px] text-indigo-500" />
+                                <Check className="w-4.5 h-4.5 text-indigo-500" />
                             ) : (
-                                <Share className="w-[18px] h-[18px] transition-colors" />
+                                <Share className="w-4.5 h-4.5 transition-colors" />
                             )}
                         </button>
                     </div>
@@ -308,4 +335,4 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
     )
 })
 
-export default WireCard
+export default WireCard

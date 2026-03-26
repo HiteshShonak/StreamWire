@@ -14,6 +14,7 @@ import { subscriptionService } from '../api/services/subscription.service';
 import { likeService } from '../api/services/like.service';
 import { commentService } from '../api/services/comment.service';
 import { libraryService } from '../api/services/library.service';
+import { toActionError } from '../utils/errorMessages';
 
 // Modular Components
 import VideoPlayerControls from '../Components/VideoPlayer/VideoPlayerControls';
@@ -36,7 +37,6 @@ export default function VideoPlayer() {
   const [progress, setProgress] = useState(0);
   const [volume, setVolume] = useState(1);
   const [showDescription, setShowDescription] = useState(false);
-  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -152,12 +152,10 @@ export default function VideoPlayer() {
     },
     onError: (err, variables, context) => {
       queryClient.setQueryData(['watchLaterStatus', videoId], context.previousStatus);
-      const message = err.message?.includes('not found')
-        ? 'Video not found'
-        : err.message?.includes('unauthorized') || err.message?.includes('login')
-          ? 'Please sign in to manage your Watch Later list'
-          : 'Could not update Watch Later. Please try again.';
-      toast.error(message);
+      toast.error(toActionError(err, 'Could not update Watch Later. Please try again.', [
+        { when: 'not found', message: 'Video not found' },
+        { when: ['unauthorized', 'not authorized', 'login'], message: 'Please sign in to manage your Watch Later list' },
+      ]));
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries(['watchLaterStatus', videoId]);
@@ -185,7 +183,10 @@ export default function VideoPlayer() {
       if (context?.previousVideo) {
         queryClient.setQueryData(['video', videoId], context.previousVideo);
       }
-      toast.error('Failed to update like');
+      toast.error(toActionError(err, 'Could not update like. Please try again.', [
+        { when: 'not found', message: 'Video not found' },
+        { when: ['unauthorized', 'not authorized', 'login'], message: 'Please sign in to like this video' },
+      ]));
     },
     onSettled: () => {
       queryClient.invalidateQueries(['video', videoId]);
@@ -206,14 +207,11 @@ export default function VideoPlayer() {
       }
     },
     onError: (err) => {
-      const message = err.message?.includes('not found')
-        ? 'Channel not found'
-        : err.message?.includes('yourself')
-          ? 'You cannot subscribe to your own channel'
-          : err.message?.includes('unauthorized') || err.message?.includes('login')
-            ? 'Please sign in to subscribe'
-            : 'Could not update subscription. Please try again.';
-      toast.error(message);
+      toast.error(toActionError(err, 'Could not update subscription. Please try again.', [
+        { when: 'not found', message: 'Channel not found' },
+        { when: 'yourself', message: 'You cannot subscribe to your own channel' },
+        { when: ['unauthorized', 'not authorized', 'login'], message: 'Please sign in to subscribe' },
+      ]));
     }
   });
 
@@ -265,14 +263,11 @@ export default function VideoPlayer() {
       if (context?.previousComments) {
         queryClient.setQueryData(['videoComments', videoId], context.previousComments);
       }
-      const message = err.message?.includes('not found')
-        ? 'Video not found'
-        : err.message?.includes('Comment is required') || err.message?.includes('empty')
-          ? 'Comment cannot be empty'
-          : err.message?.includes('unauthorized') || err.message?.includes('login')
-            ? 'Please sign in to comment'
-            : 'Could not post comment. Please try again.';
-      toast.error(message);
+      toast.error(toActionError(err, 'Could not post comment. Please try again.', [
+        { when: 'not found', message: 'Video not found' },
+        { when: ['comment is required', 'empty'], message: 'Comment cannot be empty' },
+        { when: ['unauthorized', 'not authorized', 'login'], message: 'Please sign in to comment' },
+      ]));
     },
     onSettled: () => {
       queryClient.invalidateQueries(['videoComments', videoId]);
@@ -289,12 +284,10 @@ export default function VideoPlayer() {
       queryClient.invalidateQueries(['video', videoId]);
     },
     onError: (err) => {
-      const message = err.message?.includes('not found')
-        ? 'Comment not found'
-        : err.message?.includes('permission') || err.message?.includes('not authorized')
-          ? 'You do not have permission to delete this comment'
-          : 'Could not delete comment. Please try again.';
-      toast.error(message);
+      toast.error(toActionError(err, 'Could not delete comment. Please try again.', [
+        { when: 'not found', message: 'Comment not found' },
+        { when: ['permission', 'not authorized'], message: 'You do not have permission to delete this comment' },
+      ]));
     }
   });
 
@@ -307,12 +300,10 @@ export default function VideoPlayer() {
       toast.success(data.isPinned ? 'Comment pinned!' : 'Comment unpinned');
     },
     onError: (err) => {
-      const message = err.message?.includes('not found')
-        ? 'Comment not found'
-        : err.message?.includes('permission') || err.message?.includes('not authorized')
-          ? 'Only video owner can pin comments'
-          : 'Could not pin comment. Please try again.';
-      toast.error(message);
+      toast.error(toActionError(err, 'Could not pin comment. Please try again.', [
+        { when: 'not found', message: 'Comment not found' },
+        { when: ['permission', 'not authorized'], message: 'Only video owner can pin comments' },
+      ]));
     }
   });
 
@@ -329,12 +320,10 @@ export default function VideoPlayer() {
       toast.success(message);
     },
     onError: (err) => {
-      const message = err.message?.includes('not found')
-        ? 'Video not found'
-        : err.message?.includes('permission') || err.message?.includes('not authorized')
-          ? 'Only video owner can change privacy settings'
-          : 'Could not update video privacy. Please try again.';
-      toast.error(message);
+      toast.error(toActionError(err, 'Could not update video privacy. Please try again.', [
+        { when: 'not found', message: 'Video not found' },
+        { when: ['permission', 'not authorized'], message: 'Only video owner can change privacy settings' },
+      ]));
     }
   });
 
@@ -348,12 +337,10 @@ export default function VideoPlayer() {
       navigate('/cinema');
     },
     onError: (err) => {
-      const message = err.message?.includes('not found')
-        ? 'Video not found'
-        : err.message?.includes('permission') || err.message?.includes('not authorized')
-          ? 'Only video owner can delete this video'
-          : 'Could not delete video. Please try again.';
-      toast.error(message);
+      toast.error(toActionError(err, 'Could not delete video. Please try again.', [
+        { when: 'not found', message: 'Video not found' },
+        { when: ['permission', 'not authorized'], message: 'Only video owner can delete this video' },
+      ]));
       setShowDeleteConfirm(false);
     }
   });
@@ -368,12 +355,10 @@ export default function VideoPlayer() {
       toast.success(message);
     },
     onError: (err) => {
-      const message = err.message?.includes('not found')
-        ? 'Video not found'
-        : err.message?.includes('permission') || err.message?.includes('not authorized')
-          ? 'Only video owner can change comment settings'
-          : 'Could not update comment settings. Please try again.';
-      toast.error(message);
+      toast.error(toActionError(err, 'Could not update comment settings. Please try again.', [
+        { when: 'not found', message: 'Comment not found' },
+        { when: ['permission', 'not authorized'], message: 'Only video owner can change comment settings' },
+      ]));
     }
   });
 
@@ -386,12 +371,10 @@ export default function VideoPlayer() {
       toast.success('Summary generated!');
     },
     onError: (err) => {
-      const message = err.message?.includes('not available') || err.message?.includes('processing')
-        ? 'Video transcript is still being generated. Please try again in a moment.'
-        : err.message?.includes('429') || err.message?.includes('busy')
-          ? 'AI service is busy. Please try again in a few seconds.'
-          : 'Could not generate summary. Please try again.';
-      toast.error(message);
+      toast.error(toActionError(err, 'Could not generate summary. Please try again.', [
+        { when: ['not available', 'processing'], message: 'Video transcript is still being generated. Please try again in a moment.' },
+        { when: ['429', 'busy', 'too many requests', 'rate limit'], message: 'AI service is busy. Please try again in a few seconds.' },
+      ]));
     }
   });
 
@@ -410,12 +393,10 @@ export default function VideoPlayer() {
       // No toast for assistant answers (keeps UX calm)
     },
     onError: (err) => {
-      const message = err.message?.includes('not available') || err.message?.includes('processing')
-        ? 'Video transcript is still being generated. Cannot answer questions yet.'
-        : err.message?.includes('429') || err.message?.includes('busy')
-          ? 'AI service is busy. Please try again in a few seconds.'
-          : 'Could not generate answer. Please try again.';
-      toast.error(message);
+      toast.error(toActionError(err, 'Could not generate answer. Please try again.', [
+        { when: ['not available', 'processing'], message: 'Video transcript is still being generated. Cannot answer questions yet.' },
+        { when: ['429', 'busy', 'too many requests', 'rate limit'], message: 'AI service is busy. Please try again in a few seconds.' },
+      ]));
     }
   });
 
@@ -527,10 +508,15 @@ export default function VideoPlayer() {
 
   const handleShare = () => {
     const url = window.location.href;
-    navigator.clipboard.writeText(url);
-    setCopied(true);
-    toast.success('Link copied to clipboard!');
-    setTimeout(() => setCopied(false), 2000);
+    navigator.clipboard.writeText(url)
+      .then(() => {
+        setCopied(true);
+        toast.success('Link copied to clipboard!');
+        setTimeout(() => setCopied(false), 2000);
+      })
+      .catch((error) => {
+        toast.error(toActionError(error, 'Could not copy video link. Please try again.'));
+      });
   };
 
   // Update progress
@@ -592,7 +578,7 @@ export default function VideoPlayer() {
 
         video.play().then(() => {
           setIsPlaying(true);
-        }).catch((error) => {
+        }).catch((_error) => {
           // Autoplay might be blocked by browser
         });
       }
@@ -631,14 +617,14 @@ export default function VideoPlayer() {
       video.removeEventListener('waiting', handleWaiting);
       video.removeEventListener('playing', handlePlaying);
     };
-  }, [duration, videoRef.current]); // Add videoRef.current dependency to re-attach on element swap
+  }, [duration, videoId]);
 
   // Use video duration from API as initial fallback
   useEffect(() => {
     if (video?.duration && duration === 0) {
       setDuration(video.duration);
     }
-  }, [video?.duration]);
+  }, [video?.duration, duration]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -688,7 +674,7 @@ export default function VideoPlayer() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isPlaying, isMuted]);
+  }, [togglePlay, toggleFullscreen, toggleMute, skipTime]);
 
   // Compute derived values (must be before early returns!)
   const isOwner = useMemo(() => userData?._id === video?.owner?._id, [userData?._id, video?.owner?._id]);
@@ -738,8 +724,8 @@ export default function VideoPlayer() {
       <Header variant="cinema" onUploadClick={() => navigate('/upload')} />
       <Sidebar />
 
-      <div className="lg:pl-[280px] pt-24 pb-20 px-4 md:px-6">
-        <div className="max-w-[1800px] mx-auto">
+      <div className="lg:pl-70 pt-24 pb-20 px-4 md:px-6">
+        <div className="max-w-450 mx-auto">
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
 
             {/* Main Content - Video & Details */}

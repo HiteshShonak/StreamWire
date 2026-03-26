@@ -6,6 +6,7 @@ import { LoadingDots } from './Common/LoadingIndicator'
 import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
 import { compressImage, isValidImage } from '../utils/imageCompressor'
+import { toActionError } from '../utils/errorMessages'
 
 export default function WireInput({ onSuccess }) {
     const [content, setContent] = useState("")
@@ -53,7 +54,12 @@ export default function WireInput({ onSuccess }) {
         },
         onError: (err) => {
             console.error('WireInput - Mutation error:', err);
-            toast.error(err.message || "Transmission failed")
+            toast.error(toActionError(err, 'Could not send your wire. Please try again.', [
+                {
+                    when: ['unauthorized', 'login'],
+                    message: 'Please sign in to post on the Wire.'
+                }
+            ]))
         }
     })
 
@@ -113,7 +119,7 @@ export default function WireInput({ onSuccess }) {
         } catch (error) {
             setIsUploadingImage(false)
             console.error('Image compression error:', error)
-            toast.error(error.message || 'Failed to process image')
+            toast.error(toActionError(error, 'Failed to process image. Please try a different file.'))
         }
     }
 
@@ -298,7 +304,7 @@ export default function WireInput({ onSuccess }) {
                         setContent(newText)
                     }}
                     placeholder={isStealth ? "Whisper into the void..." : "Share your thoughts..."}
-                    className="w-full bg-transparent outline-none text-zinc-200 placeholder:text-zinc-600 resize-none min-h-[100px]"
+                    className="w-full bg-transparent outline-none text-zinc-200 placeholder:text-zinc-600 resize-none min-h-25"
                 />
 
                 {/* Poll Creator Interface */}
@@ -359,7 +365,7 @@ export default function WireInput({ onSuccess }) {
                                     initial={{ opacity: 0, scale: 0.8 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     exit={{ opacity: 0, scale: 0.8 }}
-                                    className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 group"
+                                    className="relative w-20 h-20 rounded-lg overflow-hidden shrink-0 group"
                                 >
                                     <img src={img.url} alt="preview" className="w-full h-full object-cover" />
                                     <button

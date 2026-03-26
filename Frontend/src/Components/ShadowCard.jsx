@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import toast from 'react-hot-toast'
+import { toActionError } from '../utils/errorMessages'
 
 import { tweetService } from '../api/services/tweet.service'
 import ImageLightbox from './Common/ImageLightbox'
@@ -19,43 +20,53 @@ const ShadowCard = memo(function ShadowCard({ shadow, onLike, onDelete }) {
     const queryClient = useQueryClient()
     const [copied, setCopied] = useState(false)
     const [lightboxSrc, setLightboxSrc] = useState(null)
-
-    const handleShare = (e) => {
-        e.stopPropagation()
-        const url = `${window.location.origin}/shadow/${shadow._id}`
-        navigator.clipboard.writeText(url).then(() => {
-            setCopied(true)
-            toast.success('Link copied to clipboard')
-            setTimeout(() => setCopied(false), 2000)
-        })
-    }
-
-    // Guard against undefined shadow
-    if (!shadow) return null
+    const shadowId = shadow?._id
 
     // Check ownership (owner can still see their own anonymous posts)
-    const isOwner = userData?._id === shadow.owner?._id
+    const isOwner = userData?._id === shadow?.owner?._id
 
     // ALL posts in shadows are anonymous
     const displayName = "Shadow User"
     const displayHandle = "@redacted"
-    const avatarUrl = `https://ui-avatars.com/api/?name=S&background=0a0a0c&color=10b981`
+
+    const handleShare = (e) => {
+        e.stopPropagation()
+        const url = `${window.location.origin}/shadow/${shadowId}`
+        navigator.clipboard.writeText(url)
+            .then(() => {
+                setCopied(true)
+                toast.success('Link copied to clipboard')
+                setTimeout(() => setCopied(false), 2000)
+            })
+            .catch((error) => {
+                toast.error(toActionError(error, 'Could not copy shadow link. Please try again.'))
+            })
+    }
 
     // Claim shadow mutation (convert to public)
     const claimShadowMutation = useMutation({
-        mutationFn: () => tweetService.updateTweet(shadow._id, { isStealthMode: false }),
+        mutationFn: () => {
+            if (!shadowId) throw new Error('Shadow not available')
+            return tweetService.updateTweet(shadowId, { isStealthMode: false })
+        },
         onSuccess: () => {
             queryClient.invalidateQueries(['shadows'])
             toast.success("Shadow claimed and made public")
         },
-        onError: () => toast.error("Failed to claim shadow")
+        onError: (err) => {
+            toast.error(toActionError(err, 'Could not claim this shadow. Please try again.'))
+        }
     })
 
     // Navigation Handler
     const handleCardClick = (e) => {
+        if (!shadowId) return
         if (e.target.closest('button') || window.getSelection().toString().length > 0) return
-        navigate(`/shadow/${shadow._id}`)
+        navigate(`/shadow/${shadowId}`)
     }
+
+    // Guard against undefined shadow
+    if (!shadow) return null
 
     return (
         <>
@@ -68,7 +79,7 @@ const ShadowCard = memo(function ShadowCard({ shadow, onLike, onDelete }) {
         >
             <div className="flex gap-3 sm:gap-4">
                 {/* Avatar Column - Anonymous Icon */}
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                     <div className="w-10 h-10 rounded-full bg-zinc-900 border border-emerald-900/30 flex items-center justify-center">
                         <Ghost className="w-5 h-5 text-emerald-500/70" />
                     </div>
@@ -84,7 +95,7 @@ const ShadowCard = memo(function ShadowCard({ shadow, onLike, onDelete }) {
                                 {displayName}
                             </span>
 
-                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500/60 flex-shrink-0" />
+                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500/60 shrink-0" />
 
                             {isOwner && (
                                 <span className="px-1.5 py-0.5 bg-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded border border-emerald-500/30">YOU</span>
@@ -127,7 +138,7 @@ const ShadowCard = memo(function ShadowCard({ shadow, onLike, onDelete }) {
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation()
-                                                onDelete(shadow._id)
+                                                onDelete(shadowId)
                                             }}
                                             className="flex items-center gap-2 w-full px-3 py-2 text-xs font-medium text-red-400 hover:bg-red-500/10 rounded-lg text-left transition-colors"
                                         >
@@ -155,7 +166,7 @@ const ShadowCard = memo(function ShadowCard({ shadow, onLike, onDelete }) {
                             <img
                                 src={shadow.image.url}
                                 alt="Attachment"
-                                className="w-full h-auto max-h-[500px] object-cover opacity-90 hover:opacity-100 transition-opacity"
+                                className="w-full h-auto max-h-125 object-cover opacity-90 hover:opacity-100 transition-opacity"
                                 loading="lazy"
                             />
                         </div>
@@ -186,10 +197,10 @@ const ShadowCard = memo(function ShadowCard({ shadow, onLike, onDelete }) {
                             className="group/btn flex items-center gap-1.5 p-2 rounded-full transition-colors hover:bg-emerald-500/10 hover:text-emerald-500"
                             onClick={(e) => {
                                 e.stopPropagation();
-                                navigate(`/shadow/${shadow._id}`);
+                                navigate(`/shadow/${shadowId}`);
                             }}
                         >
-                            <MessageSquare className="w-[18px] h-[18px] transition-colors" />
+                            <MessageSquare className="w-4.5 h-4.5 transition-colors" />
                             <span className="text-xs font-medium">
                                 {shadow.commentsCount || 0}
                             </span>
@@ -203,11 +214,11 @@ const ShadowCard = memo(function ShadowCard({ shadow, onLike, onDelete }) {
                                     navigate('/login')
                                     return
                                 }
-                                onLike(shadow._id)
+                                onLike(shadowId)
                             }}
                             className={`group/btn flex items-center gap-1.5 p-2 rounded-full transition-colors hover:bg-emerald-500/10 hover:text-emerald-500 ${shadow.isLiked ? 'text-emerald-500' : ''}`}
                         >
-                            <Heart className={`w-[18px] h-[18px] transition-colors ${shadow.isLiked ? "fill-emerald-500" : ""}`} />
+                            <Heart className={`w-4.5 h-4.5 transition-colors ${shadow.isLiked ? "fill-emerald-500" : ""}`} />
                             <span className="text-xs font-medium">
                                 {shadow.likesCount || 0}
                             </span>
@@ -215,7 +226,7 @@ const ShadowCard = memo(function ShadowCard({ shadow, onLike, onDelete }) {
 
                         {/* Views */}
                         <div className="flex items-center gap-1.5 p-2">
-                            <BarChart2 className="w-[18px] h-[18px]" />
+                            <BarChart2 className="w-4.5 h-4.5" />
                             <span className="text-xs font-medium">
                                 {shadow.views || 0}
                             </span>
@@ -227,9 +238,9 @@ const ShadowCard = memo(function ShadowCard({ shadow, onLike, onDelete }) {
                             className="group/btn flex items-center gap-1.5 p-2 rounded-full transition-colors hover:bg-emerald-500/10 hover:text-emerald-500"
                         >
                             {copied ? (
-                                <Check className="w-[18px] h-[18px] text-emerald-500" />
+                                <Check className="w-4.5 h-4.5 text-emerald-500" />
                             ) : (
-                                <Share className="w-[18px] h-[18px] transition-colors" />
+                                <Share className="w-4.5 h-4.5 transition-colors" />
                             )}
                         </button>
                     </div>
