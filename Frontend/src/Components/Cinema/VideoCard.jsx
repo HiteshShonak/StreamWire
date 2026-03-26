@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux'
 import toast from 'react-hot-toast'
 import { libraryService } from '../../api/services/library.service'
 import { formatViews, formatDuration, formatTimeAgo } from '../../utils/formatters'
+import { toActionError } from '../../utils/errorMessages'
 
 const VideoCard = React.memo(({ video }) => {
     const navigate = useNavigate()
@@ -59,12 +60,16 @@ const VideoCard = React.memo(({ video }) => {
             }
         },
         onError: (err) => {
-            const message = err.message?.includes('not found')
-                ? 'Video not found'
-                : err.message?.includes('unauthorized') || err.message?.includes('login')
-                    ? 'Please sign in to manage your Watch Later list'
-                    : 'Could not update Watch Later. Please try again.';
-            toast.error(message);
+            toast.error(toActionError(err, 'Could not update Watch Later. Please try again.', [
+                {
+                    when: ['not found'],
+                    message: 'Video not found.'
+                },
+                {
+                    when: ['unauthorized', 'login'],
+                    message: 'Please sign in to manage your Watch Later list.'
+                }
+            ]));
         }
     })
 
@@ -104,7 +109,7 @@ const VideoCard = React.memo(({ video }) => {
                 )}
 
                 {/* Dark Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
 
                 {/* Play Button Overlay */}
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -147,7 +152,7 @@ const VideoCard = React.memo(({ video }) => {
                 <img
                     src={avatarUrl}
                     alt={displayName}
-                    className="w-9 h-9 rounded-full object-cover border border-white/10 flex-shrink-0"
+                    className="w-9 h-9 rounded-full object-cover border border-white/10 shrink-0"
                 />
                 <div className="flex-1 min-w-0">
                     <h3 className="text-white font-bold text-sm leading-snug mb-1 line-clamp-2 group-hover:text-indigo-300 transition-colors">

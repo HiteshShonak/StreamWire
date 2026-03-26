@@ -8,13 +8,13 @@ import toast from 'react-hot-toast'
 import Header from '../Components/Header'
 import Sidebar from '../Components/Sidebar'
 import { videoService } from '../api/services/video.service'
+import { toActionError } from '../utils/errorMessages'
 
 // New Modular Components
 import HeroSection from '../Components/Cinema/HeroSection'
 import CategoryTabs from '../Components/Cinema/CategoryTabs'
 import VideoCard from '../Components/Cinema/VideoCard'
 import { VideoGridSkeleton } from '../Components/Common/Skeleton'
-import { formatViews, formatDuration, formatTimeAgo } from '../utils/formatters'
 
 // Categories
 // Default categories if nothing stored
@@ -89,7 +89,7 @@ export default function CinemaFeed() {
   })
 
   // Fetch videos from backend with category filtering
-  const { data: videosData, isLoading } = useQuery({
+  const { data: videosData, isLoading, isError: isVideosError, error: videosError } = useQuery({
     queryKey: ['videos', activeCategory],
     queryFn: async () => {
       // For You feed requires authentication
@@ -136,6 +136,12 @@ export default function CinemaFeed() {
   const videos = videosData?.videos || []
   const hasVideos = videos.length > 0
   const featuredVideo = featuredVideoData
+  const videosErrorMessage = toActionError(videosError, 'Could not load videos right now. Please refresh and try again.', [
+    {
+      when: ['unauthorized', 'login'],
+      message: 'Please sign in to load this feed.'
+    }
+  ])
 
   return (
     <div className="min-h-screen bg-[#050505] text-white overflow-x-hidden selection:bg-indigo-500/30">
@@ -156,7 +162,7 @@ export default function CinemaFeed() {
       </section>
 
       {/* Main content (grid) */}
-      <div className="relative z-10 -mt-20 px-6 md:px-12 lg:pl-[300px] pb-24">
+      <div className="relative z-10 -mt-20 px-6 md:px-12 lg:pl-75 pb-24">
 
         {/* Category Filters */}
         <CategoryTabs
@@ -189,7 +195,7 @@ export default function CinemaFeed() {
           {activeCategory === 'For You' && (
             <button
               onClick={() => navigate('/build-feed')}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple-600/20 to-indigo-600/20 border border-purple-500/30 text-purple-300 hover:text-white hover:border-purple-400/50 hover:from-purple-600/30 hover:to-indigo-600/30 transition-all duration-300 text-sm font-bold group"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-linear-to-r from-purple-600/20 to-indigo-600/20 border border-purple-500/30 text-purple-300 hover:text-white hover:border-purple-400/50 hover:from-purple-600/30 hover:to-indigo-600/30 transition-all duration-300 text-sm font-bold group"
               title="Customize your For You feed"
             >
               <Sparkles className="w-4 h-4 group-hover:animate-pulse" />
@@ -201,6 +207,14 @@ export default function CinemaFeed() {
         {/* Video Grid */}
         {isLoading ? (
           <VideoGridSkeleton count={8} />
+        ) : isVideosError ? (
+          <div className="flex flex-col items-center justify-center py-24">
+            <div className="w-32 h-32 mx-auto rounded-full bg-red-500/15 border border-red-500/30 flex items-center justify-center mb-6">
+              <Film className="w-14 h-14 text-red-400" />
+            </div>
+            <h3 className="text-2xl font-black text-white mb-3 text-center">Could Not Load Feed</h3>
+            <p className="text-zinc-400 text-center max-w-md">{videosErrorMessage}</p>
+          </div>
         ) : hasVideos ? (
           <>
             {/* Empty Category Message - Match Screenshot UI */}

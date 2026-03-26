@@ -13,8 +13,8 @@ export const CustomLogo = ({ isStealth }) => {
       <motion.div 
         className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center font-bold text-base sm:text-lg transition-all duration-500 ${
           isStealth 
-            ? 'bg-gradient-to-br from-green-500 to-emerald-600 text-zinc-950 shadow-lg shadow-green-500/20' 
-            : 'bg-gradient-to-br from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/20'
+            ? 'bg-linear-to-br from-green-500 to-emerald-600 text-zinc-950 shadow-lg shadow-green-500/20' 
+            : 'bg-linear-to-br from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/20'
         }`}
         animate={{ rotate: isStealth ? 180 : 0 }}
         transition={{ duration: 0.6, type: "spring", stiffness: 200 }}

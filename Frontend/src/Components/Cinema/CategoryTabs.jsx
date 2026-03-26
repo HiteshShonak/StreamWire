@@ -19,7 +19,7 @@ const CategoryTabs = ({
             <button
                 onClick={() => setIsEditingCategories(!isEditingCategories)}
                 className={`
-          flex-shrink-0 p-2.5 rounded-full border transition-all duration-300
+          shrink-0 p-2.5 rounded-full border transition-all duration-300
           ${isEditingCategories
                         ? 'bg-red-500/20 border-red-500 text-red-400 rotate-12'
                         : 'bg-white/5 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10'
@@ -37,7 +37,7 @@ const CategoryTabs = ({
                         onClick={() => !isEditingCategories && setActiveCategory(cat)}
                         disabled={isEditingCategories}
                         className={`
-                flex-shrink-0 px-5 py-2 rounded-full text-xs font-bold border transition-all duration-300 whitespace-nowrap
+                shrink-0 px-5 py-2 rounded-full text-xs font-bold border transition-all duration-300 whitespace-nowrap
                 ${activeCategory === cat && !isEditingCategories
                                 ? 'bg-indigo-600 border-indigo-500 text-white shadow-[0_0_20px_rgba(79,70,229,0.4)]'
                                 : 'bg-white/5 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10 hover:border-white/20'

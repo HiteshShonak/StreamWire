@@ -27,11 +27,11 @@ export const HeroSection = ({ isStealth, setIsStealth }) => {
               <AnimatePresence mode="wait">
                 {isStealth ? (
                   <motion.div key="stealth-title" initial={{ opacity: 0, filter: "blur(8px)" }} animate={{ opacity: 1, filter: "blur(0px)" }} exit={{ opacity: 0, filter: "blur(8px)" }} transition={{ duration: 0.4 }}>
-                    Stream <br /> <span className="font-mono text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600">Invisibly.</span> <br /> Speak Truthfully.
+                    Stream <br /> <span className="font-mono text-transparent bg-clip-text bg-linear-to-r from-green-400 to-emerald-600">Invisibly.</span> <br /> Speak Truthfully.
                   </motion.div>
                 ) : (
                   <motion.div key="creator-title" initial={{ opacity: 0, filter: "blur(8px)" }} animate={{ opacity: 1, filter: "blur(0px)" }} exit={{ opacity: 0, filter: "blur(8px)" }} transition={{ duration: 0.4 }}>
-                    Stream Boldly. <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">Speak Freely.</span>
+                    Stream Boldly. <br /> <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-600 to-violet-600">Speak Freely.</span>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -64,7 +64,7 @@ export const HeroSection = ({ isStealth, setIsStealth }) => {
                   : "bg-zinc-900 text-white shadow-[0_4px_20px_rgba(0,0,0,0.2)] hover:bg-zinc-800 hover:shadow-[0_8px_30px_rgba(99,102,241,0.25)]"
                   }`}
               >
-                <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150 ease-out ${isStealth ? 'bg-gradient-to-t from-emerald-400/20 to-transparent' : 'bg-gradient-to-t from-indigo-500/20 to-transparent'
+                <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150 ease-out ${isStealth ? 'bg-linear-to-t from-emerald-400/20 to-transparent' : 'bg-linear-to-t from-indigo-500/20 to-transparent'
                   }`} />
 
                 <AnimatePresence mode="wait">
@@ -87,12 +87,12 @@ export const HeroSection = ({ isStealth, setIsStealth }) => {
               whileTap={{ scale: 0.98, y: 0 }}
               transition={{ duration: 0.15, ease: [0.4, 0.0, 0.2, 1] }}
               className={`group relative w-full sm:w-[220px] lg:w-[240px] py-3.5 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg flex items-center justify-center gap-2 overflow-hidden transition-all duration-150 ease-out whitespace-nowrap ${isStealth
-                ? 'border-2 border-green-500/30 bg-gradient-to-br from-zinc-900/50 to-zinc-950/50 text-zinc-100 backdrop-blur-xl shadow-[0_0_25px_rgba(34,197,94,0.15)] hover:border-green-400/50 hover:shadow-[0_0_35px_rgba(34,197,94,0.3)] hover:text-white'
-                : 'border-2 border-zinc-200 bg-gradient-to-br from-white to-zinc-50 text-zinc-700 shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:border-indigo-300 hover:shadow-[0_8px_30px_rgba(99,102,241,0.15)] hover:text-indigo-600'
+                ? 'border-2 border-green-500/30 bg-linear-to-br from-zinc-900/50 to-zinc-950/50 text-zinc-100 backdrop-blur-xl shadow-[0_0_25px_rgba(34,197,94,0.15)] hover:border-green-400/50 hover:shadow-[0_0_35px_rgba(34,197,94,0.3)] hover:text-white'
+                : 'border-2 border-zinc-200 bg-linear-to-br from-white to-zinc-50 text-zinc-700 shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:border-indigo-300 hover:shadow-[0_8px_30px_rgba(99,102,241,0.15)] hover:text-indigo-600'
                 }`}
             >
               <motion.div
-                className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150 ease-out ${isStealth ? 'bg-gradient-to-r from-green-500/5 via-emerald-500/5 to-green-500/5' : 'bg-gradient-to-r from-indigo-500/5 via-violet-500/5 to-indigo-500/5'
+                className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150 ease-out ${isStealth ? 'bg-linear-to-r from-green-500/5 via-emerald-500/5 to-green-500/5' : 'bg-linear-to-r from-indigo-500/5 via-violet-500/5 to-indigo-500/5'
                   }`}
                 animate={{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "linear" }}

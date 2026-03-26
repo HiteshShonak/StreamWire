@@ -13,7 +13,7 @@ export const InteractiveFeedDemo = ({ isStealth }) => {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4 flex-shrink-0">
+      <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4 shrink-0">
         {tabs.map((tab) => (
           <motion.button
             key={tab.id}
