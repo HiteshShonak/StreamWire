@@ -5,10 +5,11 @@ import { Mail, Send, AlertCircle, CheckCircle2, User, MessageSquare, Radio } fro
 import { LoadingDots } from '../Components/Common/LoadingIndicator'
 import toast from 'react-hot-toast'
 import api from '../api/axios'
+import { toActionError } from '../utils/errorMessages'
 
 
 const NoiseOverlay = () => (
-   <div className="absolute inset-0 pointer-events-none z-10 opacity-[0.04] mix-blend-overlay">
+   <div className="absolute inset-0 pointer-events-none z-10 opacity-4 mix-blend-overlay">
       <svg className="w-full h-full">
          <filter id="noiseFilter">
             <feTurbulence type="fractalNoise" baseFrequency="0.6" stitchTiles="stitch" />
@@ -28,7 +29,7 @@ export default function Contact() {
       setSubmitSuccess(false)
 
       try {
-         const response = await api.post('/contact/send', data)
+         await api.post('/contact/send', data)
          toast.success('Message sent successfully! We\'ll get back to you soon.')
          setSubmitSuccess(true)
          reset()
@@ -36,9 +37,10 @@ export default function Contact() {
          // Reset success message after 5 seconds
          setTimeout(() => setSubmitSuccess(false), 5000)
       } catch (error) {
-         const errorMessage = error.response?.data?.message
-            || error.message
-            || 'Failed to send message. Please try again or email us directly.'
+         const errorMessage = toActionError(error, 'Failed to send message. Please try again or email us directly.', [
+            { when: ['rate limit', 'too many requests'], message: 'Too many messages sent recently. Please wait a bit and try again.' },
+            { when: ['validation', 'required'], message: 'Please complete all required fields before sending your message.' },
+         ])
          toast.error(errorMessage)
       } finally {
          setIsSubmitting(false)
@@ -50,8 +52,8 @@ export default function Contact() {
          <NoiseOverlay />
 
          {/* Background Glow */}
-         <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-indigo-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
-         <div className="fixed bottom-0 right-0 w-[800px] h-[500px] bg-purple-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
+         <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-indigo-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
+         <div className="fixed bottom-0 right-0 w-200 h-125 bg-purple-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
 
          <div className="relative z-10 px-4 sm:px-6 lg:pl-72 lg:pr-72 pt-20 sm:pt-24 pb-20">
             <div className="max-w-5xl mx-auto">
@@ -66,7 +68,7 @@ export default function Contact() {
                      <div className="absolute inset-0 bg-indigo-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
                      <Radio className="w-8 h-8 sm:w-10 sm:h-10 text-indigo-400 relative z-10" />
                   </div>
-                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-3 sm:mb-4 bg-gradient-to-r from-white via-indigo-200 to-purple-200 bg-clip-text text-transparent">
+                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-3 sm:mb-4 bg-linear-to-r from-white via-indigo-200 to-purple-200 bg-clip-text text-transparent">
                      Get in Touch
                   </h1>
                   <p className="text-zinc-400 text-sm sm:text-base lg:text-lg max-w-2xl mx-auto">

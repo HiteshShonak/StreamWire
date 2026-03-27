@@ -8,7 +8,9 @@ import toast from 'react-hot-toast'
 import Header from '../Components/Header'
 import Sidebar from '../Components/Sidebar'
 import { videoService } from '../api/services/video.service'
+import { LoadingDots } from '../Components/Common/LoadingIndicator'
 import { TagGridSkeleton } from '../Components/Common/Skeleton'
+import { toActionError } from '../utils/errorMessages'
 
 export default function BuildFeed() {
     const navigate = useNavigate()
@@ -70,7 +72,10 @@ export default function BuildFeed() {
             queryClient.invalidateQueries(['videos'])
             navigate('/cinema')
         },
-        onError: (err) => toast.error(err.message || 'Failed to save preferences')
+        onError: (err) => toast.error(toActionError(err, 'Failed to save preferences', [
+            { when: ['unauthorized', 'not authorized', 'login'], message: 'Please sign in to update your feed preferences' },
+            { when: 'not found', message: 'Feed preferences were not found' },
+        ]))
     })
 
     // Build from history mutation
@@ -86,7 +91,10 @@ export default function BuildFeed() {
             }
             refetchPrefs()
         },
-        onError: (err) => toast.error(err.message || 'Failed to build feed')
+        onError: (err) => toast.error(toActionError(err, 'Failed to build feed', [
+            { when: ['unauthorized', 'not authorized', 'login'], message: 'Please sign in to build your feed' },
+            { when: ['history', 'watch history'], message: 'We could not read your watch history right now. Please try again.' },
+        ]))
     })
 
     const popularTags = popularTagsData?.tags || []
@@ -134,7 +142,7 @@ export default function BuildFeed() {
             <Sidebar />
 
             {/* Main Content - Responsive padding */}
-            <div className="pt-16 sm:pt-20 px-4 sm:px-6 md:px-8 lg:pl-[280px] xl:pl-[300px] pb-32">
+            <div className="pt-16 sm:pt-20 px-4 sm:px-6 md:px-8 lg:pl-70 xl:pl-75 pb-32">
 
                 {/* Back Button */}
                 <motion.button
@@ -156,7 +164,7 @@ export default function BuildFeed() {
                     className="relative mb-8 sm:mb-12"
                 >
                     {/* Gradient Orb Background - Subtle Indigo */}
-                    <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
+                    <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-75 sm:w-125 h-75 sm:h-125 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
 
                     <div className="relative text-center">
                         <motion.div
@@ -199,7 +207,7 @@ export default function BuildFeed() {
                             className="relative mb-6 sm:mb-8 p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-zinc-900/50 border border-zinc-800 overflow-hidden"
                         >
                             {/* Subtle gradient accent */}
-                            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent" />
+                            <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-indigo-500/50 to-transparent" />
 
                             <div className="flex items-center justify-between gap-3 flex-wrap mb-4 sm:mb-5">
                                 <div className="flex items-center gap-2 sm:gap-3">
@@ -229,7 +237,7 @@ export default function BuildFeed() {
                                     {selectedTags.length > 0 && (
                                         <button
                                             onClick={clearAllTags}
-                                            className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.06] text-zinc-400 hover:text-white text-xs sm:text-sm font-medium transition-all"
+                                            className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white/3 hover:bg-white/6 border border-white/6 text-zinc-400 hover:text-white text-xs sm:text-sm font-medium transition-all"
                                         >
                                             Clear
                                         </button>
@@ -282,7 +290,7 @@ export default function BuildFeed() {
                                     placeholder="Search tags..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full pl-10 sm:pl-12 pr-4 py-2.5 sm:py-3 rounded-xl bg-white/[0.02] border border-white/[0.06] text-white text-sm placeholder-zinc-500 focus:outline-none focus:border-indigo-500/50 focus:bg-white/[0.04] transition-all"
+                                    className="w-full pl-10 sm:pl-12 pr-4 py-2.5 sm:py-3 rounded-xl bg-white/2 border border-white/6 text-white text-sm placeholder-zinc-500 focus:outline-none focus:border-indigo-500/50 focus:bg-white/4 transition-all"
                                 />
                             </div>
 
@@ -293,12 +301,12 @@ export default function BuildFeed() {
                                     value={customTag}
                                     onChange={(e) => setCustomTag(e.target.value)}
                                     onKeyDown={(e) => e.key === 'Enter' && addCustomTag()}
-                                    className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl bg-white/[0.02] border border-white/[0.06] text-white text-sm placeholder-zinc-500 focus:outline-none focus:border-indigo-500/50 transition-all"
+                                    className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl bg-white/2 border border-white/6 text-white text-sm placeholder-zinc-500 focus:outline-none focus:border-indigo-500/50 transition-all"
                                 />
                                 <button
                                     onClick={addCustomTag}
                                     disabled={!customTag.trim()}
-                                    className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] text-white text-sm font-semibold transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                                    className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-white/4 hover:bg-white/8 border border-white/6 text-white text-sm font-semibold transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                                 >
                                     Add
                                 </button>
@@ -345,10 +353,10 @@ export default function BuildFeed() {
                                                     : 'bg-zinc-900/50 hover:bg-zinc-800/50 border border-zinc-800 hover:border-indigo-500/30 text-zinc-300 hover:text-white'
                                                     }`}
                                             >
-                                                {isSelected && <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />}
+                                                {isSelected && <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />}
                                                 <span className="truncate">{tag}</span>
                                                 {count && !isSelected && (
-                                                    <span className="text-[10px] text-zinc-600 flex-shrink-0">·{count}</span>
+                                                    <span className="text-[10px] text-zinc-600 shrink-0">·{count}</span>
                                                 )}
                                             </motion.button>
                                         )

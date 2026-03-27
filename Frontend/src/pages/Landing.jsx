@@ -115,7 +115,7 @@ export default function Landing() {
   return (
     <div className={`min-h-screen w-full relative transition-colors duration-1000 ${isStealth ? 'bg-[#0a0a0a] text-white selection:bg-green-500/40 selection:text-white' : 'bg-[#FDFDFD] text-zinc-900 selection:bg-indigo-500/40 selection:text-white'}`}>
 
-      <div className="fixed inset-0 pointer-events-none z-50 opacity-[0.04] mix-blend-overlay">
+      <div className="fixed inset-0 pointer-events-none z-50 opacity-4 mix-blend-overlay">
         <svg className="w-full h-full">
           <filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.6" stitchTiles="stitch" /></filter>
           <rect width="100%" height="100%" filter="url(#noiseFilter)" />

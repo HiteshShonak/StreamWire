@@ -12,7 +12,7 @@ const NotFound = () => {
          <div className="fixed inset-0 pointer-events-none overflow-hidden">
             {/* Floating Orbs */}
             <motion.div
-               className="absolute w-[600px] h-[600px] rounded-full bg-gradient-to-br from-indigo-600/10 to-purple-600/10 blur-3xl"
+               className="absolute w-[600px] h-150 rounded-full bg-linear-to-br from-indigo-600/10 to-purple-600/10 blur-3xl"
                animate={{
                   x: ['-20%', '10%', '-20%'],
                   y: ['-10%', '20%', '-10%'],
@@ -21,7 +21,7 @@ const NotFound = () => {
                style={{ top: '-10%', left: '-10%' }}
             />
             <motion.div
-               className="absolute w-[500px] h-[500px] rounded-full bg-gradient-to-br from-purple-600/8 to-pink-600/8 blur-3xl"
+               className="absolute w-125 h-125 rounded-full bg-linear-to-br from-purple-600/8 to-pink-600/8 blur-3xl"
                animate={{
                   x: ['10%', '-15%', '10%'],
                   y: ['10%', '-10%', '10%'],
@@ -32,7 +32,7 @@ const NotFound = () => {
 
             {/* Grid Pattern */}
             <div
-               className="absolute inset-0 opacity-[0.02]"
+               className="absolute inset-0 opacity-2"
                style={{
                   backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
                                     linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
@@ -64,23 +64,23 @@ const NotFound = () => {
 
                {/* 404 Number */}
                <h1 className="text-[180px] md:text-[220px] font-black leading-none tracking-tighter">
-                  <span className="bg-gradient-to-b from-white via-zinc-400 to-zinc-700 bg-clip-text text-transparent">
+                  <span className="bg-linear-to-b from-white via-zinc-400 to-zinc-700 bg-clip-text text-transparent">
                      4
                   </span>
                   <motion.span
-                     className="inline-block bg-gradient-to-b from-indigo-400 via-purple-400 to-pink-500 bg-clip-text text-transparent"
+                     className="inline-block bg-linear-to-b from-indigo-400 via-purple-400 to-pink-500 bg-clip-text text-transparent"
                      animate={{ scale: [1, 1.05, 1], rotate: [0, 5, 0] }}
                      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                   >
                      0
                   </motion.span>
-                  <span className="bg-gradient-to-b from-white via-zinc-400 to-zinc-700 bg-clip-text text-transparent">
+                  <span className="bg-linear-to-b from-white via-zinc-400 to-zinc-700 bg-clip-text text-transparent">
                      4
                   </span>
                </h1>
 
                {/* Glow Effect Under 404 */}
-               <div className="absolute inset-x-0 -bottom-8 h-32 bg-gradient-to-t from-indigo-500/20 via-purple-500/10 to-transparent blur-2xl opacity-60" />
+               <div className="absolute inset-x-0 -bottom-8 h-32 bg-linear-to-t from-indigo-500/20 via-purple-500/10 to-transparent blur-2xl opacity-60" />
             </motion.div>
 
             {/* Message */}

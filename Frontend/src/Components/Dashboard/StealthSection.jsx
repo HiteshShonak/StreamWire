@@ -34,7 +34,7 @@ const StealthSection = ({
 
             {/* Info Banner */}
             <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-xl flex items-start gap-3">
-                <ShieldCheck className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                <ShieldCheck className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
                 <div>
                     <h4 className="font-bold text-green-400 mb-1">Stealth Mode Active</h4>
                     <p className="text-sm text-green-300/70">

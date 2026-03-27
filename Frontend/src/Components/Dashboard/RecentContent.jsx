@@ -36,7 +36,7 @@ const RecentContent = ({
                             onClick={() => navigate(`/cinema/${video._id}`)}
                             className="flex gap-3 p-2 -mx-2 rounded-lg hover:bg-zinc-800/50 cursor-pointer transition-colors group"
                         >
-                            <div className="relative w-24 aspect-video rounded-lg overflow-hidden bg-zinc-800 flex-shrink-0">
+                            <div className="relative w-24 aspect-video rounded-lg overflow-hidden bg-zinc-800 shrink-0">
                                 <img src={video.thumbnail?.url} alt={video.title} className="w-full h-full object-cover" />
                                 {video.isStealthMode && (
                                     <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
@@ -93,7 +93,7 @@ const RecentContent = ({
                             className="p-3 -mx-2 rounded-lg hover:bg-zinc-800/50 cursor-pointer transition-colors group"
                         >
                             <div className="flex items-start gap-2">
-                                {wire.isStealthMode && <Ghost className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />}
+                                {wire.isStealthMode && <Ghost className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />}
                                 <p className="text-sm text-zinc-300 line-clamp-2 group-hover:text-white transition-colors">
                                     {wire.content}
                                 </p>

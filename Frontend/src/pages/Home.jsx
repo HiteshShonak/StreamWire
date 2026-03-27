@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, useMotionTemplate, useMotionValue, useSpring } from 'framer-motion'
 import { Film, MessageSquare, VenetianMask, ArrowRight, Zap } from 'lucide-react'
@@ -6,7 +6,7 @@ import Header from '../Components/Header'
 import { Footer } from '../Components/LandingPage'
 
 
-const SpotlightCard = ({ id, title, subtitle, icon: Icon, path, gradient, accent, iconColor, iconBg }) => {
+const SpotlightCard = ({ title, subtitle, icon: Icon, path, gradient, iconColor, iconBg }) => {
   const ref = useRef(null);
 
   // Mouse Tracking Logic
@@ -34,7 +34,7 @@ const SpotlightCard = ({ id, title, subtitle, icon: Icon, path, gradient, accent
         whileHover={{ scale: 1.02, rotateX: 2, rotateY: 2 }}
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
         className={`
-          relative w-full h-[450px] md:h-[500px] rounded-[2.5rem] overflow-hidden
+          relative w-full h-112.5 md:h-125 rounded-[2.5rem] overflow-hidden
           bg-zinc-900/40 backdrop-blur-xl border border-white/10
           flex flex-col justify-between p-8 md:p-10
           group-hover:border-white/20 transition-colors duration-200
@@ -55,7 +55,7 @@ const SpotlightCard = ({ id, title, subtitle, icon: Icon, path, gradient, accent
         />
 
         {/* Hover Gradient Bloom */}
-        <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out`} />
+        <div className={`absolute inset-0 bg-linear-to-br ${gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out`} />
 
         {/* Content Layer */}
         <div className="relative z-20 h-full flex flex-col justify-between">
@@ -84,7 +84,7 @@ const SpotlightCard = ({ id, title, subtitle, icon: Icon, path, gradient, accent
 
           {/* Bottom Action Section */}
           <div>
-            <div className="h-[1px] w-full bg-white/10 mb-6 group-hover:bg-white/30 transition-colors duration-300" />
+            <div className="h-px w-full bg-white/10 mb-6 group-hover:bg-white/30 transition-colors duration-300" />
 
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-500 group-hover:text-white transition-colors duration-200">
@@ -154,11 +154,11 @@ export default function Home() {
 
       {/* AMBIENT BACKGROUND */}
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-indigo-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse gpu-layer" style={{ animationDuration: '4s' }} />
-        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-emerald-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse gpu-layer" style={{ animationDuration: '6s' }} />
+        <div className="absolute top-0 left-1/4 w-125 h-125 bg-indigo-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse gpu-layer" style={{ animationDuration: '4s' }} />
+        <div className="absolute bottom-0 right-1/4 w-125 h-125 bg-emerald-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse gpu-layer" style={{ animationDuration: '6s' }} />
 
         {/* Noise Texture */}
-        <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-repeat" />
+        <div className="absolute inset-0 opacity-4 mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-repeat" />
       </div>
 
       {/* THE GLOBAL HEADER (Gateway Variant) */}
@@ -180,7 +180,7 @@ export default function Home() {
 
           <h1 className="text-5xl md:text-7xl font-black mb-6 tracking-tight text-white">
             CHOOSE YOUR <br className="md:hidden" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-white to-emerald-300 animate-gradient-x">REALITY</span>
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-300 via-white to-emerald-300 animate-gradient-x">REALITY</span>
           </h1>
           <p className="text-lg md:text-xl text-zinc-400 leading-relaxed max-w-2xl mx-auto">
             Three isolated networks. One platform. <br /> Select a channel to initiate connection.

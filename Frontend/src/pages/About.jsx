@@ -11,7 +11,7 @@ import Header from '../Components/Header'
 import Sidebar from '../Components/Sidebar'
 
 const NoiseOverlay = () => (
-   <div className="absolute inset-0 pointer-events-none z-10 opacity-[0.04] mix-blend-overlay">
+   <div className="absolute inset-0 pointer-events-none z-10 opacity-4 mix-blend-overlay">
       <svg className="w-full h-full">
          <filter id="noiseFilter">
             <feTurbulence type="fractalNoise" baseFrequency="0.6" stitchTiles="stitch" />
@@ -142,8 +142,8 @@ export default function About() {
             <NoiseOverlay />
 
             {/* Background Effects */}
-            <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-indigo-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
-            <div className="fixed bottom-0 right-0 w-[800px] h-[500px] bg-indigo-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
+            <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-indigo-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
+            <div className="fixed bottom-0 right-0 w-200 h-125 bg-indigo-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
 
             <div className="relative z-10 lg:pl-72 lg:pr-72 pt-24 pb-20 px-6">
                <div className="max-w-7xl mx-auto">
@@ -159,7 +159,7 @@ export default function About() {
                         <Radio className="w-10 h-10 text-indigo-400 relative z-10 animate-pulse" />
                      </div>
 
-                     <h1 className="text-5xl md:text-7xl font-black mb-6 bg-gradient-to-r from-white to-indigo-200 bg-clip-text text-transparent">
+                     <h1 className="text-5xl md:text-7xl font-black mb-6 bg-linear-to-r from-white to-indigo-200 bg-clip-text text-transparent">
                         About StreamWire
                      </h1>
 
@@ -229,8 +229,8 @@ export default function About() {
                            >
                               <div className="flex flex-col md:flex-row gap-8">
                                  {/* Icon */}
-                                 <div className="flex-shrink-0">
-                                    <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${feature.color} p-[2px] group-hover:scale-110 transition-transform`}>
+                                 <div className="shrink-0">
+                                    <div className={`w-20 h-20 rounded-2xl bg-linear-to-br ${feature.color} p-0.5 group-hover:scale-110 transition-transform`}>
                                        <div className="w-full h-full rounded-2xl bg-zinc-900 flex items-center justify-center">
                                           <feature.icon className="w-10 h-10 text-white" />
                                        </div>
@@ -248,7 +248,7 @@ export default function About() {
                                     <div className="grid md:grid-cols-2 gap-3">
                                        {feature.features.map((item, itemIdx) => (
                                           <div key={itemIdx} className="flex items-start gap-2">
-                                             <Sparkles className="w-4 h-4 text-indigo-400 mt-1 flex-shrink-0" />
+                                             <Sparkles className="w-4 h-4 text-indigo-400 mt-1 shrink-0" />
                                              <span className="text-sm text-zinc-400">{item}</span>
                                           </div>
                                        ))}
@@ -281,7 +281,7 @@ export default function About() {
                               transition={{ delay: 0.7 + idx * 0.05 }}
                               className="bg-zinc-900/40 backdrop-blur-sm border border-zinc-800 rounded-2xl p-6 hover:border-zinc-700 transition-all hover:-translate-y-2 group"
                            >
-                              <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.gradient} p-[2px] mb-4 group-hover:scale-110 transition-transform`}>
+                              <div className={`w-14 h-14 rounded-xl bg-linear-to-br ${feature.gradient} p-0.5 mb-4 group-hover:scale-110 transition-transform`}>
                                  <div className="w-full h-full rounded-xl bg-zinc-900 flex items-center justify-center">
                                     <feature.icon className="w-7 h-7 text-white" />
                                  </div>
@@ -301,7 +301,7 @@ export default function About() {
                      transition={{ delay: 0.8 }}
                      className="mb-20"
                   >
-                     <div className="bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 rounded-3xl p-8 md:p-12">
+                     <div className="bg-linear-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 rounded-3xl p-8 md:p-12">
                         <div className="text-center mb-10">
                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 mb-4">
                               <Shield className="w-8 h-8 text-emerald-400" />
