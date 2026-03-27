@@ -13,6 +13,7 @@ import Sidebar from '../Components/Sidebar';
 import { videoService } from '../api/services/video.service';
 import { tweetService } from '../api/services/tweet.service';
 import { dashboardService } from '../api/services/dashboard.service';
+import { toActionError } from '../utils/errorMessages';
 
 // Modular Components
 import StatsOverview from '../Components/Dashboard/StatsOverview';
@@ -27,20 +28,20 @@ export default function Dashboard() {
   const { userData } = useSelector((state) => state.auth);
 
   const [activeSection, setActiveSection] = useState('overview'); // overview | videos | wires | shadows | stealth
-  const [videoPage, setVideoPage] = useState(1);
-  const [wirePage, setWirePage] = useState(1);
+  const [videoPage] = useState(1);
+  const [wirePage] = useState(1);
 
 
 
   // Dashboard Stats
-  const { data: stats, isLoading: statsLoading } = useQuery({
+  const { data: stats, isError: isStatsError, error: statsError } = useQuery({
     queryKey: ['dashboard-stats'],
     queryFn: () => dashboardService.getChannelStats(),
     staleTime: 30000
   });
 
   // My Videos (all including stealth)
-  const { data: myVideos, isLoading: videosLoading } = useQuery({
+  const { data: myVideos, isLoading: videosLoading, isError: isVideosError, error: videosError } = useQuery({
     queryKey: ['my-videos', videoPage],
     queryFn: () => videoService.getAllVideos({
       userId: userData?._id,
@@ -52,7 +53,7 @@ export default function Dashboard() {
   });
 
   // My Wires (all including stealth)
-  const { data: myWires, isLoading: wiresLoading } = useQuery({
+  const { data: myWires, isLoading: wiresLoading, isError: isWiresError, error: wiresError } = useQuery({
     queryKey: ['my-wires', wirePage],
     queryFn: () => tweetService.getUserTweets(userData?._id, {
       page: wirePage,
@@ -77,12 +78,10 @@ export default function Dashboard() {
       toast.success(message);
     },
     onError: (err) => {
-      const message = err.message?.includes('not found')
-        ? 'Video not found'
-        : err.message?.includes('permission') || err.message?.includes('not authorized')
-          ? 'You do not have permission to edit this video'
-          : 'Could not update video. Please try again.';
-      toast.error(message);
+      toast.error(toActionError(err, 'Could not update video. Please try again.', [
+        { when: 'not found', message: 'Video not found' },
+        { when: ['permission', 'not authorized'], message: 'You do not have permission to edit this video' },
+      ]));
     }
   });
 
@@ -95,12 +94,10 @@ export default function Dashboard() {
       toast.success('Video deleted');
     },
     onError: (err) => {
-      const message = err.message?.includes('not found')
-        ? 'Video not found'
-        : err.message?.includes('permission') || err.message?.includes('not authorized')
-          ? 'You do not have permission to delete this video'
-          : 'Could not delete video. Please try again.';
-      toast.error(message);
+      toast.error(toActionError(err, 'Could not delete video. Please try again.', [
+        { when: 'not found', message: 'Video not found' },
+        { when: ['permission', 'not authorized'], message: 'You do not have permission to delete this video' },
+      ]));
     }
   });
 
@@ -114,12 +111,10 @@ export default function Dashboard() {
       toast.success(message);
     },
     onError: (err) => {
-      const message = err.message?.includes('not found')
-        ? 'Wire not found'
-        : err.message?.includes('permission') || err.message?.includes('not authorized')
-          ? 'You do not have permission to edit this wire'
-          : 'Could not update wire. Please try again.';
-      toast.error(message);
+      toast.error(toActionError(err, 'Could not update wire. Please try again.', [
+        { when: 'not found', message: 'Wire not found' },
+        { when: ['permission', 'not authorized'], message: 'You do not have permission to edit this wire' },
+      ]));
     }
   });
 
@@ -132,12 +127,10 @@ export default function Dashboard() {
       toast.success('Wire deleted');
     },
     onError: (err) => {
-      const message = err.message?.includes('not found')
-        ? 'Wire not found'
-        : err.message?.includes('permission') || err.message?.includes('not authorized')
-          ? 'You do not have permission to delete this wire'
-          : 'Could not delete wire. Please try again.';
-      toast.error(message);
+      toast.error(toActionError(err, 'Could not delete wire. Please try again.', [
+        { when: 'not found', message: 'Wire not found' },
+        { when: ['permission', 'not authorized'], message: 'You do not have permission to delete this wire' },
+      ]));
     }
   });
 
@@ -149,6 +142,18 @@ export default function Dashboard() {
   // Wires use paginated response with 'docs' field
   const allWires = myWires?.docs || [];
   const stealthWires = allWires.filter(w => w.isStealthMode);
+
+  const statsErrorMessage = toActionError(statsError, 'Could not load dashboard stats right now.', [
+    { when: ['unauthorized', 'not authorized', 'login'], message: 'Please sign in to load your dashboard.' },
+  ]);
+
+  const videosErrorMessage = toActionError(videosError, 'Could not load your videos right now.', [
+    { when: ['unauthorized', 'not authorized', 'login'], message: 'Please sign in to load your videos.' },
+  ]);
+
+  const wiresErrorMessage = toActionError(wiresError, 'Could not load your wires right now.', [
+    { when: ['unauthorized', 'not authorized', 'login'], message: 'Please sign in to load your wires.' },
+  ]);
 
 
   const sections = [
@@ -165,8 +170,8 @@ export default function Dashboard() {
       <Header variant="gateway" />
       <Sidebar />
 
-      <div className="lg:pl-[280px] pt-24 pb-20 px-4 md:px-8">
-        <div className="max-w-[1600px] mx-auto">
+      <div className="lg:pl-70 pt-24 pb-20 px-4 md:px-8">
+        <div className="max-w-400 mx-auto">
 
           {/* ==================== HEADER ==================== */}
           <div className="mb-10">
@@ -215,6 +220,19 @@ export default function Dashboard() {
               </button>
             ))}
           </div>
+
+          {(isStatsError || isVideosError || isWiresError) && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-8 border border-red-500/30 bg-red-500/10 rounded-2xl p-4 md:p-5"
+            >
+              <p className="text-sm md:text-base font-semibold text-red-200">Some dashboard data could not be loaded.</p>
+              {isStatsError && <p className="text-xs md:text-sm text-red-100/80 mt-2">Stats: {statsErrorMessage}</p>}
+              {isVideosError && <p className="text-xs md:text-sm text-red-100/80 mt-1">Videos: {videosErrorMessage}</p>}
+              {isWiresError && <p className="text-xs md:text-sm text-red-100/80 mt-1">Wires: {wiresErrorMessage}</p>}
+            </motion.div>
+          )}
 
           {/* ==================== CONTENT SECTIONS ==================== */}
           <AnimatePresence mode="wait">

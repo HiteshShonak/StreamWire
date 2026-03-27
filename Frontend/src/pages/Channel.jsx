@@ -14,13 +14,13 @@ import {
   Play,
   Clock
 } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
 import toast from 'react-hot-toast';
 
 import { authService } from '../api/services/auth.service';
 import { videoService } from '../api/services/video.service';
 import { tweetService } from '../api/services/tweet.service';
 import { subscriptionService } from '../api/services/subscription.service';
+import { toActionError } from '../utils/errorMessages';
 import VideoCard from '../Components/VideoCard';
 import WireCard from '../Components/WireCard';
 import { ChannelPageSkeleton, VideoGridSkeleton, WireListSkeleton } from '../Components/Common/Skeleton';
@@ -29,8 +29,8 @@ export default function Channel() {
   const { username } = useParams();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('videos'); // videos | tweets | about
-  const [videoPage, setVideoPage] = useState(1);
-  const [tweetPage, setTweetPage] = useState(1);
+  const [videoPage] = useState(1);
+  const [tweetPage] = useState(1);
 
   // Fetch Channel Profile
   const { data: channel, isLoading: channelLoading } = useQuery({
@@ -73,16 +73,13 @@ export default function Channel() {
 
       return { previousChannel };
     },
-    onError: (err, vars, context) => {
+    onError: (err, _vars, context) => {
       queryClient.setQueryData(['channel', username], context.previousChannel);
-      const message = err.message?.includes('not found')
-        ? 'Channel not found'
-        : err.message?.includes('yourself')
-          ? 'You cannot subscribe to your own channel'
-          : err.message?.includes('unauthorized') || err.message?.includes('login')
-            ? 'Please sign in to subscribe'
-            : 'Could not update subscription. Please try again.';
-      toast.error(message);
+      toast.error(toActionError(err, 'Could not update subscription. Please try again.', [
+        { when: 'not found', message: 'Channel not found' },
+        { when: 'yourself', message: 'You cannot subscribe to your own channel' },
+        { when: ['unauthorized', 'not authorized', 'login'], message: 'Please sign in to subscribe' },
+      ]));
     },
     onSuccess: (data) => {
       if (data.isPending) {
@@ -119,7 +116,7 @@ export default function Channel() {
   return (
     <div className="min-h-screen bg-zinc-950">
       {/* Cover Image */}
-      <div className="relative h-56 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 overflow-hidden border-b border-zinc-800/50">
+      <div className="relative h-56 bg-linear-to-br from-zinc-900 via-zinc-800 to-zinc-900 overflow-hidden border-b border-zinc-800/50">
         {channel.coverImage?.url ? (
           <img
             src={channel.coverImage.url}
@@ -127,7 +124,7 @@ export default function Channel() {
             className={`w-full h-full object-cover ${isCloaked ? 'opacity-30 grayscale' : 'opacity-40'}`}
           />
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-950/30 via-zinc-900/20 to-indigo-950/30" />
+          <div className="absolute inset-0 bg-linear-to-br from-indigo-950/30 via-zinc-900/20 to-indigo-950/30" />
         )}
 
         {/* Noise Texture Overlay - Removed inline SVG for performance (2-3% GPU usage) */}
@@ -193,7 +190,7 @@ export default function Channel() {
                   onClick={() => !isOwnChannel && subscribeMutation.mutate()}
                   disabled={isOwnChannel || subscribeMutation.isPending}
                   className={`px-6 py-2.5 rounded-lg font-medium transition-all flex items-center gap-2 disabled:opacity-50 shadow-lg ${isOwnChannel
-                    ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-emerald-900/40 cursor-default'
+                    ? 'bg-linear-to-r from-emerald-600 to-teal-600 text-white shadow-emerald-900/40 cursor-default'
                     : channel.isSubscribed
                       ? 'bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-white shadow-black/20'
                       : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-900/30'
@@ -243,7 +240,7 @@ export default function Channel() {
               {activeTab === tab && (
                 <motion.div
                   layoutId="activeTab"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-indigo-500 to-purple-500"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-indigo-500 to-purple-500"
                 />
               )}
             </button>

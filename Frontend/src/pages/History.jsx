@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useSelector } from 'react-redux'
 import { motion } from 'framer-motion'
-import { History as HistoryIcon, Clock, Play, Trash2 } from 'lucide-react'
+import { History as HistoryIcon, Clock, Play } from 'lucide-react'
 
 import { libraryService } from '../api/services/library.service'
 import VideoCard from '../Components/VideoCard'
@@ -12,7 +12,7 @@ export default function History() {
    const user = useSelector((state) => state.auth.userData)
 
    // Fetch watch history
-   const { data: historyData, isLoading, error } = useQuery({
+   const { data: historyData, isLoading } = useQuery({
       queryKey: ['watch-history'],
       queryFn: () => libraryService.getHistory({ limit: 50 }),
       enabled: !!user
@@ -45,7 +45,7 @@ export default function History() {
       <div className="relative min-h-screen bg-[#050505] text-white">
 
          {/* Background Glow */}
-         <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-pink-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
+         <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-pink-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
 
          <div className="relative z-10 lg:pl-72 pt-32 px-6 pb-20 max-w-7xl mx-auto">
 

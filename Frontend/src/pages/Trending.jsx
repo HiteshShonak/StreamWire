@@ -1,10 +1,11 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
+import toast from 'react-hot-toast'
 import {
    TrendingUp, Film, MessageSquare, Ghost,
-   Globe, ArrowRight, Flame
+   Globe, ArrowRight, Flame, AlertCircle
 } from 'lucide-react'
 
 import { videoService } from '../api/services/video.service'
@@ -14,6 +15,7 @@ import { likeService } from '../api/services/like.service'
 import VideoCard from '../Components/VideoCard'
 import WireCard from '../Components/WireCard'
 import { VideoGridSkeleton, WireListSkeleton, ShadowListSkeleton } from '../Components/Common/Skeleton'
+import { toActionError } from '../utils/errorMessages'
 
 const tabs = [
    { id: 'all', label: 'All', icon: TrendingUp, color: 'text-white', bg: 'bg-white' },
@@ -29,7 +31,6 @@ export default function Trending() {
    // Context Locking Logic
    const urlTab = searchParams.get("tab")
    const [isContextLocked, setIsContextLocked] = useState(!!urlTab && urlTab !== 'all')
-   const [hasUnlocked, setHasUnlocked] = useState(false)
 
    const activeTab = urlTab || 'all'
 
@@ -39,12 +40,16 @@ export default function Trending() {
 
    const handleUnlockContext = () => {
       setIsContextLocked(false)
-      setHasUnlocked(true)
       setSearchParams({ tab: 'all' })
    }
 
    // Fetch trending videos (sorted by trendScore highest to lowest)
-   const { data: videoData, isLoading: videoLoading } = useQuery({
+   const {
+      data: videoData,
+      isLoading: videoLoading,
+      isError: isVideoError,
+      error: videoError,
+   } = useQuery({
       queryKey: ['trending-videos', activeTab],
       queryFn: () => videoService.getTrendingVideos({
          limit: 20,
@@ -55,7 +60,12 @@ export default function Trending() {
    })
 
    // Fetch trending stealth videos (sorted by trendScore highest to lowest)
-   const { data: stealthVideoData, isLoading: stealthVideoLoading } = useQuery({
+   const {
+      data: stealthVideoData,
+      isLoading: stealthVideoLoading,
+      isError: isStealthVideoError,
+      error: stealthVideoError,
+   } = useQuery({
       queryKey: ['trending-stealth-videos'],
       queryFn: () => videoService.getTrendingVideos({
          limit: 20,
@@ -66,7 +76,12 @@ export default function Trending() {
    })
 
    // Fetch trending wires (sorted by trendScore highest to lowest)
-   const { data: tweetData, isLoading: tweetLoading } = useQuery({
+   const {
+      data: tweetData,
+      isLoading: tweetLoading,
+      isError: isTweetError,
+      error: tweetError,
+   } = useQuery({
       queryKey: ['trending-tweets', activeTab],
       queryFn: () => tweetService.getTrendingTweets({
          limit: 20,
@@ -77,7 +92,12 @@ export default function Trending() {
    })
 
    // Fetch trending shadow wires (sorted by trendScore highest to lowest)
-   const { data: shadowTweetData, isLoading: shadowTweetLoading } = useQuery({
+   const {
+      data: shadowTweetData,
+      isLoading: shadowTweetLoading,
+      isError: isShadowTweetError,
+      error: shadowTweetError,
+   } = useQuery({
       queryKey: ['trending-shadow-tweets'],
       queryFn: () => tweetService.getTrendingTweets({
          limit: 20,
@@ -93,18 +113,61 @@ export default function Trending() {
       onSuccess: () => {
          queryClient.invalidateQueries({ queryKey: ['trending-tweets'] })
          queryClient.invalidateQueries({ queryKey: ['trending-shadow-tweets'] })
+      },
+      onError: (err) => {
+         toast.error(toActionError(err, 'Could not update like. Please try again.', [
+            { when: 'not found', message: 'Wire not found' },
+            { when: ['unauthorized', 'not authorized', 'login'], message: 'Please sign in to like this wire' },
+         ]))
       }
    })
 
    // Memoized handler for WireCard
-   const handleLikeTweet = useCallback((id) => likeTweetMutation.mutate(id), [likeTweetMutation.mutate])
+   const handleLikeTweet = (id) => likeTweetMutation.mutate(id)
 
    const isLoading = videoLoading || tweetLoading || stealthVideoLoading || shadowTweetLoading
 
    const hasVideos = (activeTab === 'stealth' ? stealthVideoData?.videos?.length : videoData?.videos?.length) > 0
    const hasTweets = activeTab === 'stealth' ? shadowTweetData?.docs?.length > 0 : tweetData?.docs?.length > 0
    const hasAnyContent = hasVideos || hasTweets
-   const isEmpty = !isLoading && !hasAnyContent
+
+   const activeErrorMessage = useMemo(() => {
+      const mappings = [
+         { when: ['unauthorized', 'not authorized', 'login'], message: 'Please sign in to view this trending feed.' },
+      ]
+
+      if (activeTab === 'stealth') {
+         if (isStealthVideoError) {
+            return toActionError(stealthVideoError, 'Could not load trending shadow videos right now.', mappings)
+         }
+         if (isShadowTweetError) {
+            return toActionError(shadowTweetError, 'Could not load trending encrypted wires right now.', mappings)
+         }
+         return ''
+      }
+
+      if (activeTab === 'videos' && isVideoError) {
+         return toActionError(videoError, 'Could not load trending cinema videos right now.', mappings)
+      }
+
+      if (activeTab === 'tweets' && isTweetError) {
+         return toActionError(tweetError, 'Could not load trending wire posts right now.', mappings)
+      }
+
+      if (activeTab === 'all') {
+         if (isVideoError) {
+            return toActionError(videoError, 'Could not load trending cinema videos right now.', mappings)
+         }
+         if (isTweetError) {
+            return toActionError(tweetError, 'Could not load trending wire posts right now.', mappings)
+         }
+      }
+
+      return ''
+   }, [activeTab, isStealthVideoError, stealthVideoError, isShadowTweetError, shadowTweetError, isVideoError, videoError, isTweetError, tweetError])
+
+   const hasError = Boolean(activeErrorMessage)
+   const isEmpty = !isLoading && !hasAnyContent && !hasError
 
    // Memoize tab color/bg calculations
    const activeColor = useMemo(() => tabs.find(t => t.id === activeTab)?.color || 'text-white', [activeTab])
@@ -114,7 +177,7 @@ export default function Trending() {
       <div className="relative min-h-screen bg-[#050505] text-white">
 
          {/* Background Glow */}
-         <div className={`fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] ${activeBg} opacity-5 blur-[120px] pointer-events-none transition-colors duration-700 gpu-layer`} />
+         <div className={`fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 ${activeBg} opacity-5 blur-[120px] pointer-events-none transition-colors duration-700 gpu-layer`} />
 
          <div className="relative z-10 lg:pl-72 pt-32 px-6 pb-20 max-w-7xl mx-auto">
 
@@ -217,6 +280,19 @@ export default function Trending() {
                </div>
             )}
 
+            {/* Error State */}
+            {!isLoading && hasError && (
+               <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center py-24 border border-red-500/30 rounded-3xl bg-red-500/10"
+               >
+                  <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
+                  <h3 className="text-xl font-bold text-white">Could Not Load Trending</h3>
+                  <p className="text-red-200/80 mt-2 max-w-xl mx-auto">{activeErrorMessage}</p>
+               </motion.div>
+            )}
+
             {/* Empty State */}
             {isEmpty && (
                <motion.div
@@ -277,7 +353,7 @@ export default function Trending() {
                            <WireCard
                               key={wire._id}
                               wire={wire}
-                              onLike={(id) => likeTweetMutation.mutate(id)}
+                              onLike={handleLikeTweet}
                            />
                         ))}
                      </div>
@@ -295,7 +371,7 @@ export default function Trending() {
                            <WireCard
                               key={wire._id}
                               wire={wire}
-                              onLike={(id) => likeTweetMutation.mutate(id)}
+                              onLike={handleLikeTweet}
                            />
                         ))}
                      </div>
