@@ -8,10 +8,11 @@ import { motion } from "framer-motion"
 import { login as authLogin } from "../store/authSlice"
 import { authService } from "../api/services/auth.service"
 import toast from "react-hot-toast"
+import { toActionError } from "../utils/errorMessages"
 
 // Background components
 const NoiseOverlay = () => (
-    <div className="absolute inset-0 pointer-events-none z-10 opacity-[0.04] mix-blend-overlay">
+    <div className="absolute inset-0 pointer-events-none z-10 opacity-4 mix-blend-overlay">
         <svg className="w-full h-full">
             <filter id="noiseFilter">
                 <feTurbulence type="fractalNoise" baseFrequency="0.6" stitchTiles="stitch" />
@@ -23,8 +24,8 @@ const NoiseOverlay = () => (
 
 const AmbientBackground = () => (
     <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse gpu-layer" style={{ animationDuration: '4s' }} />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse gpu-layer" style={{ animationDuration: '7s' }} />
+        <div className="absolute top-[-10%] left-[-10%] w-125 h-125 bg-indigo-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse gpu-layer" style={{ animationDuration: '4s' }} />
+        <div className="absolute bottom-[-10%] right-[-10%] w-125 h-125 bg-purple-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse gpu-layer" style={{ animationDuration: '7s' }} />
     </div>
 )
 
@@ -51,18 +52,36 @@ export default function Login() {
                 navigate("/home")
             }
         } catch (error) {
-            // Map backend errors to user-friendly messages
-            let errorMessage = error.message || "Login failed"
-
-            if (error.message?.includes("does not exist")) {
-                errorMessage = "No account found with this username or email"
-            } else if (error.message?.includes("Invalid credentials")) {
-                errorMessage = "Incorrect password. Please try again."
-            } else if (error.message?.includes("scheduled for deletion")) {
-                errorMessage = "Account pending deletion. Contact support to restore."
-            } else if (error.message?.includes("suspended") || error.message?.includes("BANNED")) {
-                errorMessage = "Account suspended due to policy violations."
-            }
+            const errorMessage = toActionError(error, "Login failed. Please try again.", [
+                {
+                    when: ({ statusCode, normalizedMessage }) =>
+                        statusCode === 401 && normalizedMessage.includes('invalid credentials'),
+                    message: "Incorrect password. Please try again."
+                },
+                {
+                    when: ({ statusCode, normalizedMessage }) =>
+                        statusCode === 404 ||
+                        normalizedMessage.includes('does not exist') ||
+                        normalizedMessage.includes('no account') ||
+                        normalizedMessage.includes('user not found'),
+                    message: "No account found with this username or email."
+                },
+                {
+                    when: ({ statusCode, normalizedMessage }) =>
+                        statusCode === 403 && normalizedMessage.includes('scheduled for deletion'),
+                    message: "This account is pending deletion. Contact support to restore access."
+                },
+                {
+                    when: ({ statusCode, normalizedMessage }) =>
+                        statusCode === 403 &&
+                        (normalizedMessage.includes('suspended') || normalizedMessage.includes('banned')),
+                    message: "This account is suspended. Contact support for help."
+                },
+                {
+                    when: ({ statusCode }) => statusCode === 429,
+                    message: "Too many login attempts. Please wait a moment and try again."
+                }
+            ])
 
             setServerError(errorMessage)
             toast.error(errorMessage)
@@ -81,10 +100,10 @@ export default function Login() {
                 className="w-full max-w-md relative z-20"
             >
                 {/* Glass Card */}
-                <div className="bg-zinc-900/40 backdrop-blur-2xl border border-white/10 p-8 rounded-[2rem] shadow-2xl shadow-black/50 overflow-hidden relative group">
+                <div className="bg-zinc-900/40 backdrop-blur-2xl border border-white/10 p-8 rounded-4xl shadow-2xl shadow-black/50 overflow-hidden relative group">
 
                     {/* Top Glow Accent */}
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-50 blur-sm" />
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-linear-to-r from-transparent via-indigo-500 to-transparent opacity-50 blur-sm" />
 
                     {/* Header Section */}
                     <div className="text-center mb-8">
@@ -99,8 +118,10 @@ export default function Login() {
                     {/* Error Message */}
                     {serverError && (
                         <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
+                            key={serverError}
+                            initial={{ opacity: 0, y: -6, scale: 0.98 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            transition={{ duration: 0.16, ease: "easeOut" }}
                             className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-3 text-red-200 text-sm backdrop-blur-sm"
                         >
                             <AlertCircle className="w-5 h-5 shrink-0 text-red-400" />
@@ -164,7 +185,7 @@ export default function Login() {
                             type="submit"
                             className="w-full group relative overflow-hidden bg-white text-black font-bold py-3.5 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:hover:scale-100 mt-4 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-r from-indigo-400 via-white to-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mix-blend-screen" />
+                            <div className="absolute inset-0 bg-linear-to-r from-indigo-400 via-white to-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mix-blend-screen" />
                             <span className="relative z-10 flex items-center justify-center gap-2">
                                 {isSubmitting ? <LoadingDots size="md" /> : (
                                     <>

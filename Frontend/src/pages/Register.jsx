@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { useDispatch } from "react-redux"
 import { Link, useNavigate } from "react-router-dom"
@@ -9,10 +9,11 @@ import { motion, AnimatePresence } from "framer-motion"
 import toast from "react-hot-toast"
 import { authService } from "../api/services/auth.service"
 import { login } from "../store/authSlice"
+import { toActionError } from "../utils/errorMessages"
 
 // Background components
 const NoiseOverlay = () => (
-    <div className="absolute inset-0 pointer-events-none z-10 opacity-[0.04] mix-blend-overlay">
+    <div className="absolute inset-0 pointer-events-none z-10 opacity-4 mix-blend-overlay">
         <svg className="w-full h-full">
             <filter id="noiseFilter">
                 <feTurbulence type="fractalNoise" baseFrequency="0.6" stitchTiles="stitch" />
@@ -24,8 +25,8 @@ const NoiseOverlay = () => (
 
 const AmbientBackground = () => (
     <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-emerald-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse gpu-layer" style={{ animationDuration: '6s' }} />
-        <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse gpu-layer" style={{ animationDuration: '4s' }} />
+        <div className="absolute top-[-10%] right-[-10%] w-125 h-125 bg-emerald-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse gpu-layer" style={{ animationDuration: '6s' }} />
+        <div className="absolute bottom-[-10%] left-[-10%] w-125 h-125 bg-indigo-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse gpu-layer" style={{ animationDuration: '4s' }} />
     </div>
 )
 
@@ -109,19 +110,26 @@ export default function Register() {
             setStep("OTP")
             toast.success(`Verification code sent to ${data.email}`)
         } catch (error) {
-            // Map backend errors to user-friendly messages
-            let errorMessage = error.message || "Registration failed"
-
-            // If backend returned specific Zod validation errors, show the first one
-            if (error?.fieldErrors && error.fieldErrors.length > 0) {
-                // e.g. "password: Password must be at least 8 characters"
-                const firstError = error.fieldErrors[0]
-                errorMessage = firstError.message || `${firstError.field} is invalid`
-            } else if (error.message?.includes("already exists")) {
-                errorMessage = "Username or email is already registered. Try logging in instead."
-            } else if (error.message?.includes("fields") || error.message?.includes("required")) {
-                errorMessage = "All fields are required. Please fill in the form completely."
-            }
+            const errorMessage = toActionError(error, "Registration failed. Please try again.", [
+                {
+                    when: ({ statusCode, normalizedMessage }) =>
+                        statusCode === 409 ||
+                        normalizedMessage.includes('already exists') ||
+                        normalizedMessage.includes('already registered') ||
+                        normalizedMessage.includes('duplicate'),
+                    message: "Username or email is already registered. Try logging in instead."
+                },
+                {
+                    when: ({ statusCode, normalizedMessage }) =>
+                        statusCode === 400 &&
+                        (normalizedMessage.includes('fields') || normalizedMessage.includes('required')),
+                    message: "All fields are required. Please fill in the form completely."
+                },
+                {
+                    when: ({ statusCode }) => statusCode === 429,
+                    message: "Too many registration attempts. Please wait and try again."
+                }
+            ])
 
             toast.error(errorMessage)
         } finally {
@@ -146,14 +154,24 @@ export default function Register() {
                 navigate("/customize?onboarding=true");
             }
         } catch (error) {
-            // Map backend errors to user-friendly messages
-            let errorMessage = error.message || "Verification failed"
-
-            if (error.message?.includes("Invalid or expired OTP")) {
-                errorMessage = "Invalid or expired code. Please request a new one."
-            } else if (error.message?.includes("session expired")) {
-                errorMessage = "Session expired. Please start registration again."
-            }
+            const errorMessage = toActionError(error, "Verification failed. Please try again.", [
+                {
+                    when: ({ statusCode, normalizedMessage }) =>
+                        statusCode === 400 &&
+                        (normalizedMessage.includes('invalid or expired otp') ||
+                            normalizedMessage.includes('invalid otp') ||
+                            normalizedMessage.includes('expired otp')),
+                    message: "Invalid or expired code. Please request a new one."
+                },
+                {
+                    when: ({ normalizedMessage }) => normalizedMessage.includes('session expired'),
+                    message: "Session expired. Please start registration again."
+                },
+                {
+                    when: ({ statusCode }) => statusCode === 429,
+                    message: "Too many verification attempts. Please wait and try again."
+                }
+            ])
 
             toast.error(errorMessage)
         } finally {
@@ -168,10 +186,19 @@ export default function Register() {
             await authService.resendOtp(tempData.email)
             toast.success("New verification code sent!")
         } catch (error) {
-            let errorMessage = error.message || "Failed to resend code"
+            const isSessionExpired = String(error?.message || '').toLowerCase().includes('session expired')
+            const errorMessage = toActionError(error, "Failed to resend code. Please try again.", [
+                {
+                    when: ({ normalizedMessage }) => normalizedMessage.includes('session expired'),
+                    message: "Session expired. Please restart registration."
+                },
+                {
+                    when: ({ statusCode }) => statusCode === 429,
+                    message: "Too many OTP requests. Please wait before requesting again."
+                }
+            ])
 
-            if (error.message?.includes("session expired")) {
-                errorMessage = "Session expired. Please restart registration."
+            if (isSessionExpired) {
                 setStep("DETAILS")
             }
 
@@ -193,7 +220,7 @@ export default function Register() {
                 className="w-full max-w-md relative z-20"
             >
                 {/* Glass Card */}
-                <div className="bg-zinc-900/40 backdrop-blur-2xl border mt-8 border-white/10 p-8 rounded-[2rem] shadow-2xl shadow-black/50 overflow-hidden relative group">
+                <div className="bg-zinc-900/40 backdrop-blur-2xl border mt-8 border-white/10 p-8 rounded-4xl shadow-2xl shadow-black/50 overflow-hidden relative group">
 
                     {/* Header Section */}
                     <div className="text-center mb-8 relative z-10">
@@ -298,7 +325,7 @@ export default function Register() {
                                     type="submit"
                                     className="w-full group relative overflow-hidden bg-white text-black font-bold py-3.5 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:hover:scale-100 mt-6 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]"
                                 >
-                                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 via-white to-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mix-blend-screen" />
+                                    <div className="absolute inset-0 bg-linear-to-r from-emerald-400 via-white to-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mix-blend-screen" />
                                     <span className="relative z-10 flex items-center justify-center gap-2">
                                         {isSubmitting ? <LoadingDots size="md" /> : (
                                             <>

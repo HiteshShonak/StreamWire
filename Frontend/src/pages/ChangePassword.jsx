@@ -7,6 +7,7 @@ import { Lock, Eye, EyeOff, ArrowLeft, AlertCircle, CheckCircle2, Shield } from 
 import { LoadingDots } from '../Components/Common/LoadingIndicator'
 import toast from 'react-hot-toast'
 import { authService } from '../api/services/auth.service'
+import { toActionError } from '../utils/errorMessages'
 
 export default function ChangePassword() {
    const navigate = useNavigate()
@@ -32,15 +33,12 @@ export default function ChangePassword() {
          navigate('/settings')
       },
       onError: (error) => {
-         let errorMessage = error.message || "Failed to change password"
-
-         if (error.message?.includes("Invalid credentials") || error.message?.includes("incorrect")) {
-            errorMessage = "Current password is incorrect. Please try again."
-         } else if (error.message?.includes("same as")) {
-            errorMessage = "New password cannot be the same as current password."
-         } else if (error.message?.includes("required")) {
-            errorMessage = "All fields are required to change password."
-         }
+         const errorMessage = toActionError(error, "Failed to change password", [
+            { when: ['invalid credentials', 'incorrect'], message: 'Current password is incorrect. Please try again.' },
+            { when: 'same as', message: 'New password cannot be the same as current password.' },
+            { when: 'required', message: 'All fields are required to change password.' },
+            { when: ['unauthorized', 'not authorized', 'login'], message: 'Please sign in again before changing password.' },
+         ])
 
          setServerError(errorMessage)
          toast.error(errorMessage)
@@ -60,7 +58,7 @@ export default function ChangePassword() {
       <div className="relative min-h-screen bg-[#050505] text-white">
 
          {/* Background Glow */}
-         <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-indigo-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
+         <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-indigo-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
 
          <div className="relative z-10 px-4 sm:px-6 lg:pl-72 lg:pr-72 pt-20 sm:pt-24 pb-20">
             <div className="max-w-2xl mx-auto">
@@ -98,8 +96,10 @@ export default function ChangePassword() {
                   {/* Error Message */}
                   {serverError && (
                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
+                        key={serverError}
+                        initial={{ opacity: 0, y: -6, scale: 0.98 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        transition={{ duration: 0.16, ease: "easeOut" }}
                         className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-3 text-red-200 text-sm"
                      >
                         <AlertCircle className="w-5 h-5 shrink-0 text-red-400" />

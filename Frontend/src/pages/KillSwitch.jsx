@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -10,9 +10,9 @@ import { LoadingDots } from '../Components/Common/LoadingIndicator'
 import toast from 'react-hot-toast'
 
 import { authService } from '../api/services/auth.service'
+import { toActionError } from '../utils/errorMessages'
 
 export default function KillSwitch() {
-   const navigate = useNavigate()
    const queryClient = useQueryClient()
    const user = useSelector((state) => state.auth.userData)
 
@@ -42,12 +42,10 @@ export default function KillSwitch() {
          setConfirmingAction(false);
       },
       onError: (error) => {
-         const message = error.message?.includes('not found')
-            ? 'Account settings not found'
-            : error.message?.includes('unauthorized') || error.message?.includes('login')
-               ? 'Please sign in to update settings'
-               : 'Could not update identity settings. Please try again.';
-         toast.error(message);
+         toast.error(toActionError(error, 'Could not update identity settings. Please try again.', [
+            { when: 'not found', message: 'Account settings not found' },
+            { when: ['unauthorized', 'not authorized', 'login'], message: 'Please sign in to update settings' },
+         ]));
       }
    })
 
@@ -87,7 +85,7 @@ export default function KillSwitch() {
       <div className="relative min-h-screen bg-[#050505] text-white">
 
          {/* Background Glow */}
-         <div className={`fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] opacity-5 blur-[120px] pointer-events-none gpu-layer transition-colors duration-700 ${user?.isIdentityCloaked ? 'bg-emerald-500' : 'bg-red-500'}`} />
+         <div className={`fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 opacity-5 blur-[120px] pointer-events-none gpu-layer transition-colors duration-700 ${user?.isIdentityCloaked ? 'bg-emerald-500' : 'bg-red-500'}`} />
 
          <div className="relative z-10 px-4 sm:px-6 lg:pl-72 lg:pr-72 pt-20 sm:pt-24 pb-20">
             <div className="max-w-3xl mx-auto">
@@ -97,7 +95,7 @@ export default function KillSwitch() {
                   <motion.div
                      initial={{ scale: 0.8, opacity: 0 }}
                      animate={{ scale: 1, opacity: 1 }}
-                     className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 mx-auto mb-4 sm:mb-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-emerald-500/20 to-green-500/20 border border-emerald-500/30 flex items-center justify-center shadow-xl shadow-emerald-900/20"
+                     className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 mx-auto mb-4 sm:mb-6 rounded-2xl sm:rounded-3xl bg-linear-to-br from-emerald-500/20 to-green-500/20 border border-emerald-500/30 flex items-center justify-center shadow-xl shadow-emerald-900/20"
                   >
                      <Ghost className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 text-emerald-400" />
                   </motion.div>
@@ -258,7 +256,7 @@ export default function KillSwitch() {
                   <div className="p-5 sm:p-6 lg:p-8 rounded-2xl border-2 border-zinc-800 bg-zinc-900/50 text-center relative overflow-hidden">
                      {/* Animated background indicator */}
                      {user?.isIdentityCloaked && (
-                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-green-500/5" />
+                        <div className="absolute inset-0 bg-linear-to-br from-emerald-500/5 to-green-500/5" />
                      )}
 
                      <div className="relative">
