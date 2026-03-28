@@ -1,5 +1,5 @@
 import { v2 as cloudinary } from "cloudinary";
-import fs from "fs";
+import { safeUnlink } from "./tempFileCleanup.js";
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -13,9 +13,9 @@ const sanitizeFilename = (text) => {
 };
 
 const uploadOnCloudinary = async (localFilePath, fileType = "others", filename = null) => {
-    try {
-        if (!localFilePath) return null;
+    if (!localFilePath) return null;
 
+    try {
         const isVideo = localFilePath.match(/\.(mp4|mkv|mov|avi)$/i);
 
         let options = {
@@ -28,8 +28,7 @@ const uploadOnCloudinary = async (localFilePath, fileType = "others", filename =
         if (isVideo) {
             options.folder = "streamwire_videos";
             options.resource_type = "video";
-            // Video is already compressed locally, just upload as-is
-            // Use eager_async for longer videos to avoid timeout
+            // Upload video as-is and let Cloudinary process it async.
             options.eager_async = true;
             options.eager = [
                 { format: "mp4", video_codec: "h264" }
@@ -82,7 +81,6 @@ const uploadOnCloudinary = async (localFilePath, fileType = "others", filename =
 
         const response = await cloudinary.uploader.upload(localFilePath, options);
         console.log(`Cloudinary upload success: ${response.public_id}`);
-        fs.unlinkSync(localFilePath); // Clean local temp file
         return response;
 
     } catch (error) {
@@ -91,8 +89,9 @@ const uploadOnCloudinary = async (localFilePath, fileType = "others", filename =
         console.error("   File:", localFilePath);
         console.error("   Type:", fileType);
         if (error.http_code) console.error("   HTTP Code:", error.http_code);
-        if (fs.existsSync(localFilePath)) fs.unlinkSync(localFilePath);
         return null;
+    } finally {
+        safeUnlink(localFilePath, { reason: `cloudinary-${fileType}` });
     }
 }
 
@@ -113,18 +112,17 @@ const deleteFromCloudinary = async (publicId, resourceType = "image") => {
     }
 }
 
-// generate auto-thumbnail URL from video
+// Build a thumbnail URL from the video.
 const generateAutoThumbnail = (videoPublicId, options = {}) => {
     const {
-        time = "1",  // Time offset in seconds (e.g., "5" for 5 seconds in)
+        time = "1",
         width = 1280,
         height = 720,
         crop = "fill",
-        gravity = "auto" // Smart crop to focus on content
+        gravity = "auto"
     } = options;
 
-    // Build URL manually for maximum control
-    // Format: https://res.cloudinary.com/{cloud}/video/upload/{transformations}/{public_id}.jpg
+    // Build the URL directly.
     const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
     const transformations = `so_${time},c_${crop},w_${width},h_${height},g_${gravity},q_auto`;
 

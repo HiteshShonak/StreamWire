@@ -1,4 +1,3 @@
-export { MagneticButton } from './MagneticButton'
 export { ScrollReveal } from './ScrollReveal'
 export { CustomLogo } from './CustomLogo'
 export { InteractiveFeedDemo } from './InteractiveFeedDemo'

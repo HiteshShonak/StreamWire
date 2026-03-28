@@ -1,4 +1,4 @@
-import { uploadOnCloudinary, deleteFromCloudinary } from "./cloudinary.js";
+import { uploadOnCloudinary } from "./cloudinary.js";
 
 export const resolveIdentityMedia = async ({
   localPath,
@@ -18,11 +18,8 @@ export const resolveIdentityMedia = async ({
       `${type}_${cleanUsername}_${timestamp}`
     );
 
-    if (
-      existingData?.public_id &&
-      !existingData.public_id.includes("default")
-    ) {
-      await deleteFromCloudinary(existingData.public_id);
+    if (!upload?.secure_url || !upload?.public_id) {
+      throw new Error(`Failed to upload ${type} image`);
     }
 
     return { url: upload.secure_url, public_id: upload.public_id };

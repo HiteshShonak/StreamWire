@@ -1,7 +1,33 @@
 import axios from 'axios';
 import { getAccessToken, getRefreshToken, setAccessToken, setRefreshToken } from '../store/authSlice';
 
-// axios setup
+const AUTH_ROUTES_SKIP_REFRESH = [
+    '/users/login',
+    '/users/register-request',
+    '/users/verify-otp',
+    '/users/resend-otp',
+    '/users/forgot-password',
+    '/users/reset-password',
+    '/users/refresh-token'
+];
+
+const isAuthRoute = (url = '') => AUTH_ROUTES_SKIP_REFRESH.some((route) => String(url).includes(route));
+
+const buildCustomError = (errorResponse, fallback = {}) => {
+    const customError = new Error(
+        errorResponse?.message || fallback.message || 'Something went wrong'
+    );
+
+    customError.statusCode =
+        Number(errorResponse?.statusCode) ||
+        Number(fallback.statusCode) ||
+        0;
+
+    customError.fieldErrors = errorResponse?.errors || fallback.fieldErrors || [];
+    return customError;
+};
+
+// Axios setup.
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1',
     withCredentials: true,
@@ -10,16 +36,16 @@ const api = axios.create({
     }
 });
 
-// attach bearer token + handle formdata
+// Add auth headers and JSON defaults.
 api.interceptors.request.use(
     (config) => {
-        // attach token from localstorage
+        // Add the access token.
         const token = getAccessToken();
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
         }
 
-        // formdata handles its own content-type, everything else is json
+        // Let FormData set its own content type.
         if (!(config.data instanceof FormData)) {
             config.headers['Content-Type'] = 'application/json';
         }
@@ -30,7 +56,7 @@ api.interceptors.request.use(
     }
 );
 
-// Response Interceptor (Auto Token Refresh + Error Handler)
+// Refresh auth and normalize API errors.
 let isRefreshing = false;
 let failedQueue = [];
 
@@ -51,29 +77,33 @@ api.interceptors.response.use(
         return response.data?.data || response.data;
     },
     async (error) => {
-        // pull error message from backend
+        // Read the backend error.
         const errorResponse = error.response?.data;
-        const errorMessage = errorResponse?.message || "Something went wrong";
-        const fieldErrors = errorResponse?.errors || [];
         const originalRequest = error.config;
+        const status = error.response?.status;
+        const originalUrl = originalRequest?.url || '';
+        const skipRefresh = isAuthRoute(originalUrl);
 
-        // Handle 401 Unauthorized - Try Token Refresh
-        if (error.response?.status === 401 && !originalRequest._retry) {
-            if (originalRequest.url?.includes('/users/refresh-token')) {
-                // Refresh token itself expired - logout user
-                localStorage.removeItem("accessToken");
-                localStorage.removeItem("refreshToken");
-                window.dispatchEvent(new Event("auth:unauthorized"));
-                return Promise.reject(error);
+        // Try token refresh on 401s.
+        if (status === 401 && originalRequest && !originalRequest._retry && !skipRefresh) {
+            const refreshToken = getRefreshToken();
+
+            // No refresh token means we stop here.
+            if (!refreshToken) {
+                const customError = buildCustomError(errorResponse, {
+                    statusCode: status,
+                    message: error?.message,
+                });
+                return Promise.reject(customError);
             }
 
             if (isRefreshing) {
-                // refresh already in progress, queue this one
+                // Wait for the active refresh.
                 return new Promise((resolve, reject) => {
                     failedQueue.push({ resolve, reject });
                 })
                     .then(() => {
-                        // retry with updated token
+                        // Retry with the new token.
                         originalRequest.headers['Authorization'] = `Bearer ${getAccessToken()}`;
                         return api(originalRequest);
                     })
@@ -86,42 +116,47 @@ api.interceptors.response.use(
             isRefreshing = true;
 
             try {
-                // send refresh token in body (chrome blocks cross-origin cookies)
-                const refreshToken = getRefreshToken();
+                // Send the refresh token in the body.
                 const refreshResponse = await axios.post(
                     `${api.defaults.baseURL}/users/refresh-token`,
                     { refreshToken },
                     { withCredentials: true }
                 );
 
-                // save new tokens
+                // Save the new tokens.
                 const newData = refreshResponse.data?.data || refreshResponse.data;
                 if (newData?.accessToken) setAccessToken(newData.accessToken);
                 if (newData?.refreshToken) setRefreshToken(newData.refreshToken);
 
-                // refresh worked, replay queued requests
+                // Replay queued requests.
                 processQueue(null);
                 isRefreshing = false;
 
-                // Retry the original request with the new token
+                // Retry the original request.
                 originalRequest.headers['Authorization'] = `Bearer ${newData.accessToken}`;
                 return api(originalRequest);
             } catch (refreshError) {
-                // refresh failed, kick user out
+                // Refresh failed, sign the user out.
                 processQueue(refreshError, null);
                 isRefreshing = false;
                 localStorage.removeItem("accessToken");
                 localStorage.removeItem("refreshToken");
                 window.dispatchEvent(new Event("auth:unauthorized"));
-                return Promise.reject(refreshError);
+                const refreshErrorResponse = refreshError?.response?.data;
+                return Promise.reject(
+                    buildCustomError(refreshErrorResponse, {
+                        statusCode: refreshError?.response?.status,
+                        message: refreshError?.message,
+                    })
+                );
             }
         }
 
-        // wrap error for the UI
-        const customError = new Error(errorMessage);
-        customError.statusCode = errorResponse?.statusCode || 500;
-        customError.fieldErrors = fieldErrors;
-
+        // Return a normalized error.
+        const customError = buildCustomError(errorResponse, {
+            statusCode: status,
+            message: error?.message,
+        });
         return Promise.reject(customError);
     }
 );
