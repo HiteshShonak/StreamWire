@@ -12,6 +12,7 @@ import toast from 'react-hot-toast';
 import confetti from 'canvas-confetti';
 import { authService } from '../api/services/auth.service';
 import { login } from '../store/authSlice';
+import { toActionError } from '../utils/errorMessages';
 
 
 // Color palette options
@@ -73,7 +74,7 @@ export default function Customize() {
    });
    const [previews, setPreviews] = useState({ avatar: null, cover: null });
    const [usernameStatus, setUsernameStatus] = useState({ checking: false, available: null, message: '' });
-   const [uploadProgress, setUploadProgress] = useState({ avatar: 0, cover: 0 });
+   const [, setUploadProgress] = useState({ avatar: 0, cover: 0 });
    const [sliderPosition, setSliderPosition] = useState(50); // 0-100 for avatar before/after comparison
    const [coverSliderPosition, setCoverSliderPosition] = useState(50); // 0-100 for cover before/after comparison
 
@@ -163,7 +164,7 @@ export default function Customize() {
             setUploadProgress({ avatar: percentCompleted, cover: percentCompleted });
          });
       },
-      onSuccess: async (response) => {
+      onSuccess: async (_response) => {
          // Refresh user data
          const userData = await authService.getCurrentUser();
          dispatch(login({ user: userData }));
@@ -201,15 +202,15 @@ export default function Customize() {
          navigate(isOnboarding ? '/home' : '/settings');
       },
       onError: (error) => {
-         let errorMessage = error.message || 'Failed to update profile';
-
-         if (error.message?.includes('File too large') || error.message?.includes('size')) {
-            errorMessage = 'Image file is too large. Please use a smaller file.';
-         } else if (error.message?.includes('Invalid file type') || error.message?.includes('format')) {
-            errorMessage = 'Invalid file format. Please use JPG, PNG, or WebP.';
-         } else if (error.message?.includes('username') && error.message?.includes('taken')) {
-            errorMessage = 'Username is already taken. Please choose another.';
-         }
+         const errorMessage = toActionError(error, 'Failed to update profile', [
+            { when: ['file too large', 'size'], message: 'Image file is too large. Please use a smaller file.' },
+            { when: ['invalid file type', 'invalid file', 'format'], message: 'Invalid file format. Please use JPG, PNG, or WebP.' },
+            {
+               when: ({ normalizedMessage }) =>
+                  normalizedMessage.includes('username') && normalizedMessage.includes('taken'),
+               message: 'Username is already taken. Please choose another.',
+            },
+         ]);
 
          // Reset progress on error
          setUploadProgress({ avatar: 0, cover: 0 });
@@ -291,14 +292,12 @@ export default function Customize() {
       updateMutation.mutate(formData);
    };
 
-   const totalSteps = 4;
-
    return (
       <div className="min-h-screen bg-[#050505]">
 
          {/* Background Effects */}
          <div className="fixed inset-0 pointer-events-none">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-indigo-500 opacity-5 blur-[120px] gpu-layer" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-indigo-500 opacity-5 blur-[120px] gpu-layer" />
          </div>
 
          <div className="pt-20 md:pt-24 pb-20 px-4 md:px-8">
@@ -914,7 +913,7 @@ export default function Customize() {
                                  alt="Cover"
                                  className="w-full h-full object-cover"
                               />
-                              <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/80 via-transparent to-transparent" />
+                              <div className="absolute inset-0 bg-linear-to-t from-zinc-900/80 via-transparent to-transparent" />
                            </div>
 
                            {/* Profile Section */}
@@ -978,7 +977,7 @@ export default function Customize() {
                         </div>
 
                         {/* Summary */}
-                        <div className="bg-gradient-to-br from-emerald-900/20 to-green-900/20 border border-emerald-500/30 rounded-2xl p-6">
+                        <div className="bg-linear-to-br from-emerald-900/20 to-green-900/20 border border-emerald-500/30 rounded-2xl p-6">
                            <div className="flex items-start gap-4">
                               <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center shrink-0">
                                  <CheckCircle2 className="w-6 h-6 text-emerald-400" />

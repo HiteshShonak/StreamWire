@@ -10,6 +10,7 @@ import { LoadingDots } from '../Components/Common/LoadingIndicator'
 import toast from 'react-hot-toast'
 import { authService } from '../api/services/auth.service'
 import { logout } from '../store/authSlice'
+import { toActionError } from '../utils/errorMessages'
 
 export default function Settings() {
    const user = useSelector((state) => state.auth.userData)
@@ -26,8 +27,16 @@ export default function Settings() {
          toast.success('Signed out successfully')
          navigate('/login')
       },
-      onError: () => {
+      onError: (error) => {
+         const errorMessage = toActionError(error, 'Signed out on this device, but server cleanup may be delayed.', [
+            {
+               when: ['network error', 'failed to fetch', 'timeout'],
+               message: 'Signed out locally. We could not reach the server to close all session data.'
+            }
+         ])
          dispatch(logout())
+         queryClient.clear()
+         toast.error(errorMessage)
          navigate('/login')
       }
    })
@@ -41,8 +50,16 @@ export default function Settings() {
          toast.success('Signed out from all devices')
          navigate('/login')
       },
-      onError: () => {
+      onError: (error) => {
+         const errorMessage = toActionError(error, 'Signed out on this device, but some remote sessions may stay active.', [
+            {
+               when: ['network error', 'failed to fetch', 'timeout'],
+               message: 'Signed out locally. We could not confirm sign-out on all devices.'
+            }
+         ])
          dispatch(logout())
+         queryClient.clear()
+         toast.error(errorMessage)
          navigate('/login')
       }
    })
@@ -120,7 +137,7 @@ export default function Settings() {
       <div className="relative min-h-screen bg-[#050505] text-white">
 
          {/* Background Glow */}
-         <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-indigo-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
+         <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-indigo-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
 
          <div className="relative z-10 px-4 sm:px-6 lg:pl-72 lg:pr-72 pt-20 sm:pt-24 pb-20">
             <div className="max-w-4xl mx-auto">
