@@ -21,7 +21,7 @@ export default function Layout() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white">
+    <div className="min-h-screen bg-zinc-950 text-white">
 
       {/* Only show Global Header if NOT on landing/auth */}
       {showGlobalNav && <Header variant={getVariant()} />}

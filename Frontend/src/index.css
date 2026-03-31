@@ -1,26 +1,28 @@
 /* 1. Imports FIRST */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 /* 2. Theme Configuration SECOND */
 @theme {
-  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
-  --color-primary: #6366f1;
-  --color-primary-dark: #4f46e5;
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  --color-primary: #ffffff;
+  --color-primary-dark: #e4e4e7;
 
   /* SaaS Grays (Zinc) */
-  --color-surface: #ffffff;
-  --color-surface-subtle: #fafafa;
-  --color-border: #e4e4e7;
-  --color-text-main: #18181b;
-  --color-text-muted: #71717a;
+  --color-surface: #09090b;
+  --color-surface-subtle: #18181b;
+  --color-border: #27272a;
+  --color-text-main: #ffffff;
+  --color-text-muted: #a1a1aa;
 }
 
 /* 3. Base & Custom Utilities THIRD */
 @layer base {
   body {
     font-family: var(--font-sans);
-    @apply bg-zinc-50 text-zinc-900 antialiased selection:bg-indigo-500/40 selection:text-white;
+    @apply bg-black text-white antialiased selection:bg-zinc-700 selection:text-white;
   }
 }
 
@@ -41,11 +43,11 @@
 
 /* ✨ Premium Utilities */
 .glass-panel {
-  @apply bg-white/70 backdrop-blur-xl border border-white/50 shadow-sm;
+  @apply bg-zinc-950 backdrop-blur-xl border border-zinc-800 shadow-sm;
 }
 
 .btn-primary {
-  @apply bg-indigo-600 text-white font-medium px-5 py-2.5 rounded-xl hover:bg-indigo-700 transition-all active:scale-[0.98] shadow-lg shadow-indigo-500/20;
+  @apply bg-white text-black font-bold px-5 py-2.5 rounded-xl hover:bg-zinc-200 transition-all active:scale-[0.98] shadow-lg shadow-indigo-500/20;
 }
 
 /* 🫨 Animations */
@@ -103,7 +105,7 @@
 
 /* Light theme skeleton (Landing page) */
 .skeleton-light {
-  @apply relative overflow-hidden bg-zinc-200/70 rounded-xl;
+  @apply relative overflow-hidden bg-zinc-100 rounded-xl;
 }
 
 .skeleton-light::after {
