@@ -1,0 +1,46 @@
+# Local planning docs
+
+
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Environment files (keep examples)
+.env
+.env.*
+!.env.example
+!.env*.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build outputs
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Runtime/temp files
+tmp/
+temp/
+Backend/public/temp/chunk-*.mp4
+Backend/public/temp/chunks/
+plan.md
+task.md
+# OS / editor junk
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
