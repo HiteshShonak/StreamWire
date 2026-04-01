@@ -5,6 +5,8 @@ import { UserPlus, UserCheck, Ghost, Shield } from 'lucide-react'
 const UserCard = memo(function UserCard({ user, onSubscribe }) {
   // Check if this is a "Ghost" profile (already masked by backend, but we style it)
   const isGhost = user.username === 'anonymous' || user.isIdentityCloaked
+  const displayName = isGhost ? 'Anonymous' : user.fullName
+  const displayHandle = isGhost ? '@anonymous' : `@${user.username}`
 
   return (
     <div className={`flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl border transition-all gap-4 ${isGhost ? "bg-zinc-900/50 border-green-900/20" : "bg-zinc-900 border-zinc-800 hover:border-zinc-700"}`}>
@@ -12,7 +14,7 @@ const UserCard = memo(function UserCard({ user, onSubscribe }) {
         <div className="relative shrink-0">
           <img
             src={user.avatar?.url}
-            alt={user.fullName}
+            alt={displayName}
             className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover ${isGhost ? "border-2 border-green-500/30 p-0.5" : ""}`}
           />
           {isGhost && (
@@ -24,10 +26,10 @@ const UserCard = memo(function UserCard({ user, onSubscribe }) {
 
         <div className="min-w-0 flex-1">
           <h4 className={`font-bold text-sm truncate ${isGhost ? "text-green-500 font-mono tracking-wide" : "text-white"}`}>
-            {user.fullName}
+            {displayName}
           </h4>
           <p className="text-xs text-zinc-500 truncate">
-            @{user.username} • {user.subscribersCount || 0} subscribers
+            {displayHandle} • {user.subscribersCount || 0} subscribers
           </p>
           {/* If user provided a bio, show it (Backend masks bio if stealth) */}
           {user.bio && (

@@ -45,7 +45,7 @@ const NavItem = ({ icon: Icon, label, path, isDanger = false, isCollapsed = fals
           {isActive && !isCollapsed && (
             <motion.div
               layoutId="activeNav"
-              className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-indigo-500 rounded-r-full shadow-[0_0_10px_rgba(99,102,241,0.6)]"
+              className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-white rounded-r-full shadow-[0_0_10px_rgba(255,255,255,0.35)]"
             />
           )}
 
@@ -53,7 +53,7 @@ const NavItem = ({ icon: Icon, label, path, isDanger = false, isCollapsed = fals
           {isActive && isCollapsed && (
             <motion.div
               layoutId="activeNavDot"
-              className="absolute -left-1 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-indigo-500 rounded-full shadow-[0_0_10px_rgba(99,102,241,0.6)]"
+              className="absolute -left-1 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.35)]"
             />
           )}
 

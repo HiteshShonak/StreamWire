@@ -78,39 +78,39 @@ export default function Header({ variant = 'gateway', onUploadClick: _onUploadCl
   const config = {
     gateway: {
       theme: "border-white/10 bg-[#0A0A0A]/80 shadow-black/50 backdrop-blur-xl",
-      accent: "from-indigo-500 to-purple-600",
+      accent: "from-zinc-400 to-zinc-700",
       placeholder: "Search the network...",
       icon: Radio,
       customIcon: gatewayIcon,
       logoColor: "text-white",
       actionLabel: "Create",
       ActionIcon: Plus,
-      inputStyle: "bg-white/5 border-white/5 text-zinc-200 focus:border-indigo-500/50",
+      inputStyle: "bg-white/5 border-white/5 text-zinc-200 focus:border-white/40",
       buttonStyle: "bg-white text-black hover:bg-zinc-200"
     },
     cinema: {
-      theme: "border-indigo-500/10 bg-[#050510]/90 shadow-indigo-900/20 backdrop-blur-xl",
-      accent: "from-indigo-400 to-violet-600",
+      theme: "border-white/10 bg-[#0a0a0a]/90 shadow-black/40 backdrop-blur-xl",
+      accent: "from-zinc-400 to-zinc-700",
       placeholder: "Search cinema library...",
       icon: Film,
       customIcon: CinemaIcon,
-      logoColor: "text-indigo-100",
+      logoColor: "text-zinc-100",
       actionLabel: "Upload",
       ActionIcon: Upload,
-      inputStyle: "bg-[#0f0f1a] border-indigo-500/20 text-indigo-100 focus:border-indigo-400/50",
-      buttonStyle: "bg-indigo-600 text-white hover:bg-indigo-500"
+      inputStyle: "bg-[#111113] border-zinc-700 text-zinc-100 focus:border-white/40",
+      buttonStyle: "bg-zinc-900 text-zinc-100 border border-zinc-700 hover:bg-zinc-800"
     },
     wire: {
-      theme: "border-sky-500/10 bg-[#0a0a0a]/90 shadow-sky-900/10 backdrop-blur-xl",
-      accent: "from-sky-400 to-blue-600",
+      theme: "border-white/10 bg-[#0a0a0a]/90 shadow-black/30 backdrop-blur-xl",
+      accent: "from-zinc-400 to-zinc-700",
       placeholder: "Search wires & trends...",
       icon: MessageSquare,
       customIcon: WireIcon,
-      logoColor: "text-sky-100",
+      logoColor: "text-zinc-100",
       actionLabel: "Post",
       ActionIcon: PenSquare,
-      inputStyle: "bg-[#0f0f11] border-sky-500/20 text-sky-100 focus:border-sky-400/50",
-      buttonStyle: "bg-sky-500 text-white hover:bg-sky-400"
+      inputStyle: "bg-[#0f0f11] border-zinc-700 text-zinc-100 focus:border-white/40",
+      buttonStyle: "bg-white text-black hover:bg-zinc-200"
     },
     shadows: {
       theme: "border-zinc-800 bg-[#09090b]/90 shadow-2xl shadow-black backdrop-blur-xl",
@@ -121,7 +121,7 @@ export default function Header({ variant = 'gateway', onUploadClick: _onUploadCl
       logoColor: "text-emerald-500 tracking-tight font-medium",
       actionLabel: "Secure Drop",
       ActionIcon: ShieldCheck,
-      inputStyle: "bg-text-main border-zinc-800 text-zinc-300 placeholder:text-zinc-600 focus:border-emerald-500/30 focus:bg-[#202023]",
+      inputStyle: "bg-zinc-950/90 border-zinc-800 text-zinc-200 placeholder:text-zinc-500 focus:border-emerald-500/40 focus:bg-zinc-900",
       buttonStyle: "bg-emerald-600 text-white hover:bg-emerald-500 shadow-lg shadow-emerald-900/20",
       isStealth: true
     }
@@ -129,6 +129,8 @@ export default function Header({ variant = 'gateway', onUploadClick: _onUploadCl
 
   const current = config[variant] || config.gateway
   const isStealth = current.isStealth
+  const isIdentityCloaked = Boolean(userData?.isIdentityCloaked)
+  const shouldMaskIdentity = isStealth || isIdentityCloaked
 
   return (
     <motion.header
@@ -169,7 +171,7 @@ export default function Header({ variant = 'gateway', onUploadClick: _onUploadCl
               />
               <button
                 onClick={() => setIsMobileSearchOpen(false)}
-                className={`p-2 rounded-full ${isStealth ? 'bg-zinc-800 text-zinc-400' : 'bg-white/10 text-zinc-300'}`}
+                  className={`p-2 rounded-full ${isStealth ? 'bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200' : 'bg-white/10 text-zinc-300'}`}
               >
                 <X className="w-5 h-5" />
               </button>
@@ -270,12 +272,12 @@ export default function Header({ variant = 'gateway', onUploadClick: _onUploadCl
                         <div className="w-10 h-10 rounded-full skeleton" />
                       ) : (
                         <Link to="/dashboard" className="group/avatar block">
-                          <div className={`w-10 h-10 rounded-full p-0.5 bg-linear-to-tr ${current.accent} hover:scale-110 transition-all duration-300 cursor-pointer relative group-hover/avatar:shadow-lg group-hover/avatar:shadow-indigo-500/50`}>
+                          <div className={`w-10 h-10 rounded-full p-0.5 bg-linear-to-tr ${current.accent} hover:scale-110 transition-all duration-300 cursor-pointer relative group-hover/avatar:shadow-lg group-hover/avatar:shadow-white/20`}>
                             {/* Glow effect on hover */}
-                            <div className="absolute inset-0 rounded-full bg-linear-to-tr from-indigo-500 to-purple-600 opacity-0 group-hover/avatar:opacity-30 blur-md transition-opacity duration-300" />
+                            <div className="absolute inset-0 rounded-full bg-linear-to-tr from-white/60 to-zinc-400 opacity-0 group-hover/avatar:opacity-25 blur-md transition-opacity duration-300" />
 
                             <div className="w-full h-full rounded-full overflow-hidden bg-black flex items-center justify-center border-2 border-black relative z-10">
-                              {isStealth ? (
+                              {shouldMaskIdentity ? (
                                 <motion.div
                                   key="stealth-avatar"
                                   initial={{ scale: 0.8, opacity: 0 }}
@@ -326,8 +328,8 @@ export default function Header({ variant = 'gateway', onUploadClick: _onUploadCl
                             transition={{ duration: 0.15 }}
                             className="absolute top-full right-0 mt-2 px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg shadow-xl z-50 whitespace-nowrap pointer-events-none"
                           >
-                            <p className="text-sm font-medium text-white">{userData.fullName}</p>
-                            <p className="text-xs text-zinc-400">@{userData.username}</p>
+                            <p className="text-sm font-medium text-white">{isIdentityCloaked ? 'Anonymous' : userData.fullName}</p>
+                            <p className="text-xs text-zinc-400">{isIdentityCloaked ? '@anonymous' : `@${userData.username}`}</p>
                           </motion.div>
                         )}
                       </AnimatePresence>
