@@ -35,7 +35,7 @@ export const InteractiveFeedDemo = ({ isStealth }) => {
         ))}
       </div>
 
-      <div className={`relative flex-1 min-h-0 rounded-xl border overflow-hidden p-3 sm:p-4 transition-colors duration-500 ${isStealth ? "bg-zinc-950/50 border-zinc-800" : "bg-white/60 border-zinc-100"}`}>
+      <div className={`relative flex-1 min-h-0 rounded-xl border overflow-hidden p-3 sm:p-4 transition-colors duration-500 ${isStealth ? "bg-zinc-950/50 border-zinc-800" : "bg-white/80 border-indigo-100/80"}`}>
         <AnimatePresence mode="wait">
           {activeTab === 'cinema' && (
              <motion.div 
@@ -46,9 +46,9 @@ export const InteractiveFeedDemo = ({ isStealth }) => {
                transition={{ duration: 0.2 }} 
                className="h-full flex flex-col justify-center space-y-3"
              >
-                <div className={`w-full aspect-video rounded-lg animate-pulse ${isStealth ? "bg-zinc-800" : "bg-zinc-200"}`} />
-                <div className={`h-2.5 rounded-full w-3/4 animate-pulse ${isStealth ? "bg-zinc-800" : "bg-zinc-200"}`} />
-                <div className={`h-2.5 rounded-full w-1/2 animate-pulse ${isStealth ? "bg-zinc-800" : "bg-zinc-100"}`} />
+               <div className={`w-full aspect-video rounded-lg animate-pulse ${isStealth ? "bg-zinc-800" : "bg-white border border-indigo-100/90"}`} />
+               <div className={`h-2.5 rounded-full w-3/4 animate-pulse ${isStealth ? "bg-zinc-800" : "bg-white border border-indigo-100/90"}`} />
+               <div className={`h-2.5 rounded-full w-1/2 animate-pulse ${isStealth ? "bg-zinc-800" : "bg-white/95 border border-indigo-100/70"}`} />
              </motion.div>
           )}
           
@@ -63,10 +63,10 @@ export const InteractiveFeedDemo = ({ isStealth }) => {
              >
                 {[1, 2, 3].map(i => (
                   <div key={i} className="flex gap-3">
-                    <div className={`w-9 h-9 rounded-full shrink-0 animate-pulse ${isStealth ? "bg-zinc-800" : "bg-zinc-200"}`} />
+                    <div className={`w-9 h-9 rounded-full shrink-0 animate-pulse ${isStealth ? "bg-zinc-800" : "bg-white border border-indigo-100/90"}`} />
                     <div className="space-y-2 w-full flex-1">
-                      <div className={`h-2.5 rounded-full w-full animate-pulse ${isStealth ? "bg-zinc-800" : "bg-zinc-200"}`} />
-                      <div className={`h-2.5 rounded-full w-2/3 animate-pulse ${isStealth ? "bg-zinc-800" : "bg-zinc-100"}`} />
+                      <div className={`h-2.5 rounded-full w-full animate-pulse ${isStealth ? "bg-zinc-800" : "bg-white border border-indigo-100/90"}`} />
+                      <div className={`h-2.5 rounded-full w-2/3 animate-pulse ${isStealth ? "bg-zinc-800" : "bg-white/95 border border-indigo-100/70"}`} />
                     </div>
                   </div>
                 ))}
@@ -82,12 +82,12 @@ export const InteractiveFeedDemo = ({ isStealth }) => {
                transition={{ duration: 0.2 }} 
                className="h-full flex items-center justify-center p-1"
              >
-                <div className="grid grid-cols-2 gap-2 w-full max-w-[240px]">
+                <div className="grid grid-cols-2 gap-2 w-full max-w-60">
                   {[1, 2, 3, 4].map(i => (
-                    <div key={i} className={`aspect-square rounded-lg border p-2.5 flex items-end transition-colors duration-150 ${isStealth ? "bg-green-900/10 border-green-500/20" : "bg-zinc-900 text-white border-zinc-800"}`}>
+                    <div key={i} className={`aspect-square rounded-lg border p-2.5 flex items-end transition-colors duration-150 ${isStealth ? "bg-green-900/10 border-green-500/20" : "bg-white border-indigo-100 text-indigo-600"}`}>
                        <div className="w-full space-y-1">
-                         <div className="h-1 bg-white/20 rounded-full w-full" />
-                         <div className="h-1 bg-white/10 rounded-full w-2/3" />
+                         <div className={`h-1 rounded-full w-full ${isStealth ? 'bg-white/20' : 'bg-indigo-200/90'}`} />
+                         <div className={`h-1 rounded-full w-2/3 ${isStealth ? 'bg-white/10' : 'bg-indigo-100'}`} />
                        </div>
                     </div>
                   ))}

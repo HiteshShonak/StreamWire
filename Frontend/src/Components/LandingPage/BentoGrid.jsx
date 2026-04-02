@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { LayoutGrid, TrendingUp, Fingerprint, MessageSquare } from 'lucide-react'
+import { LayoutGrid, TrendingUp, Fingerprint, ShieldCheck } from 'lucide-react'
 import { ScrollReveal } from './ScrollReveal'
 import { InteractiveFeedDemo } from './InteractiveFeedDemo'
 
@@ -9,10 +9,13 @@ export const BentoGrid = ({ isStealth }) => {
       <div className="max-w-7xl mx-auto">
         <ScrollReveal>
           <div className="mb-8 sm:mb-12 md:mb-16 text-center">
+            <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[11px] sm:text-xs font-semibold mb-3 sm:mb-4 ${isStealth ? 'bg-zinc-900/70 border-zinc-700 text-zinc-300' : 'bg-white/90 border-indigo-100 text-indigo-600'}`}>
+              Product Architecture
+            </div>
             <h2 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 tracking-tight transition-colors duration-700 ${isStealth ? "text-white" : "text-zinc-900"}`}>
               One App. Two Worlds.
             </h2>
-            <p className="text-zinc-500 max-w-2xl mx-auto text-sm sm:text-base lg:text-lg">StreamWire isn't just a video platform. It's a complete ecosystem.</p>
+            <p className="text-zinc-500 max-w-2xl mx-auto text-sm sm:text-base lg:text-lg">StreamWire combines creator growth and identity-safe publishing in one unified command surface.</p>
           </div>
         </ScrollReveal>
 
@@ -24,8 +27,10 @@ export const BentoGrid = ({ isStealth }) => {
               initial={{ y: 0 }}
               whileHover={{ y: -4 }}
               transition={{ duration: 0.08, ease: [0.4, 0.0, 0.2, 1] }}
-              className={`md:col-span-2 md:row-span-2 h-[420px] sm:h-112.5 rounded-2xl sm:rounded-3xl p-5 sm:p-6 border overflow-hidden relative group cursor-pointer ${isStealth ? "bg-zinc-900/50 border-zinc-800 hover:border-zinc-700 hover:shadow-[0_12px_40px_rgba(0,0,0,0.3)]" : "bg-linear-to-br from-indigo-50 via-white to-violet-50 border-indigo-100 hover:border-indigo-200 hover:shadow-[0_12px_40px_rgba(99,102,241,0.15)]"}`}
+              className={`md:col-span-2 md:row-span-2 h-105 sm:h-112.5 rounded-2xl sm:rounded-3xl p-5 sm:p-6 border overflow-hidden relative group cursor-pointer ${isStealth ? "bg-zinc-900/50 border-zinc-800 hover:border-zinc-700 hover:shadow-[0_12px_40px_rgba(0,0,0,0.3)]" : "bg-linear-to-br from-indigo-50 via-white to-violet-50 border-indigo-100 hover:border-indigo-200 hover:shadow-[0_12px_40px_rgba(99,102,241,0.15)]"}`}
               style={{ transition: 'border-color 0.08s cubic-bezier(0.4, 0.0, 0.2, 1), box-shadow 0.08s cubic-bezier(0.4, 0.0, 0.2, 1)' }}>
+              <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150 ${isStealth ? 'bg-linear-to-br from-zinc-700/10 via-transparent to-transparent' : 'bg-linear-to-br from-indigo-100/40 via-transparent to-transparent'}`} />
+
               <div className="relative z-10 h-full flex flex-col">
                 <div className="mb-3 sm:mb-4 shrink-0">
                   <div className="flex items-center gap-2 sm:gap-3 mb-2">
@@ -35,6 +40,11 @@ export const BentoGrid = ({ isStealth }) => {
                     <h3 className={`text-lg sm:text-xl font-bold transition-colors duration-700 ${isStealth ? "text-white" : "text-zinc-900"}`}>Triple Feed Engine</h3>
                   </div>
                   <p className={`text-xs sm:text-sm max-w-md leading-relaxed ${isStealth ? "text-zinc-500" : "text-zinc-600"}`}>Three content universes with unique algorithms</p>
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    <span className={`text-[10px] sm:text-xs px-2 py-1 rounded-md border ${isStealth ? 'bg-zinc-900/60 border-zinc-700 text-zinc-300' : 'bg-zinc-50 border-indigo-200 text-indigo-700'}`}>Cinema</span>
+                    <span className={`text-[10px] sm:text-xs px-2 py-1 rounded-md border ${isStealth ? 'bg-zinc-900/60 border-zinc-700 text-zinc-300' : 'bg-zinc-50 border-violet-200 text-violet-700'}`}>The Wire</span>
+                    <span className={`text-[10px] sm:text-xs px-2 py-1 rounded-md border ${isStealth ? 'bg-zinc-900/60 border-zinc-700 text-zinc-300' : 'bg-zinc-50 border-emerald-200 text-emerald-700'}`}>Shadows</span>
+                  </div>
                 </div>
                 <div className="flex-1 min-h-0">
                   <InteractiveFeedDemo isStealth={isStealth} />
@@ -49,7 +59,7 @@ export const BentoGrid = ({ isStealth }) => {
               initial={{ y: 0 }}
               whileHover={{ y: -4 }}
               transition={{ duration: 0.08, ease: [0.4, 0.0, 0.2, 1] }}
-              className={`h-[420px] sm:h-112.5 rounded-2xl sm:rounded-3xl p-5 sm:p-6 border relative overflow-hidden cursor-pointer ${isStealth ? "bg-zinc-950 border-green-500/30 hover:border-green-500/50 hover:shadow-[0_12px_40px_rgba(34,197,94,0.2)]" : "bg-linear-to-br from-emerald-50 via-white to-green-50 border-emerald-200 hover:border-emerald-300 hover:shadow-[0_12px_40px_rgba(16,185,129,0.15)]"}`}
+              className={`group h-105 sm:h-112.5 rounded-2xl sm:rounded-3xl p-5 sm:p-6 border relative overflow-hidden cursor-pointer ${isStealth ? "bg-zinc-950 border-green-500/30 hover:border-green-500/50 hover:shadow-[0_12px_40px_rgba(34,197,94,0.2)]" : "bg-linear-to-br from-emerald-50 via-white to-green-50 border-emerald-200 hover:border-emerald-300 hover:shadow-[0_12px_40px_rgba(16,185,129,0.15)]"}`}
               style={{ transition: 'border-color 0.08s cubic-bezier(0.4, 0.0, 0.2, 1), box-shadow 0.08s cubic-bezier(0.4, 0.0, 0.2, 1)' }}>
               <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150 ${isStealth ? "bg-linear-to-br from-green-500/5 to-transparent" : "bg-linear-to-br from-emerald-100/30 to-transparent"}`} />
               
@@ -85,7 +95,10 @@ export const BentoGrid = ({ isStealth }) => {
                 </div>
 
                 <div className={`pt-3 border-t shrink-0 ${isStealth ? "border-zinc-800" : "border-emerald-100"}`}>
-                  <span className={`text-[10px] sm:text-xs font-bold ${isStealth ? "text-green-400" : "text-emerald-600"}`}>🎯 One-Tap Claiming</span>
+                  <div className="flex items-center gap-1.5">
+                    <ShieldCheck className={`w-3.5 h-3.5 ${isStealth ? 'text-green-400' : 'text-emerald-600'}`} />
+                    <span className={`text-[10px] sm:text-xs font-bold ${isStealth ? 'text-green-400' : 'text-emerald-600'}`}>One-Tap Claiming</span>
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -97,7 +110,7 @@ export const BentoGrid = ({ isStealth }) => {
               initial={{ y: 0 }}
               whileHover={{ y: -4 }}
               transition={{ duration: 0.08, ease: [0.4, 0.0, 0.2, 1] }}
-              className={`h-[420px] sm:h-112.5 rounded-2xl sm:rounded-3xl p-5 sm:p-6 border relative overflow-hidden cursor-pointer ${isStealth ? "bg-zinc-900/50 border-zinc-800 hover:border-red-500/30 hover:shadow-[0_12px_40px_rgba(239,68,68,0.15)]" : "bg-linear-to-br from-red-50 via-white to-orange-50 border-red-100 hover:border-red-200 hover:shadow-[0_12px_40px_rgba(239,68,68,0.15)]"}`}
+              className={`group h-105 sm:h-112.5 rounded-2xl sm:rounded-3xl p-5 sm:p-6 border relative overflow-hidden cursor-pointer ${isStealth ? "bg-zinc-900/50 border-zinc-800 hover:border-red-500/30 hover:shadow-[0_12px_40px_rgba(239,68,68,0.15)]" : "bg-linear-to-br from-red-50 via-white to-orange-50 border-red-100 hover:border-red-200 hover:shadow-[0_12px_40px_rgba(239,68,68,0.15)]"}`}
               style={{ transition: 'border-color 0.08s cubic-bezier(0.4, 0.0, 0.2, 1), box-shadow 0.08s cubic-bezier(0.4, 0.0, 0.2, 1)' }}>
               <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150 ${isStealth ? "bg-linear-to-br from-red-500/5 to-transparent" : "bg-linear-to-br from-red-100/30 to-transparent"}`} />
               
@@ -137,7 +150,10 @@ export const BentoGrid = ({ isStealth }) => {
                 </div>
 
                 <div className={`pt-3 border-t shrink-0 ${isStealth ? "border-zinc-800" : "border-red-100"}`}>
-                  <span className={`text-[10px] sm:text-xs font-bold ${isStealth ? "text-emerald-400" : "text-emerald-600"}`}>👻 Reversible Anytime</span>
+                  <div className="flex items-center gap-1.5">
+                    <Fingerprint className={`w-3.5 h-3.5 ${isStealth ? 'text-red-400' : 'text-red-600'}`} />
+                    <span className={`text-[10px] sm:text-xs font-bold ${isStealth ? 'text-red-400' : 'text-red-600'}`}>Reversible Anytime</span>
+                  </div>
                 </div>
               </div>
             </motion.div>
