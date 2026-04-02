@@ -82,7 +82,7 @@ const HeroSection = React.memo(({
 
     if (!featuredVideo) {
         return (
-            <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-[#050505] via-indigo-950/20 to-[#050505]">
+            <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-black via-zinc-950 to-black">
                 <div className="text-center max-w-2xl px-6 space-y-8">
                     <motion.div
                         initial={{ scale: 0.8, opacity: 0 }}
@@ -90,10 +90,10 @@ const HeroSection = React.memo(({
                         transition={{ duration: 0.6, type: "spring" }}
                         className="relative inline-block"
                     >
-                        <div className="w-32 h-32 mx-auto mb-6 rounded-full bg-indigo-500/10 border-2 border-indigo-500/30 flex items-center justify-center backdrop-blur-xl">
-                            <Film className="w-16 h-16 text-indigo-400" />
+                        <div className="w-32 h-32 mx-auto mb-6 rounded-full bg-amber-500/10 border-2 border-amber-500/30 flex items-center justify-center backdrop-blur-xl">
+                            <Film className="w-16 h-16 text-amber-400" />
                         </div>
-                        <div className="absolute -top-4 -right-4 w-24 h-24 bg-indigo-500/20 rounded-full blur-3xl"></div>
+                        <div className="absolute -top-4 -right-4 w-24 h-24 bg-amber-500/20 rounded-full blur-3xl"></div>
                     </motion.div>
 
                     <motion.div
@@ -102,7 +102,7 @@ const HeroSection = React.memo(({
                         transition={{ delay: 0.3, duration: 0.6 }}
                         className="space-y-4"
                     >
-                        <h1 className="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-linear-to-r from-white via-indigo-200 to-purple-300 leading-tight">
+                        <h1 className="text-5xl md:text-6xl font-black text-white leading-tight">
                             Welcome to The Cinema
                         </h1>
                         <p className="text-xl text-zinc-400 leading-relaxed max-w-xl mx-auto">
@@ -114,10 +114,10 @@ const HeroSection = React.memo(({
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.5, duration: 0.6 }}
-                        whileHover={{ scale: 1.05, boxShadow: "0 0 30px rgba(99, 102, 241, 0.5)" }}
+                        whileHover={{ scale: 1.05, boxShadow: "0 0 30px rgba(245, 158, 11, 0.35)" }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => navigate('/upload')}
-                        className="inline-flex items-center gap-3 px-10 py-4 bg-indigo-600 hover:bg-indigo-500 rounded-full text-white font-bold text-lg shadow-lg hover:shadow-indigo-500/40 transition-all"
+                        className="inline-flex items-center gap-3 px-10 py-4 bg-white text-black hover:bg-zinc-200 rounded-full font-bold text-lg shadow-lg transition-all"
                     >
                         <Upload className="w-6 h-6" />
                         Upload Your First Video
@@ -135,10 +135,10 @@ const HeroSection = React.memo(({
 
     return (
         <>
-            <div className="absolute inset-0 bg-[#050505]">
+            <div className="absolute inset-0 bg-black">
                 {/* Placeholder / Blur Backdrop */}
                 <div
-                    className={`absolute inset-0 bg-linear-to-br from-indigo-900/20 to-purple-900/20 transition-opacity duration-1000 ${isImageLoaded ? 'opacity-0' : 'opacity-100'}`}
+                    className={`absolute inset-0 bg-linear-to-br from-zinc-900/40 to-zinc-800/20 transition-opacity duration-1000 ${isImageLoaded ? 'opacity-0' : 'opacity-100'}`}
                 />
 
                 <img
@@ -150,15 +150,15 @@ const HeroSection = React.memo(({
                     onLoad={() => setIsImageLoaded(true)}
                 />
 
-                <div className="absolute inset-0 bg-linear-to-t from-[#050505] via-[#050505]/40 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent" />
                 <div className="absolute inset-0 bg-linear-to-r from-black/80 via-transparent to-transparent" />
             </div>
 
             <div className="absolute bottom-0 left-0 w-full p-6 md:p-12 lg:pl-75 pb-20 md:pb-32 flex flex-col justify-end h-full pointer-events-none">
                 <div className="max-w-3xl pointer-events-auto animate-fade-in-up">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-400/30 backdrop-blur-md mb-6">
-                        <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
-                        <span className="text-xs font-bold text-indigo-200 uppercase tracking-widest">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/30 backdrop-blur-md mb-6">
+                        <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                        <span className="text-xs font-bold text-amber-200 uppercase tracking-widest">
                             {featuredVideo ? 'Trending Now' : 'World Premiere'}
                         </span>
                     </div>
@@ -166,7 +166,7 @@ const HeroSection = React.memo(({
                     <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-white mb-4 leading-[0.95] tracking-tight drop-shadow-2xl">
                         {featuredVideo?.title?.toUpperCase() || "INTERSTELLAR"} <br />
                         {featuredVideo?.subtitle && (
-                            <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-300 to-white font-light">
+                            <span className="text-amber-300 font-light">
                                 {featuredVideo.subtitle.toUpperCase()}
                             </span>
                         )}
@@ -204,7 +204,7 @@ const HeroSection = React.memo(({
                             }}
                             disabled={toggleWatchLaterMutation.isPending || watchLaterLoading}
                             className={`px-8 py-3.5 rounded-xl font-bold text-base transition-transform active:scale-95 flex items-center gap-2 backdrop-blur-md disabled:opacity-50 ${watchLaterStatus?.isInWatchLater
-                                ? 'bg-indigo-500/30 text-indigo-200 border border-indigo-400/30'
+                                ? 'bg-amber-500/30 text-amber-200 border border-amber-400/30'
                                 : 'bg-white/10 text-white border border-white/20 hover:bg-white/20'
                                 }`}
                         >

@@ -39,7 +39,7 @@ const CategoryTabs = ({
                         className={`
                 shrink-0 px-5 py-2 rounded-full text-xs font-bold border transition-all duration-300 whitespace-nowrap
                 ${activeCategory === cat && !isEditingCategories
-                                ? 'bg-indigo-600 border-indigo-500 text-white shadow-[0_0_20px_rgba(79,70,229,0.4)]'
+                                        ? 'bg-white border-zinc-200 text-black shadow-[0_0_20px_rgba(255,255,255,0.2)]'
                                 : 'bg-white/5 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10 hover:border-white/20'
                             }
               ${isEditingCategories && !["All", "For You"].includes(cat) ? 'animate-shake cursor-default opacity-80' : ''}
@@ -69,13 +69,13 @@ const CategoryTabs = ({
                         value={newCategory}
                         onChange={(e) => setNewCategory(e.target.value)}
                         placeholder="New Tag..."
-                        className="w-24 px-3 py-2 rounded-full bg-white/5 border border-white/20 text-xs text-white focus:outline-none focus:border-indigo-500 transition-all"
+                        className="w-24 px-3 py-2 rounded-full bg-white/5 border border-white/20 text-xs text-white focus:outline-none focus:border-amber-500 transition-all"
                         onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
                     />
                     <button
                         onClick={handleAddCategory}
                         disabled={!newCategory.trim()}
-                        className="p-2 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                        className="p-2 rounded-full bg-white hover:bg-zinc-200 text-black disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                     >
                         <Plus className="w-4 h-4" />
                     </button>

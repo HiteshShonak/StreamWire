@@ -33,7 +33,7 @@ const VideoCard = React.memo(({ video }) => {
     const displayName = isStealthMode ? "Anonymous Creator" : video.owner?.fullName
     const avatarUrl = isStealthMode
         ? `https://ui-avatars.com/api/?name=S&background=18181b&color=22c55e`
-        : video.owner?.avatar?.url || `https://ui-avatars.com/api/?name=${video.owner?.fullName || 'U'}&background=6366f1&color=fff`
+        : video.owner?.avatar?.url || `https://ui-avatars.com/api/?name=${video.owner?.fullName || 'U'}&background=27272a&color=fff`
 
     // Check if video is in watch later
     const { data: watchLaterStatus, isLoading: watchLaterLoading } = useQuery({
@@ -87,7 +87,7 @@ const VideoCard = React.memo(({ video }) => {
                 onClick={() => navigate(`/cinema/${video._id}`)}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
-                className="relative aspect-video rounded-xl overflow-hidden mb-3 shadow-lg shadow-black/40 group-hover:shadow-indigo-500/20 transition-all duration-300 bg-black"
+                className="relative aspect-video rounded-xl overflow-hidden mb-3 shadow-lg shadow-black/40 group-hover:shadow-amber-500/20 transition-all duration-300 bg-black"
             >
                 {isHovering ? (
                     <video
@@ -155,12 +155,12 @@ const VideoCard = React.memo(({ video }) => {
                     className="w-9 h-9 rounded-full object-cover border border-white/10 shrink-0"
                 />
                 <div className="flex-1 min-w-0">
-                    <h3 className="text-white font-bold text-sm leading-snug mb-1 line-clamp-2 group-hover:text-indigo-300 transition-colors">
+                    <h3 className="text-white font-bold text-sm leading-snug mb-1 line-clamp-2 group-hover:text-amber-300 transition-colors">
                         {video.title}
                     </h3>
                     <div className="flex items-center gap-1 text-zinc-400 text-xs mb-0.5">
                         <span className="hover:text-white transition-colors">{displayName}</span>
-                        {!isStealthMode && <BadgeCheck className="w-3 h-3 text-indigo-400" />}
+                        {!isStealthMode && <BadgeCheck className="w-3 h-3 text-emerald-400" />}
                     </div>
                     <div className="text-zinc-500 text-[11px]">
                         {formatViews(video.views)} views • {formatTimeAgo(video.createdAt)}

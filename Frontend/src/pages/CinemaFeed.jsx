@@ -144,7 +144,7 @@ export default function CinemaFeed() {
   ])
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white overflow-x-hidden selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-black text-white overflow-x-hidden selection:bg-zinc-700">
 
       {/* Header (Cinema Variant) - Sits on top of hero */}
       <Header variant="cinema" />
@@ -187,7 +187,7 @@ export default function CinemaFeed() {
         {/* Section Title */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-            <span className="w-1 h-6 bg-indigo-500 rounded-full" />
+            <span className="w-1 h-6 bg-amber-500 rounded-full" />
             {activeCategory === 'All' ? 'Recommended For You' : activeCategory}
           </h2>
 
@@ -195,7 +195,7 @@ export default function CinemaFeed() {
           {activeCategory === 'For You' && (
             <button
               onClick={() => navigate('/build-feed')}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-linear-to-r from-purple-600/20 to-indigo-600/20 border border-purple-500/30 text-purple-300 hover:text-white hover:border-purple-400/50 hover:from-purple-600/30 hover:to-indigo-600/30 transition-all duration-300 text-sm font-bold group"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 hover:text-white hover:border-amber-400/50 hover:bg-amber-500/20 transition-all duration-300 text-sm font-bold group"
               title="Customize your For You feed"
             >
               <Sparkles className="w-4 h-4 group-hover:animate-pulse" />
@@ -220,8 +220,8 @@ export default function CinemaFeed() {
             {/* Empty Category Message - Match Screenshot UI */}
             {videosData?.isFallback && (
               <div className="flex flex-col items-center justify-center py-16 mb-8 mt-4">
-                <div className="w-24 h-24 rounded-full bg-indigo-500/10 flex items-center justify-center mb-6">
-                  <Film className="w-10 h-10 text-indigo-400" />
+                <div className="w-24 h-24 rounded-full bg-amber-500/10 flex items-center justify-center mb-6">
+                  <Film className="w-10 h-10 text-amber-400" />
                 </div>
 
                 <h3 className="text-2xl font-bold text-white mb-2 text-center">
@@ -235,7 +235,7 @@ export default function CinemaFeed() {
 
                 <button
                   onClick={() => navigate('/trending?tab=videos')}
-                  className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg transition-colors"
+                  className="px-6 py-2.5 bg-white text-black hover:bg-zinc-200 font-semibold rounded-lg transition-colors"
                 >
                   View Trending Videos
                 </button>
@@ -261,11 +261,11 @@ export default function CinemaFeed() {
               className="text-center max-w-md"
             >
               <div className="relative mb-8">
-                <div className="w-32 h-32 mx-auto rounded-full bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center">
-                  <Film className="w-14 h-14 text-indigo-400" />
+                <div className="w-32 h-32 mx-auto rounded-full bg-amber-500/15 border border-amber-500/30 flex items-center justify-center">
+                  <Film className="w-14 h-14 text-amber-400" />
                 </div>
                 <motion.div
-                  className="absolute inset-0 rounded-full border-2 border-indigo-500/20"
+                  className="absolute inset-0 rounded-full border-2 border-amber-500/20"
                   animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 />
@@ -283,7 +283,7 @@ export default function CinemaFeed() {
                     </p>
                     <button
                       onClick={() => navigate('/login')}
-                      className="px-6 py-3 rounded-xl font-bold transition-all bg-indigo-600 hover:bg-indigo-500 text-white"
+                      className="px-6 py-3 rounded-xl font-bold transition-all bg-white text-black hover:bg-zinc-200"
                     >
                       Sign In to Continue
                     </button>
@@ -305,7 +305,7 @@ export default function CinemaFeed() {
                       </button>
                       <button
                         onClick={() => navigate('/build-feed')}
-                        className="px-6 py-3 rounded-xl font-bold transition-all bg-indigo-600 hover:bg-indigo-500 text-white"
+                        className="px-6 py-3 rounded-xl font-bold transition-all bg-white text-black hover:bg-zinc-200"
                       >
                         Customize Feed
                       </button>
@@ -322,7 +322,7 @@ export default function CinemaFeed() {
                   </p>
                   <button
                     onClick={() => navigate('/trending?tab=videos')}
-                    className="px-6 py-3 rounded-xl font-bold transition-all bg-indigo-600 hover:bg-indigo-500 text-white"
+                    className="px-6 py-3 rounded-xl font-bold transition-all bg-white text-black hover:bg-zinc-200"
                   >
                     View Trending Videos
                   </button>
