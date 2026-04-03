@@ -31,8 +31,9 @@ function App() {
 
   const getHeaderVariant = useCallback(() => {
     if (path.startsWith('/cinema')) return 'cinema'
+    if (path.startsWith('/build-feed')) return 'cinema'
     if (path.startsWith('/wire')) return 'wire'
-    if (path.startsWith('/shadows')) return 'shadows'
+    if (path.startsWith('/shadows') || path.startsWith('/shadow')) return 'shadows'
     return 'gateway'
   }, [path])
 
@@ -65,7 +66,7 @@ function App() {
 
   if (loading) {
     return (
-      <div className="h-screen w-screen flex items-center justify-center bg-[#050505]">
+      <div className="h-screen w-screen flex items-center justify-center bg-black">
         <LoadingPulse size="md" />
       </div>
     )
@@ -73,7 +74,7 @@ function App() {
 
   return (
     <UploadProvider>
-    <div className="min-h-screen bg-[#050505] text-white selection:bg-indigo-500/30 font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-black text-white selection:bg-zinc-700 font-sans overflow-x-hidden">
 
       {showHeader && <Header variant={getHeaderVariant()} />}
 

@@ -5,8 +5,6 @@ import { useSelector } from 'react-redux'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Sparkles, Check, X, Search, TrendingUp, Film, ArrowLeft, Save, RefreshCw, Hash, Zap } from 'lucide-react'
 import toast from 'react-hot-toast'
-import Header from '../Components/Header'
-import Sidebar from '../Components/Sidebar'
 import { videoService } from '../api/services/video.service'
 import { LoadingDots } from '../Components/Common/LoadingIndicator'
 import { TagGridSkeleton } from '../Components/Common/Skeleton'
@@ -137,12 +135,9 @@ export default function BuildFeed() {
     if (!userData) return null
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white overflow-x-hidden selection:bg-indigo-500/30">
-            <Header variant="cinema" />
-            <Sidebar />
-
+        <div className="min-h-screen bg-black text-white overflow-x-hidden selection:bg-zinc-700">
             {/* Main Content - Responsive padding */}
-            <div className="pt-16 sm:pt-20 px-4 sm:px-6 md:px-8 lg:pl-70 xl:pl-75 pb-32">
+            <div className="pt-16 sm:pt-20 px-4 sm:px-6 md:px-8 pb-32">
 
                 {/* Back Button */}
                 <motion.button
@@ -163,24 +158,24 @@ export default function BuildFeed() {
                     transition={{ duration: 0.6, ease: "easeOut" }}
                     className="relative mb-8 sm:mb-12"
                 >
-                    {/* Gradient Orb Background - Subtle Indigo */}
-                    <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-75 sm:w-125 h-75 sm:h-125 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
+                    {/* Gradient Orb Background */}
+                    <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-75 sm:w-125 h-75 sm:h-125 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
                     <div className="relative text-center">
                         <motion.div
                             initial={{ scale: 0.9, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             transition={{ delay: 0.2 }}
-                            className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-4 sm:mb-6"
+                            className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-amber-500/10 border border-amber-500/20 mb-4 sm:mb-6"
                         >
-                            <Zap className="w-3 h-3 sm:w-4 sm:h-4 text-indigo-400" />
-                            <span className="text-[10px] sm:text-xs font-bold text-indigo-300 uppercase tracking-[0.15em] sm:tracking-[0.2em]">
+                            <Zap className="w-3 h-3 sm:w-4 sm:h-4 text-amber-400" />
+                            <span className="text-[10px] sm:text-xs font-bold text-amber-300 uppercase tracking-[0.15em] sm:tracking-[0.2em]">
                                 Personalize
                             </span>
                         </motion.div>
 
                         <h1 className="text-[clamp(1.75rem,5vw,3.5rem)] font-black text-white mb-3 sm:mb-4 leading-tight">
-                            Build Your <span className="text-indigo-400">Feed</span>
+                            Build Your <span className="text-amber-400">Feed</span>
                         </h1>
 
                         <p className="text-zinc-400 text-[clamp(0.875rem,2vw,1.125rem)] max-w-xl mx-auto leading-relaxed px-4">
@@ -207,12 +202,12 @@ export default function BuildFeed() {
                             className="relative mb-6 sm:mb-8 p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-zinc-900/50 border border-zinc-800 overflow-hidden"
                         >
                             {/* Subtle gradient accent */}
-                            <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-indigo-500/50 to-transparent" />
+                            <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-amber-500/50 to-transparent" />
 
                             <div className="flex items-center justify-between gap-3 flex-wrap mb-4 sm:mb-5">
                                 <div className="flex items-center gap-2 sm:gap-3">
-                                    <div className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-indigo-500/10 border border-indigo-500/20">
-                                        <Hash className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-400" />
+                                    <div className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-amber-500/10 border border-amber-500/20">
+                                        <Hash className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400" />
                                     </div>
                                     <h3 className="text-sm sm:text-base font-bold text-white">
                                         Your Tags
@@ -228,7 +223,7 @@ export default function BuildFeed() {
                                         whileTap={{ scale: 0.98 }}
                                         onClick={() => buildMutation.mutate()}
                                         disabled={buildMutation.isPending}
-                                        className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-sm font-semibold transition-all disabled:opacity-50"
+                                        className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white text-black hover:bg-zinc-200 text-xs sm:text-sm font-semibold transition-all disabled:opacity-50"
                                     >
                                         <RefreshCw className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${buildMutation.isPending ? 'animate-spin' : ''}`} />
                                         <span>{buildMutation.isPending ? 'Building...' : 'From History'}</span>
@@ -257,7 +252,7 @@ export default function BuildFeed() {
                                                 animate={{ opacity: 1, scale: 1 }}
                                                 exit={{ opacity: 0, scale: 0.8 }}
                                                 onClick={() => removeTag(tag)}
-                                                className="group flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-200 text-xs sm:text-sm font-medium hover:bg-red-500/15 hover:border-red-500/30 hover:text-red-200 transition-all"
+                                                className="group flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-200 text-xs sm:text-sm font-medium hover:bg-red-500/15 hover:border-red-500/30 hover:text-red-200 transition-all"
                                             >
                                                 <span>{tag}</span>
                                                 <X className="w-3 h-3 opacity-40 group-hover:opacity-100 transition-opacity" />
@@ -290,7 +285,7 @@ export default function BuildFeed() {
                                     placeholder="Search tags..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full pl-10 sm:pl-12 pr-4 py-2.5 sm:py-3 rounded-xl bg-white/2 border border-white/6 text-white text-sm placeholder-zinc-500 focus:outline-none focus:border-indigo-500/50 focus:bg-white/4 transition-all"
+                                    className="w-full pl-10 sm:pl-12 pr-4 py-2.5 sm:py-3 rounded-xl bg-zinc-900/60 border border-zinc-800 text-white text-sm placeholder-zinc-500 focus:outline-none focus:border-amber-500/50 focus:bg-zinc-900 transition-all"
                                 />
                             </div>
 
@@ -301,12 +296,12 @@ export default function BuildFeed() {
                                     value={customTag}
                                     onChange={(e) => setCustomTag(e.target.value)}
                                     onKeyDown={(e) => e.key === 'Enter' && addCustomTag()}
-                                    className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl bg-white/2 border border-white/6 text-white text-sm placeholder-zinc-500 focus:outline-none focus:border-indigo-500/50 transition-all"
+                                    className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl bg-zinc-900/60 border border-zinc-800 text-white text-sm placeholder-zinc-500 focus:outline-none focus:border-amber-500/50 transition-all"
                                 />
                                 <button
                                     onClick={addCustomTag}
                                     disabled={!customTag.trim()}
-                                    className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-white/4 hover:bg-white/8 border border-white/6 text-white text-sm font-semibold transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                                    className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-white text-sm font-semibold transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                                 >
                                     Add
                                 </button>
@@ -320,7 +315,7 @@ export default function BuildFeed() {
                             transition={{ delay: 0.3 }}
                         >
                             <div className="flex items-center gap-2 mb-4 sm:mb-5">
-                                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-400" />
+                                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
                                 <h3 className="text-base sm:text-lg font-bold text-white">
                                     {searchQuery ? 'Search Results' : 'Trending Tags'}
                                 </h3>
@@ -349,8 +344,8 @@ export default function BuildFeed() {
                                                 whileTap={{ scale: 0.97 }}
                                                 onClick={() => toggleTag(tag)}
                                                 className={`relative flex items-center justify-center gap-1.5 px-3 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-medium transition-all truncate ${isSelected
-                                                    ? 'bg-indigo-600 text-white border border-indigo-500'
-                                                    : 'bg-zinc-900/50 hover:bg-zinc-800/50 border border-zinc-800 hover:border-indigo-500/30 text-zinc-300 hover:text-white'
+                                                        ? 'bg-amber-500/20 text-amber-100 border border-amber-500/40'
+                                                        : 'bg-zinc-900/50 hover:bg-zinc-800/50 border border-zinc-800 hover:border-amber-500/30 text-zinc-300 hover:text-white'
                                                     }`}
                                             >
                                                 {isSelected && <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />}
@@ -386,7 +381,7 @@ export default function BuildFeed() {
                         whileTap={{ scale: 0.97 }}
                         onClick={() => saveMutation.mutate(selectedTags)}
                         disabled={saveMutation.isPending}
-                        className="flex items-center gap-2 sm:gap-3 px-6 sm:px-8 py-3 sm:py-4 bg-indigo-600 hover:bg-indigo-500 rounded-full text-white font-bold text-sm sm:text-base shadow-lg shadow-indigo-500/20 transition-all disabled:opacity-50"
+                        className="flex items-center gap-2 sm:gap-3 px-6 sm:px-8 py-3 sm:py-4 bg-white text-black hover:bg-zinc-200 rounded-full font-bold text-sm sm:text-base shadow-lg shadow-black/20 transition-all disabled:opacity-50"
                     >
                         {saveMutation.isPending ? (
                             <LoadingDots size="md" />
