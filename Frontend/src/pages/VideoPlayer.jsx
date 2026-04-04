@@ -64,6 +64,7 @@ export default function VideoPlayer() {
   const [chatMessages, setChatMessages] = useState([]);
   const chatEndRef = useRef(null);
   const progressSaveTimeoutRef = useRef(null);
+  const pendingSeekRef = useRef(null);
 
   // Reset player state when changing videos
   useEffect(() => {
@@ -76,6 +77,7 @@ export default function VideoPlayer() {
     setShowAISummary(false);
     setShowAIChat(false);
     setChatMessages([]);
+    pendingSeekRef.current = null;
   }, [videoId]);
 
   // Fetch video data
@@ -488,6 +490,70 @@ export default function VideoPlayer() {
     }
   }, []);
 
+  const seekVideoElement = useCallback((seekSeconds) => {
+    const videoElement = videoRef.current;
+    if (!videoElement || !Number.isFinite(seekSeconds)) return false;
+
+    const nativeDuration = videoElement.duration;
+    const safeDuration = Number.isFinite(nativeDuration) && nativeDuration > 0
+      ? nativeDuration
+      : duration;
+
+    const clampedTime = Math.max(
+      0,
+      Number.isFinite(safeDuration) && safeDuration > 0
+        ? Math.min(seekSeconds, safeDuration)
+        : seekSeconds
+    );
+
+    if (typeof videoElement.fastSeek === 'function') {
+      videoElement.fastSeek(clampedTime);
+    } else {
+      videoElement.currentTime = clampedTime;
+    }
+
+    setCurrentTime(clampedTime);
+
+    if (Number.isFinite(safeDuration) && safeDuration > 0) {
+      setProgress((clampedTime / safeDuration) * 100);
+    }
+
+    return true;
+  }, [duration]);
+
+  const applyPendingSeek = useCallback((forceAutoPlay = false) => {
+    const pendingSeek = pendingSeekRef.current;
+    if (!pendingSeek || !videoRef.current) return false;
+
+    const didSeek = seekVideoElement(pendingSeek.seconds);
+    if (!didSeek) return false;
+
+    pendingSeekRef.current = null;
+
+    if ((forceAutoPlay || pendingSeek.autoPlay) && videoRef.current.paused) {
+      videoRef.current.play().catch(() => {
+        // Browser autoplay policy may block playback; seek still applies.
+      });
+    }
+
+    return true;
+  }, [seekVideoElement]);
+
+  const handleSeekToTime = useCallback((seekSeconds) => {
+    if (!Number.isFinite(seekSeconds)) return;
+
+    pendingSeekRef.current = {
+      seconds: seekSeconds,
+      autoPlay: true,
+    };
+
+    if (videoRef.current?.readyState >= 1) {
+      applyPendingSeek();
+    }
+
+    setShowControls(true);
+  }, [applyPendingSeek]);
+
   const togglePiP = useCallback(async () => {
     if (videoRef.current) {
       if (document.pictureInPictureElement) {
@@ -557,6 +623,8 @@ export default function VideoPlayer() {
       if (video.duration && !isNaN(video.duration) && video.duration !== Infinity) {
         setDuration(video.duration);
       }
+
+      applyPendingSeek();
     };
 
     const handleCanPlay = () => {
@@ -564,6 +632,11 @@ export default function VideoPlayer() {
       if (video.duration && !isNaN(video.duration) && duration === 0) {
         setDuration(video.duration);
       }
+
+      if (applyPendingSeek(true)) {
+        return;
+      }
+
       // Autoplay video when it's ready
       if (video.paused) {
         // Check for saved progress to restore
@@ -617,7 +690,7 @@ export default function VideoPlayer() {
       video.removeEventListener('waiting', handleWaiting);
       video.removeEventListener('playing', handlePlaying);
     };
-  }, [duration, videoId]);
+  }, [applyPendingSeek, duration, videoId]);
 
   // Use video duration from API as initial fallback
   useEffect(() => {
@@ -703,14 +776,14 @@ export default function VideoPlayer() {
 
   if (!video) {
     return (
-      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
           <Film className="w-16 h-16 text-zinc-700 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-white mb-2">Video not found</h2>
           <p className="text-zinc-500 mb-6">This video may have been removed or is unavailable.</p>
           <button
             onClick={() => navigate('/cinema')}
-            className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-colors"
+            className="px-6 py-3 bg-white text-black hover:bg-zinc-200 font-bold rounded-xl transition-colors"
           >
             Back to Cinema
           </button>
@@ -720,7 +793,7 @@ export default function VideoPlayer() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white">
+    <div className="min-h-screen bg-black text-white">
       <Header variant="cinema" onUploadClick={() => navigate('/upload')} />
       <Sidebar />
 
@@ -797,6 +870,8 @@ export default function VideoPlayer() {
                 setAIQuestion={setAIQuestion}
                 handleAskQuestion={handleAskQuestion}
                 chatEndRef={chatEndRef}
+                videoDuration={duration}
+                onSeekToTime={handleSeekToTime}
               />
 
               <CommentsSection
