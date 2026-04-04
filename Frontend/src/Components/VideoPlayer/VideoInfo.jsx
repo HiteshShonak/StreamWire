@@ -70,18 +70,18 @@ const VideoInfo = React.memo(({
                         alt={displayName}
                         className={`w-12 h-12 rounded-full object-cover border-2 transition-all ${isStealthMode
                             ? 'border-green-500/30'
-                            : 'border-zinc-800 group-hover:border-indigo-500/50'
+                            : 'border-zinc-800 group-hover:border-rose-500/50'
                             }`}
                     />
                     <div>
                         <div className="flex items-center gap-2 mb-0.5">
                             <h3 className={`font-bold transition-colors ${isStealthMode
                                 ? 'text-green-500'
-                                : 'text-white group-hover:text-indigo-400'
+                                : 'text-white group-hover:text-rose-400'
                                 }`}>
                                 {displayName}
                             </h3>
-                            {!isStealthMode && <BadgeCheck className="w-4 h-4 text-indigo-400" />}
+                            {!isStealthMode && <BadgeCheck className="w-4 h-4 text-emerald-400" />}
                             {isStealthMode && <Ghost className="w-4 h-4 text-green-500" />}
                         </div>
                         <p className="text-sm text-zinc-500">
@@ -98,7 +98,7 @@ const VideoInfo = React.memo(({
               px-6 py-2.5 rounded-xl font-bold text-sm transition-all disabled:opacity-50 flex items-center gap-2 justify-center
               ${video.isSubscribed
                                 ? 'bg-zinc-800 hover:bg-zinc-700 text-white'
-                                : 'bg-indigo-600 hover:bg-indigo-500 text-white'
+                                    : 'bg-white text-black hover:bg-zinc-200'
                             }
             `}
                     >
@@ -120,7 +120,7 @@ const VideoInfo = React.memo(({
                     className={`
             flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm transition-all
             ${video.isLiked
-                            ? 'bg-indigo-500/20 border border-indigo-500/30 text-indigo-300'
+                            ? 'bg-rose-500/20 border border-rose-500/30 text-rose-300'
                             : 'bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700'
                         }
           `}
@@ -143,7 +143,7 @@ const VideoInfo = React.memo(({
                     className={`
             flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm transition-all disabled:opacity-50
             ${watchLaterStatus?.isInWatchLater
-                            ? 'bg-amber-500/20 border border-amber-500/30 text-amber-300'
+                            ? 'bg-red-500/20 border border-red-500/30 text-red-300'
                             : 'bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700'
                         }
           `}
@@ -294,7 +294,7 @@ const VideoInfo = React.memo(({
                             <button
                                 key={index}
                                 onClick={() => navigate(`/search?query=${encodeURIComponent(tag)}&tab=videos`)}
-                                className="px-3 py-1.5 bg-zinc-800/80 border border-zinc-700 hover:border-indigo-500/50 hover:bg-indigo-500/10 text-zinc-300 hover:text-indigo-300 rounded-lg text-sm font-medium transition-all"
+                                className="px-3 py-1.5 bg-zinc-800/80 border border-zinc-700 hover:border-rose-500/50 hover:bg-rose-500/10 text-zinc-300 hover:text-rose-300 rounded-lg text-sm font-medium transition-all"
                             >
                                 #{tag}
                             </button>

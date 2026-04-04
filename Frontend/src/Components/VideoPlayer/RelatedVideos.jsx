@@ -18,7 +18,7 @@ const RelatedVideos = React.memo(({
     return (
         <div className="space-y-4">
             <div className="flex items-center gap-2 mb-4">
-                <Film className="w-5 h-5 text-indigo-400" />
+                <Film className="w-5 h-5 text-rose-400" />
                 <h2 className="text-lg font-bold text-white">More from {displayName}</h2>
             </div>
 
@@ -41,7 +41,7 @@ const RelatedVideos = React.memo(({
                             </div>
                         </div>
                         <div className="flex-1 min-w-0 py-1">
-                            <h4 className="text-sm font-medium text-white line-clamp-2 mb-1.5 group-hover:text-indigo-300 transition-colors">
+                            <h4 className="text-sm font-medium text-white line-clamp-2 mb-1.5 group-hover:text-rose-300 transition-colors">
                                 {recVideo.title}
                             </h4>
                             <p className="text-xs text-zinc-500 mb-0.5">

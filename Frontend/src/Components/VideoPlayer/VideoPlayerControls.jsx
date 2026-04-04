@@ -269,9 +269,9 @@ const VideoPlayerControls = React.memo(({
                         onClick={togglePlay}
                     >
                         <motion.button
-                            whileHover={{ scale: 1.1, backgroundColor: "rgba(99, 102, 241, 0.9)" }}
+                            whileHover={{ scale: 1.1, backgroundColor: "rgba(244, 63, 94, 0.9)" }}
                             whileTap={{ scale: 0.95 }}
-                            className="w-24 h-24 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 shadow-[0_0_50px_rgba(99,102,241,0.3)] group/play"
+                            className="w-24 h-24 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 shadow-[0_0_50px_rgba(244,63,94,0.25)] group/play"
                         >
                             <Play className="w-10 h-10 text-white fill-white translate-x-1 transition-all group-hover/play:scale-110" />
                         </motion.button>
@@ -338,11 +338,11 @@ const VideoPlayerControls = React.memo(({
 
                         {/* Progress Fill */}
                         <div
-                            className="h-full bg-indigo-500 relative"
+                            className="h-full bg-rose-500 relative"
                             style={{ width: `${progress}%` }}
                         >
                             {/* Glow Effect */}
-                            <div className="absolute right-0 top-0 bottom-0 w-4 bg-indigo-400 blur-xs" />
+                            <div className="absolute right-0 top-0 bottom-0 w-4 bg-rose-400 blur-xs" />
                         </div>
                     </div>
 
@@ -358,7 +358,7 @@ const VideoPlayerControls = React.memo(({
                     <div className="flex items-center gap-4">
                         <button
                             onClick={togglePlay}
-                            className="hover:text-indigo-400 transition-colors"
+                            className="hover:text-rose-400 transition-colors"
                             aria-label={isPlaying ? "Pause video" : "Play video"}
                         >
                             {isPlaying ? <Pause className="w-8 h-8 fill-current" /> : <Play className="w-8 h-8 fill-current" />}
@@ -425,7 +425,7 @@ const VideoPlayerControls = React.memo(({
                                                         <button
                                                             key={speed}
                                                             onClick={() => changePlaybackSpeed(speed)}
-                                                            className={`w-full px-3 py-2 rounded-lg text-sm flex items-center justify-between ${playbackSpeed === speed ? 'bg-indigo-600 text-white' : 'text-zinc-400 hover:bg-white/10'}`}
+                                                            className={`w-full px-3 py-2 rounded-lg text-sm flex items-center justify-between ${playbackSpeed === speed ? 'bg-white text-black' : 'text-zinc-400 hover:bg-white/10'}`}
                                                         >
                                                             <span>{speed === 1 ? 'Normal' : `${speed}x`}</span>
                                                             {playbackSpeed === speed && <Check className="w-4 h-4" />}
@@ -440,7 +440,7 @@ const VideoPlayerControls = React.memo(({
                                                         <button
                                                             key={opt.value}
                                                             onClick={() => handleQualityChange(opt.value)}
-                                                            className={`w-full px-3 py-2 rounded-lg text-sm flex items-center justify-between transition-colors ${quality === opt.value ? 'bg-emerald-600 text-white' : pendingQuality === opt.value ? 'bg-amber-600/20 text-amber-400' : 'text-zinc-400 hover:bg-white/10'}`}
+                                                            className={`w-full px-3 py-2 rounded-lg text-sm flex items-center justify-between transition-colors ${quality === opt.value ? 'bg-rose-500 text-white' : pendingQuality === opt.value ? 'bg-rose-600/20 text-rose-400' : 'text-zinc-400 hover:bg-white/10'}`}
                                                         >
                                                             <span className="flex items-center gap-2">
                                                                 {opt.value === 'audio' ? <Music className="w-3 h-3" /> : (opt.value !== 'auto' && <Highlighter className="w-3 h-3" />)}

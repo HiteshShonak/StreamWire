@@ -53,7 +53,7 @@ const CommentsSection = React.memo(({
         <div id="comments-section" className="pt-6 border-t border-zinc-800">
             <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                    <MessageSquare className="w-5 h-5 text-indigo-400" />
+                    <MessageSquare className="w-5 h-5 text-rose-400" />
                     Comments
                     <span className="text-sm font-normal text-zinc-500">({video.commentsCount || 0})</span>
                 </h3>
@@ -66,7 +66,7 @@ const CommentsSection = React.memo(({
                         <img
                             src={isStealthComment
                                 ? 'https://ui-avatars.com/api/?name=S&background=18181b&color=22c55e'
-                                : userData?.avatar?.url || `https://ui-avatars.com/api/?name=${userData?.fullName}&background=6366f1&color=fff`
+                                : userData?.avatar?.url || `https://ui-avatars.com/api/?name=${userData?.fullName}&background=27272a&color=fff`
                             }
                             alt="Your avatar"
                             className="w-10 h-10 rounded-full object-cover border border-zinc-800 shrink-0"
@@ -77,7 +77,7 @@ const CommentsSection = React.memo(({
                                 onChange={(e) => setCommentText(e.target.value)}
                                 placeholder="Share your thoughts..."
                                 rows={2}
-                                className="w-full px-4 py-3 bg-zinc-900/50 border border-zinc-800 rounded-xl text-white placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50 resize-none text-sm"
+                                className="w-full px-4 py-3 bg-zinc-900/50 border border-zinc-800 rounded-xl text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/60 resize-none text-sm"
                             />
                             <div className="flex items-center justify-between">
                                 {/* Stealth Toggle */}
@@ -99,7 +99,7 @@ const CommentsSection = React.memo(({
                                 <button
                                     type="submit"
                                     disabled={!commentText.trim() || addCommentMutation.isPending}
-                                    className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-zinc-800 disabled:text-zinc-600 text-white rounded-lg text-sm font-bold transition-colors disabled:cursor-not-allowed"
+                                    className="flex items-center gap-2 px-4 py-2 bg-white text-black hover:bg-zinc-200 disabled:bg-zinc-800 disabled:text-zinc-600 rounded-lg text-sm font-bold transition-colors disabled:cursor-not-allowed"
                                 >
                                     {addCommentMutation.isPending ? (
                                         <LoadingDots size="xs" />
@@ -134,7 +134,7 @@ const CommentsSection = React.memo(({
                     {/* Pinned Comments */}
                     {pinnedComments.length > 0 && (
                         <div className="space-y-3 mb-6">
-                            <div className="flex items-center gap-2 text-xs text-amber-400 font-medium">
+                            <div className="flex items-center gap-2 text-xs text-rose-400 font-medium">
                                 <Pin className="w-3.5 h-3.5" />
                                 Pinned by creator
                             </div>
@@ -143,7 +143,7 @@ const CommentsSection = React.memo(({
                                 const commentStealth = comment.isStealthMode || comment.owner?.isIdentityCloaked;
                                 const commentAvatar = commentStealth
                                     ? 'https://ui-avatars.com/api/?name=S&background=18181b&color=22c55e'
-                                    : comment.owner?.avatar?.url || `https://ui-avatars.com/api/?name=${comment.owner?.fullName || 'U'}&background=6366f1&color=fff`;
+                                    : comment.owner?.avatar?.url || `https://ui-avatars.com/api/?name=${comment.owner?.fullName || 'U'}&background=27272a&color=fff`;
                                 const commentName = commentStealth ? 'Anonymous' : comment.owner?.fullName;
 
                                 return (
@@ -151,17 +151,17 @@ const CommentsSection = React.memo(({
                                         key={comment._id}
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        className="flex gap-3 group p-3 bg-amber-500/5 border border-amber-500/20 rounded-xl"
+                                        className="flex gap-3 group p-3 bg-rose-500/5 border border-rose-500/20 rounded-xl"
                                     >
                                         <img
                                             src={commentAvatar}
                                             alt={commentName}
-                                            className="w-9 h-9 rounded-full object-cover border-2 border-amber-500/30 shrink-0"
+                                            className="w-9 h-9 rounded-full object-cover border-2 border-rose-500/30 shrink-0"
                                         />
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2 mb-1">
                                                 <span className="font-bold text-sm text-white">{commentName}</span>
-                                                <Pin className="w-3 h-3 text-amber-500 fill-amber-500" />
+                                                <Pin className="w-3 h-3 text-rose-500 fill-rose-500" />
                                                 {commentStealth && <Ghost className="w-3 h-3 text-green-500" />}
                                                 <span className="text-xs text-zinc-600">
                                                     {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
@@ -175,7 +175,7 @@ const CommentsSection = React.memo(({
                                             <button
                                                 onClick={() => togglePinMutation.mutate(comment._id)}
                                                 disabled={togglePinMutation.isPending}
-                                                className="p-2 text-amber-500 hover:bg-amber-500/10 transition-colors rounded-lg opacity-0 group-hover:opacity-100"
+                                                className="p-2 text-rose-500 hover:bg-rose-500/10 transition-colors rounded-lg opacity-0 group-hover:opacity-100"
                                                 title="Unpin comment"
                                             >
                                                 <Pin className="w-4 h-4 fill-current" />
@@ -204,7 +204,7 @@ const CommentsSection = React.memo(({
                         const commentStealth = comment.isStealthMode || comment.owner?.isIdentityCloaked;
                         const commentAvatar = commentStealth
                             ? 'https://ui-avatars.com/api/?name=S&background=18181b&color=22c55e'
-                            : comment.owner?.avatar?.url || `https://ui-avatars.com/api/?name=${comment.owner?.fullName || 'U'}&background=6366f1&color=fff`;
+                            : comment.owner?.avatar?.url || `https://ui-avatars.com/api/?name=${comment.owner?.fullName || 'U'}&background=27272a&color=fff`;
                         const commentName = commentStealth ? 'Anonymous' : comment.owner?.fullName;
                         const isPinned = pinnedCommentIds.has(comment._id);
 
@@ -225,7 +225,7 @@ const CommentsSection = React.memo(({
                                         <span className="font-bold text-sm text-white">{commentName}</span>
                                         {commentStealth && <Ghost className="w-3 h-3 text-green-500" />}
                                         {!commentStealth && comment.owner?.isSubscribed && (
-                                            <BadgeCheck className="w-3 h-3 text-indigo-400" />
+                                            <BadgeCheck className="w-3 h-3 text-emerald-400" />
                                         )}
                                         <span className="text-xs text-zinc-600">
                                             {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
@@ -239,7 +239,7 @@ const CommentsSection = React.memo(({
                                     <button
                                         onClick={() => togglePinMutation.mutate(comment._id)}
                                         disabled={togglePinMutation.isPending}
-                                        className="p-2 text-zinc-600 hover:text-amber-400 hover:bg-amber-500/10 transition-colors rounded-lg opacity-0 group-hover:opacity-100"
+                                        className="p-2 text-zinc-600 hover:text-rose-400 hover:bg-rose-500/10 transition-colors rounded-lg opacity-0 group-hover:opacity-100"
                                         title="Pin comment"
                                     >
                                         <Pin className="w-4 h-4" />
@@ -284,7 +284,7 @@ const CommentsSection = React.memo(({
                         <button
                             onClick={() => fetchNextPage()}
                             disabled={isFetchingNextPage}
-                            className="w-full py-3 my-4 text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors flex items-center justify-center gap-2 bg-zinc-900/50 rounded-xl"
+                            className="w-full py-3 my-4 text-sm font-medium text-rose-400 hover:text-rose-300 transition-colors flex items-center justify-center gap-2 bg-zinc-900/50 rounded-xl"
                         >
                             {isFetchingNextPage ? (
                                 <>
