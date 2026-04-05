@@ -13,7 +13,7 @@ function DeleteModal({ onConfirm, onCancel }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[99999] flex items-center justify-center px-4"
+            className="fixed inset-0 z-99999 flex items-center justify-center px-4"
             onClick={onCancel}
         >
             <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
@@ -104,7 +104,7 @@ const WireCardMini = ({ wire, onToggleStealth, onDelete, isStealth }) => {
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
                     <button
                         onClick={onToggleStealth}
-                        className={`p-2 rounded-lg transition-colors ${wire.isStealthMode ? 'text-sky-400 hover:bg-sky-500/10' : 'text-green-400 hover:bg-green-500/10'}`}
+                        className={`p-2 rounded-lg transition-colors ${wire.isStealthMode ? 'text-zinc-300 hover:bg-zinc-800' : 'text-green-400 hover:bg-green-500/10'}`}
                         title={wire.isStealthMode ? 'Make Public' : 'Go Stealth'}
                     >
                         {wire.isStealthMode ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}

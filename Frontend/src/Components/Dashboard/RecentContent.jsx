@@ -18,12 +18,12 @@ const RecentContent = ({
             <div className="p-6 bg-zinc-900/30 border border-zinc-800 rounded-2xl">
                 <div className="flex items-center justify-between mb-5">
                     <h3 className="font-bold text-lg text-white flex items-center gap-2">
-                        <Film className="w-5 h-5 text-indigo-400" />
+                        <Film className="w-5 h-5 text-zinc-400" />
                         Recent Videos
                     </h3>
                     <button
                         onClick={() => setActiveSection('videos')}
-                        className="text-sm text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+                        className="text-sm text-zinc-400 hover:text-white flex items-center gap-1"
                     >
                         View all <ChevronRight className="w-4 h-4" />
                     </button>
@@ -45,7 +45,7 @@ const RecentContent = ({
                                 )}
                             </div>
                             <div className="flex-1 min-w-0">
-                                <h4 className="text-sm font-medium text-white truncate group-hover:text-indigo-300 transition-colors">
+                                <h4 className="text-sm font-medium text-white truncate group-hover:text-zinc-200 transition-colors">
                                     {video.title}
                                 </h4>
                                 <p className="text-xs text-zinc-500 mt-1">
@@ -61,7 +61,7 @@ const RecentContent = ({
                             <p className="text-sm text-zinc-500">No videos yet</p>
                             <button
                                 onClick={() => navigate('/upload')}
-                                className="mt-3 text-sm text-indigo-400 hover:text-indigo-300"
+                                className="mt-3 text-sm text-zinc-400 hover:text-white"
                             >
                                 Upload your first video
                             </button>
@@ -74,12 +74,12 @@ const RecentContent = ({
             <div className="p-6 bg-zinc-900/30 border border-zinc-800 rounded-2xl">
                 <div className="flex items-center justify-between mb-5">
                     <h3 className="font-bold text-lg text-white flex items-center gap-2">
-                        <MessageSquare className="w-5 h-5 text-sky-400" />
+                        <MessageSquare className="w-5 h-5 text-zinc-400" />
                         Recent Wires
                     </h3>
                     <button
                         onClick={() => setActiveSection('wires')}
-                        className="text-sm text-sky-400 hover:text-sky-300 flex items-center gap-1"
+                        className="text-sm text-zinc-400 hover:text-white flex items-center gap-1"
                     >
                         View all <ChevronRight className="w-4 h-4" />
                     </button>
@@ -108,7 +108,7 @@ const RecentContent = ({
                         <div className="text-center py-8">
                             <MessageSquare className="w-10 h-10 text-zinc-700 mx-auto mb-2" />
                             <p className="text-sm text-zinc-500">No wires yet</p>
-                            <Link to="/wire" className="mt-3 text-sm text-sky-400 hover:text-sky-300 block">
+                            <Link to="/wire" className="mt-3 text-sm text-zinc-400 hover:text-white block">
                                 Post your first wire
                             </Link>
                         </div>

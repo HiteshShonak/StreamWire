@@ -166,7 +166,7 @@ export default function Dashboard() {
 
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white">
+    <div className="min-h-screen bg-zinc-950 text-white">
       <Header variant="gateway" />
       <Sidebar />
 
@@ -199,7 +199,7 @@ export default function Dashboard() {
                   ${activeSection === section.id
                     ? section.id === 'stealth'
                       ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                      : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
+                      : 'bg-zinc-800 text-white border border-zinc-700'
                     : 'bg-zinc-900 text-zinc-400 border border-zinc-800 hover:text-white hover:border-zinc-700'
                   }
                 `}
@@ -210,7 +210,7 @@ export default function Dashboard() {
                   <span className={`
                     px-2 py-0.5 rounded-full text-xs font-bold
                     ${activeSection === section.id
-                      ? section.id === 'stealth' ? 'bg-green-500/30' : 'bg-indigo-500/30'
+                      ? section.id === 'stealth' ? 'bg-green-500/30' : 'bg-zinc-700 text-zinc-200'
                       : 'bg-zinc-800'
                     }
                   `}>

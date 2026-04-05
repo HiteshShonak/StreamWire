@@ -27,14 +27,14 @@ const VideoList = ({
                 <div className="flex items-center gap-3">
                     <h2 className="text-2xl font-bold text-white">All Videos</h2>
                     {activeUploadCount > 0 && (
-                        <span className="px-2 py-0.5 bg-indigo-500/20 border border-indigo-500/30 rounded-full text-xs font-bold text-indigo-400 animate-pulse">
+                        <span className="px-2 py-0.5 bg-zinc-800 border border-zinc-700 rounded-full text-xs font-bold text-zinc-300 animate-pulse">
                             {activeUploadCount} uploading…
                         </span>
                     )}
                 </div>
                 <button
                     onClick={() => navigate('/upload')}
-                    className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-bold text-sm transition-all"
+                    className="flex items-center gap-2 px-4 py-2 bg-white text-black hover:bg-zinc-200 rounded-lg font-bold text-sm transition-all"
                 >
                     <Plus className="w-4 h-4" />
                     Upload New
@@ -50,7 +50,7 @@ const VideoList = ({
                     <p className="text-zinc-500 mb-6">Upload your first video to get started</p>
                     <button
                         onClick={() => navigate('/upload')}
-                        className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-bold transition-all"
+                        className="px-6 py-3 bg-white text-black hover:bg-zinc-200 rounded-xl font-bold transition-all"
                     >
                         Upload Video
                     </button>

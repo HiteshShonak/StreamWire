@@ -82,11 +82,11 @@ function UploadingGhostCard({ upload }) {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             onClick={() => navigate(`/uploading/${upload.id}`)}
-            className={`relative rounded-xl overflow-hidden border cursor-pointer hover:border-indigo-500/50 transition-colors ${
+            className={`relative rounded-xl overflow-hidden border cursor-pointer hover:border-zinc-600 transition-colors ${
                 isError ? 'border-red-500/30 bg-red-950/20' :
                 isCanceled ? 'border-zinc-500/30 bg-zinc-900/60' :
                 isQueued ? 'border-zinc-500/30 bg-zinc-900/60' :
-                'border-indigo-500/30 bg-indigo-950/10'
+                'border-zinc-500/30 bg-zinc-900/60'
             }`}
         >
             {/* Thumbnail area */}
@@ -95,12 +95,12 @@ function UploadingGhostCard({ upload }) {
                     <img src={upload.thumbnailUrl} alt="Uploading" className="w-full h-full object-cover opacity-40" />
                 ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                        <Upload className={`w-10 h-10 ${isError ? 'text-red-500/50' : isCanceled ? 'text-zinc-500/70' : 'text-indigo-500/50'}`} />
+                        <Upload className={`w-10 h-10 ${isError ? 'text-red-500/50' : isCanceled ? 'text-zinc-500/70' : 'text-zinc-500/70'}`} />
                     </div>
                 )}
 
                 {/* Status badge */}
-                <div className={`absolute top-2 left-2 px-2 py-1 rounded-lg flex items-center gap-1.5 text-[10px] font-bold ${isError ? 'bg-red-500/90' : isCanceled ? 'bg-zinc-600/90' : isQueued ? 'bg-zinc-700/90' : 'bg-indigo-600/90'}`}>
+                <div className={`absolute top-2 left-2 px-2 py-1 rounded-lg flex items-center gap-1.5 text-[10px] font-bold ${isError ? 'bg-red-500/90' : isCanceled ? 'bg-zinc-600/90' : isQueued ? 'bg-zinc-700/90' : 'bg-zinc-500/90'}`}>
                     {isError ? (
                         <><AlertTriangle className="w-3 h-3" /> FAILED</>
                     ) : isCanceled ? (
@@ -119,13 +119,13 @@ function UploadingGhostCard({ upload }) {
                             initial={{ width: 0 }}
                             animate={{ width: `${upload.progress}%` }}
                             transition={{ duration: 0.4, ease: 'easeOut' }}
-                            className="h-full bg-indigo-500"
+                            className="h-full bg-zinc-300"
                         />
                     </div>
                 )}
 
                 {!isError && !isCanceled && !isQueued && (
-                    <div className="absolute inset-0 bg-linear-to-r from-transparent via-indigo-500/5 to-transparent animate-pulse" />
+                    <div className="absolute inset-0 bg-linear-to-r from-transparent via-zinc-200/5 to-transparent animate-pulse" />
                 )}
             </div>
 
@@ -149,7 +149,7 @@ function UploadingGhostCard({ upload }) {
                         {upload.requiresFileReselect ? (
                             <button
                                 onClick={(e) => { e.stopPropagation(); navigate('/upload'); }}
-                                className="flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 transition-colors font-medium"
+                                className="flex items-center gap-1.5 text-xs text-zinc-300 hover:text-white transition-colors font-medium"
                             >
                                 <Upload className="w-3 h-3" /> Reselect file to resume
                             </button>
@@ -167,7 +167,7 @@ function UploadingGhostCard({ upload }) {
                 ) : isQueued ? (
                     <p className="text-xs mt-1 text-zinc-400">Queued and starting soon...</p>
                 ) : (
-                    <p className="text-xs mt-1 text-indigo-400">
+                    <p className="text-xs mt-1 text-zinc-300">
                         {upload.progress > 0 ? `${upload.progress}% uploaded` : 'Preparing…'}
                     </p>
                 )}
@@ -229,7 +229,7 @@ const DashboardVideoCard = ({ video, onToggleStealth, onDelete, isStealth }) => 
             <div className="p-3">
                 <div className="flex items-start justify-between gap-2">
                     <h4
-                        className="text-sm font-medium text-white line-clamp-2 cursor-pointer hover:text-indigo-300 transition-colors"
+                        className="text-sm font-medium text-white line-clamp-2 cursor-pointer hover:text-zinc-200 transition-colors"
                         onClick={() => navigate(`/cinema/${video._id}`)}
                     >
                         {video.title}
@@ -263,7 +263,7 @@ const DashboardVideoCard = ({ video, onToggleStealth, onDelete, isStealth }) => 
                                             }}
                                             className={`w-full px-4 py-2.5 text-left text-sm flex items-center gap-2 transition-colors ${
                                                 video.isStealthMode
-                                                    ? 'text-sky-400 hover:bg-sky-500/10'
+                                                    ? 'text-zinc-300 hover:bg-zinc-800'
                                                     : 'text-green-400 hover:bg-green-500/10'
                                             }`}
                                         >
