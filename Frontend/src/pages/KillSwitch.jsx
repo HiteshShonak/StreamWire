@@ -62,7 +62,7 @@ export default function KillSwitch() {
    // Not logged in state
    if (!user) {
       return (
-         <div className="relative min-h-screen bg-[#050505] text-white">
+         <div className="relative min-h-screen bg-black text-white">
             <div className="relative z-10 px-4 sm:px-6 lg:pl-72 lg:pr-72 pt-20 sm:pt-24 pb-20">
                <div className="max-w-4xl mx-auto">
                   <motion.div
@@ -71,7 +71,7 @@ export default function KillSwitch() {
                   >
                      <Power className="w-12 h-12 text-zinc-700 mx-auto mb-4" />
                      <h3 className="text-xl font-bold text-zinc-400">Sign in to access Ghost Mode</h3>
-                     <Link to="/login" className="mt-6 inline-block text-indigo-400 hover:text-indigo-300 font-bold text-sm">
+                     <Link to="/login" className="mt-6 inline-block text-zinc-300 hover:text-white font-bold text-sm">
                         Sign In &rarr;
                      </Link>
                   </motion.div>
@@ -82,10 +82,10 @@ export default function KillSwitch() {
    }
 
    return (
-      <div className="relative min-h-screen bg-[#050505] text-white">
+      <div className="relative min-h-screen bg-black text-white">
 
          {/* Background Glow */}
-         <div className={`fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 opacity-5 blur-[120px] pointer-events-none gpu-layer transition-colors duration-700 ${user?.isIdentityCloaked ? 'bg-emerald-500' : 'bg-red-500'}`} />
+         <div className={`fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 opacity-5 blur-[120px] pointer-events-none gpu-layer transition-colors duration-700 ${user?.isIdentityCloaked ? 'bg-emerald-500' : 'bg-zinc-500'}`} />
 
          <div className="relative z-10 px-4 sm:px-6 lg:pl-72 lg:pr-72 pt-20 sm:pt-24 pb-20">
             <div className="max-w-3xl mx-auto">
@@ -95,7 +95,7 @@ export default function KillSwitch() {
                   <motion.div
                      initial={{ scale: 0.8, opacity: 0 }}
                      animate={{ scale: 1, opacity: 1 }}
-                     className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 mx-auto mb-4 sm:mb-6 rounded-2xl sm:rounded-3xl bg-linear-to-br from-emerald-500/20 to-green-500/20 border border-emerald-500/30 flex items-center justify-center shadow-xl shadow-emerald-900/20"
+                     className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 mx-auto mb-4 sm:mb-6 rounded-2xl sm:rounded-3xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center shadow-xl shadow-emerald-900/20"
                   >
                      <Ghost className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 text-emerald-400" />
                   </motion.div>
@@ -214,22 +214,22 @@ export default function KillSwitch() {
 
                   <div className="p-4 sm:p-5 lg:p-6 rounded-xl border border-zinc-800 bg-zinc-900/30">
                      <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center">
-                           <Shield className="w-5 h-5 text-indigo-400" />
+                        <div className="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center">
+                           <Shield className="w-5 h-5 text-zinc-300" />
                         </div>
                         <h4 className="font-bold text-white">What's Preserved</h4>
                      </div>
                      <ul className="space-y-2 text-sm text-zinc-400">
                         <li className="flex items-center gap-2">
-                           <div className="w-1 h-1 rounded-full bg-indigo-400" />
+                           <div className="w-1 h-1 rounded-full bg-zinc-400" />
                            Your account & settings
                         </li>
                         <li className="flex items-center gap-2">
-                           <div className="w-1 h-1 rounded-full bg-indigo-400" />
+                           <div className="w-1 h-1 rounded-full bg-zinc-400" />
                            Subscriptions & followers
                         </li>
                         <li className="flex items-center gap-2">
-                           <div className="w-1 h-1 rounded-full bg-indigo-400" />
+                           <div className="w-1 h-1 rounded-full bg-zinc-400" />
                            All your content stays online
                         </li>
                      </ul>
@@ -341,7 +341,7 @@ export default function KillSwitch() {
                            <button
                               onClick={confirmAction}
                               disabled={isLoading}
-                              className="flex-1 px-6 py-3.5 rounded-xl font-bold transition-colors flex items-center justify-center gap-2 disabled:opacity-50 bg-emerald-500 hover:bg-emerald-400 text-white"
+                              className="flex-1 px-6 py-3.5 rounded-xl font-bold transition-colors flex items-center justify-center gap-2 disabled:opacity-50 bg-emerald-600 hover:bg-emerald-500 text-white"
                            >
                               {isLoading ? (
                                  <LoadingDots size="md" />

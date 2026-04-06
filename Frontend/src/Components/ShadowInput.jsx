@@ -213,7 +213,7 @@ export default function ShadowInput({ onSuccess }) {
     }
 
     return (
-        <div className="relative bg-[#09090b] border border-emerald-900/30 rounded-2xl overflow-hidden shadow-lg shadow-emerald-950/20">
+        <div className="relative bg-black border border-emerald-900/30 rounded-2xl overflow-hidden shadow-lg shadow-emerald-950/20 font-mono">
 
             {/* Header - Always shows as anonymous */}
             <div className="px-4 py-3 border-b bg-emerald-950/20 border-emerald-900/30">
@@ -243,7 +243,7 @@ export default function ShadowInput({ onSuccess }) {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         className="absolute inset-0 z-20 flex items-center justify-center rounded-2xl pointer-events-none
-                            bg-[#09090b]/92 border-2 border-dashed border-emerald-500/50"
+                            bg-black/92 border-2 border-dashed border-emerald-500/50"
                     >
                         <motion.div
                             initial={{ scale: 0.85, y: 8 }}
@@ -322,7 +322,7 @@ export default function ShadowInput({ onSuccess }) {
                                                 value={opt}
                                                 onChange={(e) => handleOptionChange(i, e.target.value)}
                                                 placeholder={`Option ${i + 1} `}
-                                                className="flex-1 bg-zinc-900/50 rounded-lg px-3 py-1.5 text-sm text-zinc-200 outline-none focus:ring-1 focus:ring-emerald-900"
+                                                className="flex-1 bg-black rounded-lg px-3 py-1.5 text-sm text-zinc-200 outline-none focus:ring-1 focus:ring-emerald-900"
                                             />
                                             {pollOptions.length > 2 && (
                                                 <button onClick={() => handleRemoveOption(i)} className="text-zinc-700 hover:text-red-400">

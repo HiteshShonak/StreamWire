@@ -304,8 +304,8 @@ export default function ShadowPost() {
 
   if (shadowLoading) {
     return (
-      <div className="min-h-screen bg-[#050505] text-white">
-        <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-emerald-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
+      <div className="min-h-screen bg-black text-white font-mono">
+        <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-black/0 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
         <div className="relative z-10 px-3 sm:px-6 lg:pl-6 pt-24 sm:pt-28 pb-20 lg:px-6">
           <WirePostSkeleton />
         </div>
@@ -315,7 +315,7 @@ export default function ShadowPost() {
 
   if (!shadow) {
     return (
-      <div className="min-h-screen bg-[#050505] flex items-center justify-center text-zinc-500">
+      <div className="min-h-screen bg-black flex items-center justify-center text-zinc-500 font-mono">
         Shadow not found
       </div>
     )
@@ -332,9 +332,9 @@ export default function ShadowPost() {
   const hasVoted = shadow.userVote !== undefined && shadow.userVote !== null
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white">
+    <div className="min-h-screen bg-black text-white font-mono">
       {/* Background Glow - Emerald theme */}
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-emerald-500 opacity-3 blur-[120px] pointer-events-none gpu-layer" />
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-black/0 opacity-3 blur-[120px] pointer-events-none gpu-layer" />
 
       {/* Main Content */}
       <div className="relative z-10 px-3 sm:px-6 lg:pl-6 pt-24 sm:pt-28 pb-20 lg:px-6">
@@ -353,7 +353,7 @@ export default function ShadowPost() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-[#09090b] border border-zinc-900 rounded-xl sm:rounded-2xl p-3 sm:p-4 mb-6 border-l-2 border-l-emerald-900/40"
+            className="bg-black border border-zinc-900 rounded-xl sm:rounded-2xl p-3 sm:p-4 mb-6 border-l-2 border-l-emerald-900/40"
           >
             <div className="flex gap-4">
               {/* Avatar - Ghost Icon */}
@@ -389,14 +389,14 @@ export default function ShadowPost() {
 
                       {/* Dropdown Menu */}
                       <div className="absolute right-0 top-0 hidden group-hover/menu:block pt-6 z-20">
-                        <div className="bg-[#0a0a0c] border border-zinc-800 rounded-xl p-1 shadow-xl w-36 overflow-hidden">
+                        <div className="bg-black border border-zinc-800 rounded-xl p-1 shadow-xl w-36 overflow-hidden">
 
                           {/* Claim Shadow Button - Hidden when identity is globally cloaked */}
                           {!shadow.owner?.isIdentityCloaked && (
                             <button
                               onClick={() => claimShadowMutation.mutate()}
                               disabled={claimShadowMutation.isPending}
-                              className="flex items-center gap-2 w-full px-3 py-2 text-xs font-medium rounded-lg text-left transition-colors text-emerald-400 hover:bg-emerald-500/10"
+                              className="flex items-center gap-2 w-full px-3 py-2 text-xs font-medium rounded-lg text-left transition-colors text-red-500 hover:bg-red-500/10"
                             >
                               <Eye className="w-3.5 h-3.5" />
                               Claim Shadow
@@ -523,7 +523,7 @@ export default function ShadowPost() {
           {/* Comment Input - Can be anonymous or public */}
           <div className="mb-8">
             {userData ? (
-              <div className="bg-[#09090b] border border-zinc-900 rounded-xl sm:rounded-2xl p-4 sm:p-6">
+              <div className="bg-black border border-zinc-900 rounded-xl sm:rounded-2xl p-4 sm:p-6">
                 <h3 className="text-lg font-bold mb-4 text-white flex items-center gap-2">
                   <Ghost className="w-4 h-4 text-emerald-500/70" />
                   Add a Comment
@@ -547,8 +547,8 @@ export default function ShadowPost() {
                       <button
                         onClick={() => setIsStealthComment(!isStealthComment)}
                         className={`flex items-center gap-2 text-xs font-medium px-4 py-2 rounded-full border transition-colors ${isStealthComment
-                          ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
-                          : "border-zinc-700 text-zinc-500 hover:text-zinc-300"
+                          ? "bg-red-500/10 border-red-500/30 text-red-500"
+                          : "border-zinc-700 text-zinc-500 hover:text-red-400"
                           }`}
                       >
                         <Ghost className="w-3.5 h-3.5" />
@@ -608,7 +608,7 @@ export default function ShadowPost() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className={`bg-[#09090b] border border-zinc-900 rounded-xl sm:rounded-2xl p-4 sm:p-6 ${commentIsStealth ? "border-l-4 border-l-emerald-950/40" : ""
+                      className={`bg-black border border-zinc-900 rounded-xl sm:rounded-2xl p-4 sm:p-6 ${commentIsStealth ? "border-l-4 border-l-emerald-950/40" : ""
                         }`}
                     >
                       <div className="flex gap-4">
@@ -632,7 +632,7 @@ export default function ShadowPost() {
                                   {commentDisplayName}
                                 </span>
                                 {commentIsStealth && <ShieldCheck className="w-4 h-4 text-emerald-500/60" />}
-                                {!commentIsStealth && <BadgeCheck className="w-4 h-4 text-sky-500" />}
+                                {!commentIsStealth && <BadgeCheck className="w-4 h-4 text-emerald-500" />}
                               </div>
                               <span className="text-zinc-600 text-sm">
                                 {commentDisplayHandle} • {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
@@ -648,8 +648,8 @@ export default function ShadowPost() {
                                   })}
                                   disabled={toggleCommentClaimMutation.isPending}
                                   className={`p-2 rounded-full transition-colors ${commentIsStealth
-                                    ? "text-emerald-500 hover:bg-emerald-500/10"
-                                    : "text-sky-500 hover:bg-sky-500/10"
+                                    ? "text-red-500 hover:bg-red-500/10"
+                                    : "text-red-500 hover:bg-red-500/10"
                                     }`}
                                   title={commentIsStealth ? "Claim comment" : "Hide identity"}
                                 >

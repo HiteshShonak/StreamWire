@@ -75,7 +75,7 @@ const ShadowCard = memo(function ShadowCard({ shadow, onLike, onDelete }) {
             animate={{ opacity: 1, y: 0 }}
             layout
             onClick={handleCardClick}
-            className="relative border-b border-zinc-900 bg-[#09090b] hover:bg-zinc-950/60 transition-colors cursor-pointer p-3 sm:p-4 border-l-2 border-l-emerald-900/40 contain-content"
+            className="relative border-b border-zinc-900 bg-black hover:bg-zinc-950 transition-colors cursor-pointer p-3 sm:p-4 border-l-2 border-l-emerald-900/40 contain-content font-mono"
         >
             <div className="flex gap-3 sm:gap-4">
                 {/* Avatar Column - Anonymous Icon */}
@@ -117,7 +117,7 @@ const ShadowCard = memo(function ShadowCard({ shadow, onLike, onDelete }) {
 
                                 {/* Dropdown Menu */}
                                 <div className="absolute right-0 top-0 hidden group-hover/menu:block pt-6 z-20">
-                                    <div className="bg-[#0a0a0c] border border-zinc-800 rounded-xl p-1 shadow-xl w-36 overflow-hidden">
+                                    <div className="bg-black border border-zinc-800 rounded-xl p-1 shadow-xl w-36 overflow-hidden">
 
                                         {/* Claim Shadow Button - Hidden when identity is globally cloaked */}
                                         {!shadow.owner?.isIdentityCloaked && (
@@ -127,7 +127,7 @@ const ShadowCard = memo(function ShadowCard({ shadow, onLike, onDelete }) {
                                                     claimShadowMutation.mutate()
                                                 }}
                                                 disabled={claimShadowMutation.isPending}
-                                                className="flex items-center gap-2 w-full px-3 py-2 text-xs font-medium rounded-lg text-left transition-colors text-emerald-400 hover:bg-emerald-500/10"
+                                                className="flex items-center gap-2 w-full px-3 py-2 text-xs font-medium rounded-lg text-left transition-colors text-red-500 hover:bg-red-500/10"
                                             >
                                                 <Eye className="w-3.5 h-3.5" />
                                                 Claim Shadow
@@ -160,7 +160,7 @@ const ShadowCard = memo(function ShadowCard({ shadow, onLike, onDelete }) {
                     {/* Image Attachment */}
                     {shadow.image?.url && (
                         <div
-                            className="mb-3 rounded-xl overflow-hidden border border-zinc-900 bg-zinc-950/50 cursor-zoom-in"
+                            className="mb-3 rounded-xl overflow-hidden border border-zinc-900 bg-black/70 cursor-zoom-in"
                             onClick={e => { e.stopPropagation(); setLightboxSrc(shadow.image.url) }}
                         >
                             <img
@@ -174,7 +174,7 @@ const ShadowCard = memo(function ShadowCard({ shadow, onLike, onDelete }) {
 
                     {/* Poll Visual (If exists) */}
                     {shadow.poll && (
-                        <div className="mb-3 p-3 border border-zinc-900 rounded-xl bg-zinc-950/30">
+                        <div className="mb-3 p-3 border border-zinc-900 rounded-xl bg-black/80">
                             <div className="flex items-center gap-2 text-xs text-emerald-500/60 mb-2">
                                 <BarChart2 className="w-3.5 h-3.5" />
                                 <span>Anonymous poll</span>
