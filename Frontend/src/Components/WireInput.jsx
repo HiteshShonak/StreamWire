@@ -216,7 +216,7 @@ export default function WireInput({ onSuccess }) {
     }
 
     return (
-        <div className={`relative bg-[#0a0a0c] border rounded-2xl overflow-hidden transition-colors duration-300 ${isStealth ? "border-green-900/50" : "border-zinc-800"}`}>
+        <div className={`relative bg-zinc-950 border rounded-2xl overflow-hidden transition-colors duration-300 ${isStealth ? "border-green-900/50" : "border-zinc-800"}`}>
 
             {/* Header */}
             <div className={`px-4 py-3 border-b flex justify-between items-center transition-colors ${isStealth ? "bg-green-900/10 border-green-900/30" : "bg-zinc-900/50 border-zinc-800"}`}>
@@ -237,7 +237,7 @@ export default function WireInput({ onSuccess }) {
 
             {/* Input Area — accepts drag-and-drop */}
             <div
-                className={`p-4 transition-colors duration-200 ${isDragging ? (isStealth ? 'bg-green-900/10 ring-1 ring-green-500/40 rounded-xl' : 'bg-indigo-500/5 ring-1 ring-indigo-500/40 rounded-xl') : ''}`}
+                className={`p-4 transition-colors duration-200 ${isDragging ? (isStealth ? 'bg-green-900/10 ring-1 ring-green-500/40 rounded-xl' : 'bg-white/5 ring-1 ring-white/30 rounded-xl') : ''}`}
                 onDragEnter={handleDragEnter}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
@@ -250,8 +250,8 @@ export default function WireInput({ onSuccess }) {
                         exit={{ opacity: 0 }}
                         className={`absolute inset-0 z-20 flex items-center justify-center rounded-2xl pointer-events-none
                             ${isStealth
-                                ? 'bg-[#0a0a0c]/90 border-2 border-dashed border-green-500/60'
-                                : 'bg-[#0a0a0c]/90 border-2 border-dashed border-indigo-500/60'
+                                ? 'bg-zinc-950/90 border-2 border-dashed border-green-500/60'
+                                : 'bg-zinc-950/90 border-2 border-dashed border-white/60'
                             }`}
                     >
                         <motion.div
@@ -265,11 +265,11 @@ export default function WireInput({ onSuccess }) {
                                 <motion.div
                                     animate={{ scale: [1, 1.3, 1], opacity: [0.4, 0, 0.4] }}
                                     transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
-                                    className={`absolute inset-0 rounded-full ${isStealth ? 'bg-green-500/30' : 'bg-indigo-500/30'}`}
+                                    className={`absolute inset-0 rounded-full ${isStealth ? 'bg-green-500/30' : 'bg-white/30'}`}
                                 />
                                 <div className={`relative w-14 h-14 rounded-full flex items-center justify-center
-                                    ${isStealth ? 'bg-green-500/10 border border-green-500/30' : 'bg-indigo-500/10 border border-indigo-500/30'}`}>
-                                    <ImageIcon className={`w-6 h-6 ${isStealth ? 'text-green-400' : 'text-indigo-400'}`} />
+                                    ${isStealth ? 'bg-green-500/10 border border-green-500/30' : 'bg-white/10 border border-white/30'}`}>
+                                    <ImageIcon className={`w-6 h-6 ${isStealth ? 'text-green-400' : 'text-white'}`} />
                                 </div>
                             </div>
 
@@ -279,7 +279,7 @@ export default function WireInput({ onSuccess }) {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.06 }}
                                 className={`text-lg font-black tracking-tight leading-none
-                                    ${isStealth ? 'text-green-300' : 'text-indigo-300'}`}
+                                        ${isStealth ? 'text-green-300' : 'text-white'}`}
                             >
                                 {isStealth ? 'Drop to transmit in stealth' : 'Drop to add image'}
                             </motion.p>
@@ -322,7 +322,7 @@ export default function WireInput({ onSuccess }) {
                                     value={pollQuestion}
                                     onChange={(e) => setPollQuestion(e.target.value)}
                                     placeholder="Ask a question..."
-                                    className="w-full bg-transparent border-b border-zinc-700 pb-2 mb-3 text-sm text-white placeholder:text-zinc-600 outline-none focus:border-sky-500/50 transition-colors"
+                                    className="w-full bg-transparent border-b border-zinc-700 pb-2 mb-3 text-sm text-white placeholder:text-zinc-600 outline-none focus:border-white/60 transition-colors"
                                 />
                                 <div className="space-y-2">
                                     {pollOptions.map((opt, i) => (
@@ -345,7 +345,7 @@ export default function WireInput({ onSuccess }) {
                                 {pollOptions.length < 4 && (
                                     <button
                                         onClick={handleAddOption}
-                                        className="mt-3 text-xs flex items-center gap-1 text-sky-500 hover:text-sky-400 font-medium"
+                                        className="mt-3 text-xs flex items-center gap-1 text-white hover:text-zinc-300 font-medium"
                                     >
                                         <Plus className="w-3 h-3" /> Add Option
                                     </button>
@@ -375,7 +375,7 @@ export default function WireInput({ onSuccess }) {
                                         <X className="w-4 h-4 text-white" />
                                     </button>
                                     {/* Compressed size badge */}
-                                    <span className="absolute bottom-0.5 left-0.5 text-[9px] font-bold bg-black/60 text-indigo-300 px-1 rounded">
+                                    <span className="absolute bottom-0.5 left-0.5 text-[9px] font-bold bg-black/60 text-zinc-300 px-1 rounded">
                                         {(img.file.size / 1024).toFixed(0)}KB
                                     </span>
                                 </motion.div>
@@ -408,7 +408,7 @@ export default function WireInput({ onSuccess }) {
                     {/* Poll Button */}
                     <button
                         onClick={togglePoll}
-                        className={`transition-colors ${images.length > 0 ? 'text-zinc-700 cursor-not-allowed' : showPoll ? 'text-sky-500' : 'text-zinc-400 hover:text-white'}`}
+                        className={`transition-colors ${images.length > 0 ? 'text-zinc-700 cursor-not-allowed' : showPoll ? 'text-white' : 'text-zinc-400 hover:text-white'}`}
                         disabled={images.length > 0}
                         title={images.length > 0 ? "Cannot add poll with image" : "Create Poll"}
                     >

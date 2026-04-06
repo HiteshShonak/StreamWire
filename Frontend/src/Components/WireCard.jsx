@@ -114,7 +114,7 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
             layout
             onClick={handleCardClick}
             className={`
-                relative border-b border-zinc-800 bg-[#0a0a0c] hover:bg-zinc-900/40 transition-colors cursor-pointer p-3 sm:p-4 contain-content
+                relative border-b border-zinc-800 bg-zinc-950 hover:bg-zinc-900 transition-colors cursor-pointer p-3 sm:p-4 contain-content
                 ${isStealth ? "border-l-2 border-l-green-500/30 pl-3.5" : ""} 
             `}
         >
@@ -129,7 +129,7 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
                         src={avatarUrl}
                         alt="Avatar"
                         loading="lazy"
-                        className={`w-10 h-10 rounded-full object-cover hover:ring-2 hover:ring-sky-500/50 transition-all ${isStealth ? "border border-green-500/30" : ""}`}
+                        className={`w-10 h-10 rounded-full object-cover hover:ring-2 hover:ring-white/30 transition-all ${isStealth ? "border border-green-500/30" : ""}`}
                     />
                 </Link>
 
@@ -147,11 +147,11 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
                                 {displayName}
                             </Link>
 
-                            {!isStealth && <BadgeCheck className="w-3.5 h-3.5 text-sky-500 shrink-0" />}
+                            {!isStealth && <BadgeCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />}
                             {isStealth && <ShieldCheck className="w-3.5 h-3.5 text-green-500 shrink-0" />}
 
                             {isOwner && (
-                                <span className="px-1.5 py-0.5 bg-indigo-500/20 text-indigo-400 text-[10px] font-bold rounded border border-indigo-500/30">YOU</span>
+                                <span className="px-1.5 py-0.5 bg-zinc-800 text-zinc-400 text-[10px] font-bold rounded border border-zinc-700">YOU</span>
                             )}
                             {userData && !isOwner && !isStealth && (
                                 <button
@@ -161,8 +161,8 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
                                     }}
                                     disabled={subscribeMutation.isPending}
                                     className={`px-2 py-0.5 text-[10px] font-bold rounded border flex items-center gap-0.5 transition-colors disabled:opacity-50 ${wire.owner?.isSubscribed
-                                        ? 'bg-sky-500/20 hover:bg-sky-500/30 text-sky-400 border-sky-500/30'
-                                        : 'bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border-indigo-500/30'
+                                        ? 'bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border-zinc-700'
+                                        : 'bg-white/10 hover:bg-white/15 text-white border-zinc-600'
                                         }`}
                                 >
                                     {wire.owner?.isSubscribed ? (
@@ -173,7 +173,7 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
                                 </button>
                             )}
 
-                            <span className="text-zinc-500 text-sm truncate">{displayHandle}</span>
+                            <span className="text-zinc-500 text-sm truncate font-mono">{displayHandle}</span>
                             <span className="text-zinc-600 text-xs">•</span>
                             <span className="text-zinc-500 text-xs hover:underline">
                                 {formatDistanceToNow(new Date(wire.createdAt), { addSuffix: true })}
@@ -183,13 +183,13 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
                         {/* Context Menu (Owner Only) */}
                         {isOwner && (
                             <div className="relative group/menu">
-                                <button className="p-1 text-zinc-500 hover:text-sky-500 transition-colors rounded-full hover:bg-sky-500/10">
+                                <button className="p-1 text-zinc-500 hover:text-white transition-colors rounded-full hover:bg-white/5">
                                     <MoreHorizontal className="w-4 h-4" />
                                 </button>
 
                                 {/* Dropdown Menu */}
                                 <div className="absolute right-0 top-0 hidden group-hover/menu:block pt-6 z-20">
-                                    <div className="bg-text-main border border-zinc-800 rounded-xl p-1 shadow-xl w-36 overflow-hidden">
+                                    <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-1 shadow-xl w-36 overflow-hidden">
 
                                         {/* Claim / Go Stealth Button - Hidden when identity is globally cloaked */}
                                         {!wire.owner?.isIdentityCloaked && (
@@ -200,7 +200,7 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
                                                 }}
                                                 disabled={toggleStealthMutation.isPending}
                                                 className={`flex items-center gap-2 w-full px-3 py-2 text-xs font-medium rounded-lg text-left transition-colors ${isStealth
-                                                    ? "text-sky-400 hover:bg-sky-500/10"
+                                                    ? "text-white hover:bg-white/5"
                                                     : "text-green-400 hover:bg-green-500/10"
                                                     }`}
                                             >
@@ -227,7 +227,7 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
 
                     {/* Post Text */}
                     <div className="mb-3">
-                        <p className="text-zinc-200 text-sm leading-relaxed whitespace-pre-wrap">
+                        <p className="text-zinc-200 text-sm leading-relaxed whitespace-pre-wrap font-sans">
                             {wire.content}
                         </p>
                     </div>
@@ -269,7 +269,7 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
 
                         {/* Comments */}
                         <button
-                            className="group/btn flex items-center gap-1.5 p-2 rounded-full transition-colors hover:bg-sky-500/10 hover:text-sky-500"
+                            className="group/btn flex items-center gap-1.5 p-2 rounded-full transition-colors hover:bg-white/5 hover:text-white"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 navigate(`/wire/${wireId}`);
@@ -291,9 +291,9 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
                                 }
                                 onLike(wireId)
                             }}
-                            className={`group/btn flex items-center gap-1.5 p-2 rounded-full transition-colors hover:bg-pink-500/10 hover:text-pink-500 ${wire.isLiked ? 'text-pink-500' : ''}`}
+                            className={`group/btn flex items-center gap-1.5 p-2 rounded-full transition-colors hover:bg-red-500/10 hover:text-red-500 ${wire.isLiked ? 'text-red-500' : ''}`}
                         >
-                            <Heart className={`w-4.5 h-4.5 transition-colors ${wire.isLiked ? "fill-pink-500" : ""}`} />
+                            <Heart className={`w-4.5 h-4.5 transition-colors ${wire.isLiked ? "fill-red-500" : ""}`} />
                             <span className="text-xs font-medium">
                                 {wire.likesCount || 0}
                             </span>
@@ -310,10 +310,10 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
                         {/* Share */}
                         <button
                             onClick={handleShare}
-                            className="group/btn flex items-center gap-1.5 p-2 rounded-full transition-colors hover:bg-indigo-500/10 hover:text-indigo-500"
+                            className="group/btn flex items-center gap-1.5 p-2 rounded-full transition-colors hover:bg-white/5 hover:text-white"
                         >
                             {copied ? (
-                                <Check className="w-4.5 h-4.5 text-indigo-500" />
+                                <Check className="w-4.5 h-4.5 text-white" />
                             ) : (
                                 <Share className="w-4.5 h-4.5 transition-colors" />
                             )}

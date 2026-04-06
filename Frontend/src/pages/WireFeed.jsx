@@ -128,9 +128,9 @@ export default function WireFeed() {
     ])
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white">
+        <div className="min-h-screen bg-zinc-950 text-white">
             {/* Background Glow */}
-            <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-sky-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
+            <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-black/0 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
 
             <div className="relative z-10 px-3 sm:px-6 lg:pl-6 pt-24 sm:pt-28 pb-20 lg:px-6">
                 <div className="max-w-2xl mx-auto">
@@ -138,8 +138,8 @@ export default function WireFeed() {
                     {/* Header */}
                     <div className="mb-6 sm:mb-8 text-center">
                         <div className="flex items-center justify-center gap-2 sm:gap-3 mb-2">
-                            <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-sky-500/70" />
-                            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">The Wire</h1>
+                            <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                            <h1 className="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight">The Wire</h1>
                         </div>
                         <p className="text-zinc-500 text-xs sm:text-sm">Connect with the community</p>
                     </div>
@@ -160,7 +160,7 @@ export default function WireFeed() {
                     </div>
 
                     {/* Feed content */}
-                    <div className="space-y-0 border border-zinc-800 rounded-2xl overflow-hidden bg-[#0a0a0c]">
+                    <div className="space-y-0 border border-zinc-800 rounded-2xl overflow-hidden bg-zinc-950">
                         {status === 'pending' ? (
                             <WireListSkeleton count={5} />
                         ) : status === 'error' ? (

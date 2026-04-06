@@ -386,8 +386,8 @@ export default function WirePost() {
 
   if (wireLoading) {
     return (
-      <div className="min-h-screen bg-[#050505] text-white">
-        <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-sky-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
+      <div className="min-h-screen bg-zinc-950 text-white">
+        <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-black/0 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
         <div className="relative z-10 px-3 sm:px-6 lg:pl-6 pt-24 sm:pt-28 pb-20 lg:px-6">
           <WirePostSkeleton />
         </div>
@@ -397,7 +397,7 @@ export default function WirePost() {
 
   if (!wire) {
     return (
-      <div className="min-h-screen bg-[#050505] flex items-center justify-center text-zinc-500">
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center text-zinc-500">
         Wire not found
       </div>
     )
@@ -416,9 +416,9 @@ export default function WirePost() {
   const hasVoted = wire.userVote !== undefined && wire.userVote !== null
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white">
+    <div className="min-h-screen bg-zinc-950 text-white">
       {/* Background Glow */}
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-sky-500 opacity-5 blur-[120px] pointer-events-none" />
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-black/0 opacity-5 blur-[120px] pointer-events-none" />
 
       {/* Main Content */}
       <div className="relative z-10 px-3 sm:px-6 lg:pl-6 pt-24 sm:pt-28 pb-20 lg:px-6">
@@ -437,7 +437,7 @@ export default function WirePost() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`bg-[#0a0a0c] border border-zinc-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 mb-6 ${isStealth ? "border-l-2 border-l-green-500/30 pl-3.5" : ""}`}
+            className={`bg-zinc-950 border border-zinc-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 mb-6 ${isStealth ? "border-l-2 border-l-green-500/30 pl-3.5" : ""}`}
           >
             <div className="flex gap-4">
               {/* Avatar */}
@@ -448,7 +448,7 @@ export default function WirePost() {
                 <img
                   src={avatarUrl}
                   alt="Avatar"
-                  className={`w-10 h-10 rounded-full object-cover hover:ring-2 hover:ring-sky-500/50 transition-all ${isStealth ? "border border-green-500/30" : ""
+                  className={`w-10 h-10 rounded-full object-cover hover:ring-2 hover:ring-white/30 transition-all ${isStealth ? "border border-green-500/30" : ""
                     }`}
                 />
               </Link>
@@ -465,19 +465,19 @@ export default function WirePost() {
                       >
                         {displayName}
                       </Link>
-                      {!isStealth && <BadgeCheck className="w-3 h-3 text-sky-500" />}
+                      {!isStealth && <BadgeCheck className="w-3 h-3 text-emerald-500" />}
                       {isStealth && <ShieldCheck className="w-3 h-3 text-green-500" />}
 
                       {isOwner && (
-                        <span className="px-1.5 py-0.5 bg-indigo-500/20 text-indigo-400 text-[10px] font-bold rounded border border-indigo-500/30">YOU</span>
+                        <span className="px-1.5 py-0.5 bg-zinc-800 text-zinc-400 text-[10px] font-bold rounded border border-zinc-700">YOU</span>
                       )}
                       {!isOwner && !isStealth && (
                         <button
                           onClick={() => subscribeToPostAuthorMutation.mutate()}
                           disabled={subscribeToPostAuthorMutation.isPending}
                           className={`px-2 py-0.5 text-[10px] font-bold rounded border flex items-center gap-0.5 transition-colors disabled:opacity-50 ${wire.owner?.isSubscribed
-                            ? 'bg-sky-500/20 hover:bg-sky-500/30 text-sky-400 border-sky-500/30'
-                            : 'bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border-indigo-500/30'
+                            ? 'bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border-zinc-700'
+                            : 'bg-white/10 hover:bg-white/15 text-white border-zinc-600'
                             }`}
                         >
                           {wire.owner?.isSubscribed ? (
@@ -496,7 +496,7 @@ export default function WirePost() {
                   {/* Context Menu (Owner Only) */}
                   {isOwner && (
                     <div className="relative group/menu">
-                      <button className="p-1 text-zinc-500 hover:text-sky-500 transition-colors rounded-full hover:bg-sky-500/10">
+                      <button className="p-1 text-zinc-500 hover:text-white transition-colors rounded-full hover:bg-white/5">
                         <MoreHorizontal className="w-4 h-4" />
                       </button>
 
@@ -510,7 +510,7 @@ export default function WirePost() {
                               onClick={() => toggleStealthMutation.mutate()}
                               disabled={toggleStealthMutation.isPending}
                               className={`flex items-center gap-2 w-full px-3 py-2 text-xs font-medium rounded-lg text-left transition-colors ${isStealth
-                                ? "text-sky-400 hover:bg-sky-500/10"
+                                ? "text-white hover:bg-white/5"
                                 : "text-green-400 hover:bg-green-500/10"
                                 }`}
                             >
@@ -562,7 +562,7 @@ export default function WirePost() {
                           disabled={voteMutation.isPending}
                           className={`relative w-full h-10 rounded-lg overflow-hidden border transition-all ${hasVoted
                             ? isVotedOption
-                              ? "border-sky-500/50"
+                              ? "border-white/40"
                               : "border-zinc-800"
                             : "border-zinc-700 hover:bg-zinc-800"
                             }`}
@@ -572,13 +572,13 @@ export default function WirePost() {
                             <motion.div
                               initial={{ width: 0 }}
                               animate={{ width: `${percentage}%` }}
-                              className={`absolute inset-0 h-full opacity-20 ${isVotedOption ? "bg-sky-500" : "bg-zinc-600"}`}
+                              className={`absolute inset-0 h-full opacity-20 ${isVotedOption ? "bg-white" : "bg-zinc-600"}`}
                             />
                           )}
 
                           {/* Text Content */}
                           <div className="absolute inset-0 flex items-center justify-between px-4">
-                            <span className={`text-sm font-medium ${isVotedOption ? "text-sky-400" : "text-zinc-300"}`}>
+                            <span className={`text-sm font-medium ${isVotedOption ? "text-white" : "text-zinc-300"}`}>
                               {option.text} {isVotedOption && "✓"}
                             </span>
                             {hasVoted && (
@@ -605,7 +605,7 @@ export default function WirePost() {
                       likeMutation.mutate(wire._id)
                     }}
                     disabled={likeMutation.isPending}
-                    className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${wire.isLiked ? "text-pink-500" : "text-zinc-400 hover:text-pink-400"
+                    className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${wire.isLiked ? "text-red-500" : "text-zinc-400 hover:text-red-500"
                       }`}
                   >
                     <Heart className={`w-4 h-4 ${wire.isLiked ? "fill-current" : ""}`} />
@@ -625,9 +625,9 @@ export default function WirePost() {
 
                   <button
                     onClick={handleShare}
-                    className="text-zinc-400 hover:text-indigo-400 transition-colors"
+                    className="text-zinc-400 hover:text-white transition-colors"
                   >
-                    {copied ? <Check className="w-4 h-4 text-indigo-400" /> : <Share className="w-4 h-4" />}
+                    {copied ? <Check className="w-4 h-4 text-white" /> : <Share className="w-4 h-4" />}
                   </button>
                 </div>
               </div>
@@ -639,7 +639,7 @@ export default function WirePost() {
           {/* Comment Input */}
           <div className="mb-8">
             {userData ? (
-              <div className="bg-[#0a0a0c] border border-zinc-800 rounded-xl sm:rounded-2xl p-4 sm:p-6">
+              <div className="bg-zinc-950 border border-zinc-800 rounded-xl sm:rounded-2xl p-4 sm:p-6">
                 <h3 className="text-lg font-bold mb-4 text-white">Add a Comment</h3>
                 <div className="flex gap-4">
                   <img
@@ -652,7 +652,7 @@ export default function WirePost() {
                       value={commentText}
                       onChange={(e) => setCommentText(e.target.value)}
                       placeholder={isStealthComment ? "Reply anonymously..." : "Share your thoughts..."}
-                      className="w-full bg-zinc-900/50 border border-zinc-700 rounded-lg px-3 sm:px-4 py-2.5 sm:py-3 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-sky-500/50 resize-none"
+                      className="w-full bg-zinc-900/50 border border-zinc-700 rounded-lg px-3 sm:px-4 py-2.5 sm:py-3 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/60 resize-none"
                       rows={3}
                     />
                     <div className="flex items-center justify-between mt-3 sm:mt-4">
@@ -672,7 +672,7 @@ export default function WirePost() {
                       <button
                         onClick={handleAddComment}
                         disabled={!commentText.trim() || addCommentMutation.isPending}
-                        className="flex items-center gap-2 px-6 py-2.5 bg-sky-500 hover:bg-sky-600 disabled:bg-zinc-700 disabled:text-zinc-500 text-white text-sm font-bold rounded-lg transition-colors"
+                        className="flex items-center gap-2 px-6 py-2.5 bg-white text-black hover:bg-zinc-200 disabled:bg-zinc-700 disabled:text-zinc-500 text-sm font-bold rounded-lg transition-colors"
                       >
                         {addCommentMutation.isPending ? (
                           <LoadingDots size="xs" />
@@ -702,7 +702,7 @@ export default function WirePost() {
 
             {commentsLoading ? (
               <div className="flex justify-center py-12">
-                <LoadingDots size="md" className="text-sky-500" />
+                <LoadingDots size="md" className="text-white" />
               </div>
             ) : commentsData?.docs?.length > 0 ? (
               <AnimatePresence>
@@ -721,7 +721,7 @@ export default function WirePost() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className={`bg-[#0a0a0c] border border-zinc-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 ${commentIsStealth ? "border-l-4 border-l-green-500/30" : ""
+                      className={`bg-zinc-950 border border-zinc-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 ${commentIsStealth ? "border-l-4 border-l-green-500/30" : ""
                         }`}
                     >
                       <div className="flex gap-4">
@@ -733,7 +733,7 @@ export default function WirePost() {
                           <img
                             src={commentAvatarUrl}
                             alt="Commenter"
-                            className={`w-11 h-11 rounded-full object-cover hover:ring-2 hover:ring-sky-500/50 transition-all ${commentIsStealth ? "border border-green-500/30" : ""
+                            className={`w-11 h-11 rounded-full object-cover hover:ring-2 hover:ring-white/30 transition-all ${commentIsStealth ? "border border-green-500/30" : ""
                               }`}
                           />
                         </Link>
@@ -749,7 +749,7 @@ export default function WirePost() {
                                 >
                                   {commentDisplayName}
                                 </Link>
-                                {!commentIsStealth && <BadgeCheck className="w-4 h-4 text-sky-500" />}
+                                {!commentIsStealth && <BadgeCheck className="w-4 h-4 text-emerald-500" />}
                                 {commentIsStealth && <ShieldCheck className="w-4 h-4 text-green-500" />}
 
                                 {commentOwner && (
@@ -760,8 +760,8 @@ export default function WirePost() {
                                     onClick={() => subscribeFromCommentMutation.mutate(comment.owner?._id)}
                                     disabled={subscribeFromCommentMutation.isPending}
                                     className={`px-2 py-0.5 text-[10px] font-bold rounded border flex items-center gap-0.5 transition-colors disabled:opacity-50 ${comment.owner?.isSubscribed
-                                      ? 'bg-sky-500/20 hover:bg-sky-500/30 text-sky-400 border-sky-500/30'
-                                      : 'bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border-indigo-500/30'
+                                      ? 'bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border-zinc-700'
+                                      : 'bg-white/10 hover:bg-white/15 text-white border-zinc-600'
                                       }`}
                                   >
                                     {comment.owner?.isSubscribed ? (
@@ -787,7 +787,7 @@ export default function WirePost() {
                                   disabled={toggleCommentClaimMutation.isPending}
                                   className={`p-2 rounded-full transition-colors ${commentIsStealth
                                     ? "text-green-500 hover:bg-green-500/10"
-                                    : "text-sky-500 hover:bg-sky-500/10"
+                                    : "text-white hover:bg-white/5"
                                     }`}
                                   title={commentIsStealth ? "Claim comment" : "Hide identity"}
                                 >
