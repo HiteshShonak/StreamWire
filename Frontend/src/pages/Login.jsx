@@ -24,8 +24,8 @@ const NoiseOverlay = () => (
 
 const AmbientBackground = () => (
     <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-125 h-125 bg-indigo-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse gpu-layer" style={{ animationDuration: '4s' }} />
-        <div className="absolute bottom-[-10%] right-[-10%] w-125 h-125 bg-purple-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse gpu-layer" style={{ animationDuration: '7s' }} />
+        <div className="absolute top-[-10%] left-[-10%] w-125 h-125 bg-black/0 blur-[120px] rounded-full mix-blend-screen animate-pulse gpu-layer" style={{ animationDuration: '4s' }} />
+        <div className="absolute bottom-[-10%] right-[-10%] w-125 h-125 bg-black/0 blur-[120px] rounded-full mix-blend-screen animate-pulse gpu-layer" style={{ animationDuration: '7s' }} />
     </div>
 )
 
@@ -89,7 +89,7 @@ export default function Login() {
     }
 
     return (
-        <div className="min-h-screen w-full bg-[#050505] flex items-center justify-center p-4 relative overflow-hidden">
+        <div className="min-h-screen w-full bg-black flex items-center justify-center p-4 relative overflow-hidden">
             <NoiseOverlay />
             <AmbientBackground />
 
@@ -100,19 +100,19 @@ export default function Login() {
                 className="w-full max-w-md relative z-20"
             >
                 {/* Glass Card */}
-                <div className="bg-zinc-900/40 backdrop-blur-2xl border border-white/10 p-8 rounded-4xl shadow-2xl shadow-black/50 overflow-hidden relative group">
+                <div className="bg-zinc-950 backdrop-blur-2xl border border-zinc-800 p-8 rounded-4xl shadow-2xl shadow-black/50 overflow-hidden relative group">
 
                     {/* Top Glow Accent */}
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-linear-to-r from-transparent via-indigo-500 to-transparent opacity-50 blur-sm" />
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-linear-to-r from-transparent via-zinc-700 to-transparent opacity-50 blur-sm" />
 
                     {/* Header Section */}
                     <div className="text-center mb-8">
                         <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/5 border border-white/10 mb-6 shadow-inner text-white relative overflow-hidden group-hover:border-white/20 transition-colors">
-                            <div className="absolute inset-0 bg-indigo-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <div className="absolute inset-0 bg-white/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
                             <Radio className="w-7 h-7 relative z-10" />
                         </div>
-                        <h1 className="text-3xl font-black text-white tracking-tight mb-2">Welcome Back</h1>
-                        <p className="text-zinc-400 text-sm"> Authenticate to enter the <span className="text-indigo-400 font-semibold">Gateway</span>.</p>
+                        <h1 className="font-display text-3xl font-black text-white tracking-tight mb-2">Welcome Back</h1>
+                        <p className="text-zinc-400 text-sm"> Authenticate to enter the <span className="text-white font-semibold">Gateway</span>.</p>
                     </div>
 
                     {/* Error Message */}
@@ -134,7 +134,7 @@ export default function Login() {
 
                         {/* Identifier Field */}
                         <div className="space-y-1.5 group/input">
-                            <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider ml-1 group-focus-within/input:text-indigo-400 transition-colors">
+                            <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider ml-1 group-focus-within/input:text-white transition-colors">
                                 Identity
                             </label>
                             <div className="relative">
@@ -142,7 +142,7 @@ export default function Login() {
                                 <input
                                     {...register("identifier", { required: "Identity is required" })}
                                     autoComplete="username"
-                                    className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:bg-black/40 focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 outline-none transition-all shadow-inner"
+                                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:bg-zinc-900 focus:border-white focus:ring-1 focus:ring-white outline-none transition-all shadow-inner"
                                     placeholder="Username or Email"
                                 />
                             </div>
@@ -152,10 +152,10 @@ export default function Login() {
                         {/* Password Field */}
                         <div className="space-y-1.5 group/input">
                             <div className="flex justify-between items-center ml-1">
-                                <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider group-focus-within/input:text-indigo-400 transition-colors">
+                                <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider group-focus-within/input:text-white transition-colors">
                                     Passkey
                                 </label>
-                                <Link to="/forgot-password" className="text-xs text-indigo-400 hover:text-indigo-300 font-medium hover:underline decoration-indigo-500/30">
+                                <Link to="/forgot-password" className="text-xs text-zinc-500 hover:text-white font-medium hover:underline decoration-zinc-500/30">
                                     Recover Access?
                                 </Link>
                             </div>
@@ -165,7 +165,7 @@ export default function Login() {
                                     type={showPassword ? "text" : "password"}
                                     {...register("password", { required: "Passkey is required" })}
                                     autoComplete="current-password"
-                                    className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-12 pr-12 text-white placeholder:text-zinc-600 focus:bg-black/40 focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 outline-none transition-all shadow-inner"
+                                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-3 pl-12 pr-12 text-white placeholder:text-zinc-600 focus:bg-zinc-900 focus:border-white focus:ring-1 focus:ring-white outline-none transition-all shadow-inner"
                                     placeholder="••••••••"
                                 />
                                 <button
@@ -185,7 +185,7 @@ export default function Login() {
                             type="submit"
                             className="w-full group relative overflow-hidden bg-white text-black font-bold py-3.5 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:hover:scale-100 mt-4 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]"
                         >
-                            <div className="absolute inset-0 bg-linear-to-r from-indigo-400 via-white to-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mix-blend-screen" />
+                            <div className="absolute inset-0 bg-linear-to-r from-zinc-200 via-white to-zinc-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mix-blend-screen" />
                             <span className="relative z-10 flex items-center justify-center gap-2">
                                 {isSubmitting ? <LoadingDots size="md" /> : (
                                     <>
@@ -199,7 +199,7 @@ export default function Login() {
                     {/* Footer */}
                     <div className="mt-8 text-center">
                         <p className="text-zinc-500 text-sm">
-                            New to the network? <Link to="/register" className="text-white hover:text-indigo-300 font-bold hover:underline decoration-white/20 transition-colors">Initialize Account</Link>
+                            New to the network? <Link to="/register" className="text-white hover:text-zinc-300 font-bold hover:underline decoration-white/20 transition-colors">Initialize Account</Link>
                         </p>
                     </div>
                 </div>

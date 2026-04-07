@@ -25,8 +25,8 @@ const NoiseOverlay = () => (
 
 const AmbientBackground = () => (
     <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-[-10%] right-[-10%] w-125 h-125 bg-emerald-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse gpu-layer" style={{ animationDuration: '6s' }} />
-        <div className="absolute bottom-[-10%] left-[-10%] w-125 h-125 bg-indigo-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse gpu-layer" style={{ animationDuration: '4s' }} />
+        <div className="absolute top-[-10%] right-[-10%] w-125 h-125 bg-black/0 blur-[120px] rounded-full mix-blend-screen animate-pulse gpu-layer" style={{ animationDuration: '6s' }} />
+        <div className="absolute bottom-[-10%] left-[-10%] w-125 h-125 bg-black/0 blur-[120px] rounded-full mix-blend-screen animate-pulse gpu-layer" style={{ animationDuration: '4s' }} />
     </div>
 )
 
@@ -57,7 +57,7 @@ const OTPInput = ({ length = 6, onComplete }) => {
                     type="text"
                     maxLength="1"
                     autoFocus={index === 0}
-                    className="w-10 h-12 sm:w-12 sm:h-14 bg-black/20 border border-white/10 rounded-xl text-center text-xl font-bold text-white focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all focus:-translate-y-1"
+                    className="w-10 h-12 sm:w-12 sm:h-14 bg-zinc-950 border border-zinc-800 rounded-xl text-center text-xl font-bold text-white focus:border-white focus:ring-2 focus:ring-white/20 outline-none transition-all focus:-translate-y-1"
                     value={otp[index]}
                     onChange={(e) => handleChange(e, index)}
                     onKeyDown={(e) => {
@@ -209,7 +209,7 @@ export default function Register() {
     }
 
     return (
-        <div className="min-h-screen w-full bg-[#050505] flex items-center justify-center p-4 relative overflow-hidden">
+        <div className="min-h-screen w-full bg-black flex items-center justify-center p-4 relative overflow-hidden">
             <NoiseOverlay />
             <AmbientBackground />
 
@@ -220,12 +220,12 @@ export default function Register() {
                 className="w-full max-w-md relative z-20"
             >
                 {/* Glass Card */}
-                <div className="bg-zinc-900/40 backdrop-blur-2xl border mt-8 border-white/10 p-8 rounded-4xl shadow-2xl shadow-black/50 overflow-hidden relative group">
+                <div className="bg-zinc-950 backdrop-blur-2xl border mt-8 border-zinc-800 p-8 rounded-4xl shadow-2xl shadow-black/50 overflow-hidden relative group">
 
                     {/* Header Section */}
                     <div className="text-center mb-8 relative z-10">
                         <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/5 border border-white/10 mb-6 shadow-inner text-white relative overflow-hidden group-hover:border-white/20 transition-colors">
-                            <div className={`absolute inset-0 blur-xl opacity-0 group-hover:opacity-100 transition-opacity ${step === "DETAILS" ? "bg-emerald-500/20" : "bg-indigo-500/20"}`} />
+                            <div className={`absolute inset-0 blur-xl opacity-0 group-hover:opacity-100 transition-opacity ${step === "DETAILS" ? "bg-white/10" : "bg-white/10"}`} />
                             {step === "DETAILS" ? (
                                 <Radio className="w-7 h-7 relative z-10" />
                             ) : (
@@ -234,7 +234,7 @@ export default function Register() {
                                 </div>
                             )}
                         </div>
-                        <h1 className="text-3xl font-black text-white tracking-tight mb-2">
+                        <h1 className="font-display text-3xl font-black text-white tracking-tight mb-2">
                             {step === "DETAILS" ? "Initialize Account" : "Verify Identity"}
                         </h1>
                         <p className="text-zinc-400 text-sm">
@@ -254,13 +254,13 @@ export default function Register() {
                             >
                                 {/* Full Name */}
                                 <div className="space-y-1.5 group/input">
-                                    <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider ml-1 group-focus-within/input:text-indigo-400 transition-colors">Full Name</label>
+                                    <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider ml-1 group-focus-within/input:text-white transition-colors">Full Name</label>
                                     <div className="relative">
                                         <User className="absolute left-4 top-3.5 h-5 w-5 text-zinc-500 group-focus-within/input:text-white transition-colors" />
                                         <input
                                             {...register("fullName", { required: "Required" })}
                                             autoComplete="name"
-                                            className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:bg-black/40 focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 outline-none transition-all shadow-inner"
+                                            className="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:bg-zinc-900 focus:border-white focus:ring-1 focus:ring-white outline-none transition-all shadow-inner"
                                             placeholder="John Doe"
                                         />
                                     </div>
@@ -269,13 +269,13 @@ export default function Register() {
 
                                 {/* Username */}
                                 <div className="space-y-1.5 group/input">
-                                    <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider ml-1 group-focus-within/input:text-indigo-400 transition-colors">Username</label>
+                                    <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider ml-1 group-focus-within/input:text-white transition-colors">Username</label>
                                     <div className="relative">
                                         <AtSign className="absolute left-4 top-3.5 h-5 w-5 text-zinc-500 group-focus-within/input:text-white transition-colors" />
                                         <input
                                             {...register("username", { required: "Required" })}
                                             autoComplete="username"
-                                            className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:bg-black/40 focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 outline-none transition-all shadow-inner"
+                                            className="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:bg-zinc-900 focus:border-white focus:ring-1 focus:ring-white outline-none transition-all shadow-inner"
                                             placeholder="johndoe"
                                         />
                                     </div>
@@ -284,13 +284,13 @@ export default function Register() {
 
                                 {/* Email */}
                                 <div className="space-y-1.5 group/input">
-                                    <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider ml-1 group-focus-within/input:text-indigo-400 transition-colors">Email</label>
+                                    <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider ml-1 group-focus-within/input:text-white transition-colors">Email</label>
                                     <div className="relative">
                                         <Mail className="absolute left-4 top-3.5 h-5 w-5 text-zinc-500 group-focus-within/input:text-white transition-colors" />
                                         <input
                                             {...register("email", { required: "Required", pattern: { value: /^\S+@\S+$/i, message: "Invalid email" } })}
                                             autoComplete="email"
-                                            className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:bg-black/40 focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 outline-none transition-all shadow-inner"
+                                            className="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:bg-zinc-900 focus:border-white focus:ring-1 focus:ring-white outline-none transition-all shadow-inner"
                                             placeholder="john@example.com"
                                         />
                                     </div>
@@ -299,14 +299,14 @@ export default function Register() {
 
                                 {/* Password */}
                                 <div className="space-y-1.5 group/input">
-                                    <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider ml-1 group-focus-within/input:text-indigo-400 transition-colors">Password</label>
+                                    <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider ml-1 group-focus-within/input:text-white transition-colors">Password</label>
                                     <div className="relative">
                                         <Shield className="absolute left-4 top-3.5 h-5 w-5 text-zinc-500 group-focus-within/input:text-white transition-colors" />
                                         <input
                                             type={showPassword ? "text" : "password"}
                                             {...register("password", { required: "Required", minLength: { value: 8, message: "At least 8 characters, 1 uppercase, 1 lowercase & 1 number" } })}
                                             autoComplete="new-password"
-                                            className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-12 pr-12 text-white placeholder:text-zinc-600 focus:bg-black/40 focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 outline-none transition-all shadow-inner"
+                                            className="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-3 pl-12 pr-12 text-white placeholder:text-zinc-600 focus:bg-zinc-900 focus:border-white focus:ring-1 focus:ring-white outline-none transition-all shadow-inner"
                                             placeholder="••••••••"
                                         />
                                         <button
@@ -325,7 +325,7 @@ export default function Register() {
                                     type="submit"
                                     className="w-full group relative overflow-hidden bg-white text-black font-bold py-3.5 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:hover:scale-100 mt-6 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]"
                                 >
-                                    <div className="absolute inset-0 bg-linear-to-r from-emerald-400 via-white to-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mix-blend-screen" />
+                                    <div className="absolute inset-0 bg-linear-to-r from-zinc-200 via-white to-zinc-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mix-blend-screen" />
                                     <span className="relative z-10 flex items-center justify-center gap-2">
                                         {isSubmitting ? <LoadingDots size="md" /> : (
                                             <>
@@ -343,15 +343,15 @@ export default function Register() {
                                 exit={{ x: 20, opacity: 0 }}
                                 className="space-y-6"
                             >
-                                <div className="text-center bg-indigo-500/10 p-4 rounded-xl border border-indigo-500/20 backdrop-blur-md">
-                                    <p className="text-indigo-300 text-sm mb-1">Code sent to</p>
+                                <div className="text-center bg-zinc-900 p-4 rounded-xl border border-zinc-700 backdrop-blur-md">
+                                    <p className="text-zinc-300 text-sm mb-1">Code sent to</p>
                                     <p className="font-mono text-white font-bold tracking-wide">{tempData?.email}</p>
                                 </div>
 
                                 <OTPInput length={6} onComplete={onVerifyOTP} />
 
                                 {isSubmitting && (
-                                    <div className="flex justify-center text-indigo-400">
+                                    <div className="flex justify-center text-white">
                                         <LoadingDots size="lg" />
                                     </div>
                                 )}
@@ -363,7 +363,7 @@ export default function Register() {
                                         type="button"
                                         onClick={onResendOTP}
                                         disabled={isResending}
-                                        className="text-indigo-400 hover:text-indigo-300 font-semibold hover:underline decoration-indigo-500/30 transition-colors disabled:opacity-50"
+                                        className="text-zinc-400 hover:text-white font-semibold hover:underline decoration-zinc-500/30 transition-colors disabled:opacity-50"
                                     >
                                         {isResending ? "Sending..." : "Resend"}
                                     </button>
@@ -382,7 +382,7 @@ export default function Register() {
                     {/* Footer */}
                     <div className="mt-8 text-center border-t border-white/5 pt-6">
                         <p className="text-zinc-500 text-sm">
-                            Already authenticated? <Link to="/login" className="text-white hover:text-indigo-300 font-bold hover:underline decoration-white/20 transition-colors">Enter Gateway</Link>
+                            Already authenticated? <Link to="/login" className="text-white hover:text-zinc-300 font-bold hover:underline decoration-white/20 transition-colors">Enter Gateway</Link>
                         </p>
                     </div>
 
