@@ -124,7 +124,7 @@ export default function Channel() {
             className={`w-full h-full object-cover ${isCloaked ? 'opacity-30 grayscale' : 'opacity-40'}`}
           />
         ) : (
-          <div className="absolute inset-0 bg-linear-to-br from-indigo-950/30 via-zinc-900/20 to-indigo-950/30" />
+          <div className="absolute inset-0 bg-linear-to-br from-zinc-900/50 via-zinc-900/20 to-zinc-900/50" />
         )}
 
         {/* Noise Texture Overlay - Removed inline SVG for performance (2-3% GPU usage) */}
@@ -150,7 +150,7 @@ export default function Channel() {
             <div className={`relative ${isCloaked ? 'opacity-80' : ''}`}>
               <div className="w-32 h-32 rounded-full border-4 border-zinc-950 overflow-hidden shadow-2xl ring-1 ring-zinc-800/50">
                 <img
-                  src={channel.avatar?.url || `https://ui-avatars.com/api/?name=${channel.fullName}&background=6366f1&color=fff`}
+                  src={channel.avatar?.url || `https://ui-avatars.com/api/?name=${channel.fullName}&background=27272a&color=fff`}
                   alt={channel.fullName}
                   className="w-full h-full object-cover"
                 />
@@ -193,7 +193,7 @@ export default function Channel() {
                     ? 'bg-linear-to-r from-emerald-600 to-teal-600 text-white shadow-emerald-900/40 cursor-default'
                     : channel.isSubscribed
                       ? 'bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-white shadow-black/20'
-                      : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-900/30'
+                      : 'bg-white hover:bg-zinc-200 text-black shadow-lg shadow-black/20'
                     }`}
                 >
                   <UserPlus className="w-4 h-4" />
@@ -240,7 +240,7 @@ export default function Channel() {
               {activeTab === tab && (
                 <motion.div
                   layoutId="activeTab"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-indigo-500 to-purple-500"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-white"
                 />
               )}
             </button>
@@ -319,7 +319,7 @@ export default function Channel() {
                   {channel.bio && (
                     <div className="bg-zinc-900/50 rounded-xl p-6 border border-zinc-800/50">
                       <h3 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-                        <Users className="w-5 h-5 text-indigo-500" />
+                        <Users className="w-5 h-5 text-zinc-400" />
                         About
                       </h3>
                       <p className="text-zinc-300 leading-relaxed">

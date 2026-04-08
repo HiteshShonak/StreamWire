@@ -17,37 +17,39 @@ import { toActionError } from '../utils/errorMessages';
 
 // Color palette options
 const AVATAR_COLORS = [
-   { name: 'Indigo', value: '6366f1' },
-   { name: 'Purple', value: 'a855f7' },
-   { name: 'Pink', value: 'ec4899' },
-   { name: 'Rose', value: 'f43f5e' },
-   { name: 'Red', value: 'ef4444' },
-   { name: 'Orange', value: 'f97316' },
-   { name: 'Amber', value: 'f59e0b' },
-   { name: 'Yellow', value: 'eab308' },
-   { name: 'Lime', value: '84cc16' },
-   { name: 'Green', value: '22c55e' },
-   { name: 'Emerald', value: '10b981' },
-   { name: 'Teal', value: '14b8a6' },
-   { name: 'Cyan', value: '06b6d4' },
-   { name: 'Sky', value: '0ea5e9' },
-   { name: 'Blue', value: '3b82f6' },
+   { name: 'Black', value: '0a0a0a' },
+   { name: 'Charcoal', value: '18181b' },
+   { name: 'Graphite', value: '27272a' },
+   { name: 'Stone', value: '44403c' },
    { name: 'Zinc', value: '71717a' },
+   { name: 'Red', value: 'dc2626' },
+   { name: 'Orange', value: 'ea580c' },
+   { name: 'Amber', value: 'd97706' },
+   { name: 'Yellow', value: 'ca8a04' },
+   { name: 'Lime', value: '65a30d' },
+   { name: 'Green', value: '16a34a' },
+   { name: 'Emerald', value: '059669' },
+   { name: 'Teal', value: '0f766e' },
+   { name: 'Forest', value: '14532d' },
+   { name: 'Maroon', value: '7f1d1d' },
+   { name: 'Slate', value: '475569' },
 ];
 
 const COVER_COLORS = [
-   { name: 'Dark Indigo', value: '312e81' },
-   { name: 'Dark Purple', value: '581c87' },
-   { name: 'Dark Pink', value: '831843' },
-   { name: 'Dark Red', value: '7f1d1d' },
-   { name: 'Dark Orange', value: '7c2d12' },
-   { name: 'Dark Green', value: '14532d' },
-   { name: 'Dark Teal', value: '134e4a' },
-   { name: 'Dark Blue', value: '1e3a8a' },
    { name: 'Dark Zinc', value: '27272a' },
    { name: 'Charcoal', value: '18181b' },
    { name: 'Pure Black', value: '0a0a0a' },
-   { name: 'Slate', value: '1e293b' },
+   { name: 'Gunmetal', value: '3f3f46' },
+   { name: 'Slate', value: '334155' },
+   { name: 'Dark Red', value: '7f1d1d' },
+   { name: 'Dark Orange', value: '7c2d12' },
+   { name: 'Bronze', value: '78350f' },
+   { name: 'Olive', value: '3f6212' },
+   { name: 'Dark Green', value: '14532d' },
+   { name: 'Dark Emerald', value: '064e3b' },
+   { name: 'Dark Teal', value: '134e4a' },
+   { name: 'Iron', value: '52525b' },
+   { name: 'Carbon', value: '111827' },
 ];
 
 export default function Customize() {
@@ -66,7 +68,7 @@ export default function Customize() {
       username: '',
       bio: '',
       avatarType: 'keep', // 'keep' | 'color' | 'custom' - keep means don't change
-      avatarColor: '6366f1',
+      avatarColor: '18181b',
       avatarFile: null,
       coverType: 'keep', // 'keep' | 'color' | 'custom' - keep means don't change
       coverColor: '18181b',
@@ -191,7 +193,7 @@ export default function Customize() {
                particleCount: 100,
                spread: 70,
                origin: { y: 0.6 },
-               colors: ['#6366f1', '#a855f7', '#ec4899'],
+               colors: ['#ffffff', '#a1a1aa', '#10b981'],
                ticks: 200
             });
          }
@@ -293,11 +295,11 @@ export default function Customize() {
    };
 
    return (
-      <div className="min-h-screen bg-[#050505]">
+      <div className="min-h-screen bg-black">
 
          {/* Background Effects */}
          <div className="fixed inset-0 pointer-events-none">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-indigo-500 opacity-5 blur-[120px] gpu-layer" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-black/0 opacity-5 blur-[120px] gpu-layer" />
          </div>
 
          <div className="pt-20 md:pt-24 pb-20 px-4 md:px-8">
@@ -319,11 +321,11 @@ export default function Customize() {
                      </button>
                   )}
 
-                  <div className="w-20 h-20 mx-auto mb-6 rounded-3xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center">
-                     <Sparkles className="w-10 h-10 text-indigo-400" />
+                  <div className="w-20 h-20 mx-auto mb-6 rounded-3xl bg-zinc-900 border border-zinc-700 flex items-center justify-center">
+                     <Sparkles className="w-10 h-10 text-white" />
                   </div>
 
-                  <h1 className="text-4xl md:text-5xl font-black text-white mb-3">
+                  <h1 className="font-display text-4xl md:text-5xl font-black text-white mb-3">
                      {isOnboarding ? 'Customize Your Profile' : 'Edit Your Profile'}
                   </h1>
                   <p className="text-zinc-400 text-lg max-w-md mx-auto">
@@ -341,7 +343,7 @@ export default function Customize() {
                         <button
                            onClick={() => setStep(s)}
                            className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${s === step
-                              ? 'bg-indigo-500 text-white scale-110'
+                              ? 'bg-white text-black scale-110'
                               : s < step
                                  ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
                                  : 'bg-zinc-800 text-zinc-500'
@@ -369,11 +371,11 @@ export default function Customize() {
                         className="bg-zinc-900/50 border border-zinc-800 rounded-3xl p-8"
                      >
                         <div className="flex items-center gap-4 mb-8">
-                           <div className="w-14 h-14 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center">
-                              <User className="w-7 h-7 text-indigo-400" />
+                           <div className="w-14 h-14 rounded-2xl bg-zinc-900 border border-zinc-700 flex items-center justify-center">
+                              <User className="w-7 h-7 text-white" />
                            </div>
                            <div>
-                              <h2 className="text-2xl font-bold text-white">Your Identity</h2>
+                              <h2 className="font-display text-2xl font-bold text-white">Your Identity</h2>
                               <p className="text-zinc-400">How others will see you</p>
                            </div>
                         </div>
@@ -389,7 +391,7 @@ export default function Customize() {
                                  value={formData.fullName}
                                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                                  placeholder="Your display name"
-                                 className="w-full px-4 py-3.5 bg-zinc-900 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all text-lg"
+                                 className="w-full px-4 py-3.5 bg-zinc-900 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:border-white focus:ring-2 focus:ring-white/20 outline-none transition-all text-lg"
                                  maxLength={50}
                               />
                               <p className="text-xs text-zinc-600 mt-2">{formData.fullName.length}/50</p>
@@ -407,7 +409,7 @@ export default function Customize() {
                                     value={formData.username}
                                     onChange={(e) => setFormData({ ...formData, username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '') })}
                                     placeholder="username"
-                                    className="w-full pl-10 pr-12 py-3.5 bg-zinc-900 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all text-lg"
+                                    className="w-full pl-10 pr-12 py-3.5 bg-zinc-900 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:border-white focus:ring-2 focus:ring-white/20 outline-none transition-all text-lg"
                                     maxLength={20}
                                  />
                                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
@@ -445,11 +447,11 @@ export default function Customize() {
                         className="bg-zinc-900/50 border border-zinc-800 rounded-3xl p-8"
                      >
                         <div className="flex items-center gap-4 mb-8">
-                           <div className="w-14 h-14 rounded-2xl bg-sky-500/20 border border-sky-500/30 flex items-center justify-center">
-                              <FileText className="w-7 h-7 text-sky-400" />
+                           <div className="w-14 h-14 rounded-2xl bg-zinc-900 border border-zinc-700 flex items-center justify-center">
+                              <FileText className="w-7 h-7 text-white" />
                            </div>
                            <div>
-                              <h2 className="text-2xl font-bold text-white">About You</h2>
+                              <h2 className="font-display text-2xl font-bold text-white">About You</h2>
                               <p className="text-zinc-400">Tell viewers a bit about yourself</p>
                            </div>
                         </div>
@@ -464,7 +466,7 @@ export default function Customize() {
                                  value={formData.bio}
                                  onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                                  placeholder="Write a short bio about yourself, your channel, or what content you create..."
-                                 className="w-full px-4 py-3.5 bg-zinc-900 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all text-base resize-none"
+                                 className="w-full px-4 py-3.5 bg-zinc-900 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:border-white focus:ring-2 focus:ring-white/20 outline-none transition-all text-base resize-none"
                                  rows={5}
                                  maxLength={300}
                               />
@@ -479,19 +481,19 @@ export default function Customize() {
                            </div>
 
                            {/* Bio Tips */}
-                           <div className="bg-sky-900/20 border border-sky-500/30 rounded-xl p-4">
-                              <h4 className="text-sm font-bold text-sky-400 mb-2">💡 Tips for a great bio</h4>
+                           <div className="bg-zinc-900 border border-zinc-700 rounded-xl p-4">
+                              <h4 className="text-sm font-bold text-white mb-2">Tips for a great bio</h4>
                               <ul className="space-y-1.5 text-xs text-zinc-400">
                                  <li className="flex items-start gap-2">
-                                    <span className="text-sky-400 mt-0.5">•</span>
+                                    <span className="text-white mt-0.5">•</span>
                                     <span>Keep it short and memorable</span>
                                  </li>
                                  <li className="flex items-start gap-2">
-                                    <span className="text-sky-400 mt-0.5">•</span>
+                                    <span className="text-white mt-0.5">•</span>
                                     <span>Mention what kind of content you create</span>
                                  </li>
                                  <li className="flex items-start gap-2">
-                                    <span className="text-sky-400 mt-0.5">•</span>
+                                    <span className="text-white mt-0.5">•</span>
                                     <span>Add personality — be yourself!</span>
                                  </li>
                               </ul>
@@ -510,11 +512,11 @@ export default function Customize() {
                         className="bg-zinc-900/50 border border-zinc-800 rounded-3xl p-8"
                      >
                         <div className="flex items-center gap-4 mb-8">
-                           <div className="w-14 h-14 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center">
-                              <Camera className="w-7 h-7 text-indigo-400" />
+                           <div className="w-14 h-14 rounded-2xl bg-zinc-900 border border-zinc-700 flex items-center justify-center">
+                              <Camera className="w-7 h-7 text-white" />
                            </div>
                            <div>
-                              <h2 className="text-2xl font-bold text-white">Profile Picture</h2>
+                              <h2 className="font-display text-2xl font-bold text-white">Profile Picture</h2>
                               <p className="text-zinc-400">Choose a color or upload custom</p>
                            </div>
                         </div>
@@ -637,8 +639,8 @@ export default function Customize() {
                                  onChange={handleAvatarFileChange}
                                  className="hidden"
                               />
-                              <div className="border-2 border-dashed border-zinc-700 hover:border-indigo-500/50 rounded-xl p-4 text-center transition-colors group">
-                                 <Upload className="w-6 h-6 text-zinc-500 mx-auto mb-2 group-hover:text-indigo-400 transition-colors" />
+                              <div className="border-2 border-dashed border-zinc-700 hover:border-white rounded-xl p-4 text-center transition-colors group">
+                                 <Upload className="w-6 h-6 text-zinc-500 mx-auto mb-2 group-hover:text-white transition-colors" />
                                  <p className="text-sm text-zinc-400">Upload custom image</p>
                               </div>
                            </label>
@@ -654,7 +656,7 @@ export default function Customize() {
                                     setPreviews({ ...previews, avatar: null });
                                  }}
                                  className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all ${formData.avatarType === 'keep'
-                                    ? 'border-indigo-500 bg-indigo-500/10'
+                                    ? 'border-white bg-white/10'
                                     : 'border-zinc-700 hover:border-zinc-600 bg-zinc-800/50'
                                     }`}
                               >
@@ -668,8 +670,8 @@ export default function Customize() {
                                     <p className="text-sm text-zinc-400">Don't change my avatar</p>
                                  </div>
                                  {formData.avatarType === 'keep' && (
-                                    <div className="w-6 h-6 rounded-full bg-indigo-500 flex items-center justify-center">
-                                       <Check className="w-4 h-4 text-white" />
+                                    <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
+                                       <Check className="w-4 h-4 text-black" />
                                     </div>
                                  )}
                               </button>
@@ -707,11 +709,11 @@ export default function Customize() {
                         className="bg-zinc-900/50 border border-zinc-800 rounded-3xl p-8"
                      >
                         <div className="flex items-center gap-4 mb-8">
-                           <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
-                              <Image className="w-7 h-7 text-emerald-400" />
+                           <div className="w-14 h-14 rounded-2xl bg-zinc-900 border border-zinc-700 flex items-center justify-center">
+                              <Image className="w-7 h-7 text-white" />
                            </div>
                            <div>
-                              <h2 className="text-2xl font-bold text-white">Cover Image</h2>
+                              <h2 className="font-display text-2xl font-bold text-white">Cover Image</h2>
                               <p className="text-zinc-400">Your profile banner</p>
                            </div>
                         </div>
@@ -829,8 +831,8 @@ export default function Customize() {
                                  onChange={handleCoverFileChange}
                                  className="hidden"
                               />
-                              <div className="border-2 border-dashed border-zinc-700 hover:border-emerald-500/50 rounded-xl p-4 text-center transition-colors group">
-                                 <Upload className="w-6 h-6 text-zinc-500 mx-auto mb-2 group-hover:text-emerald-400 transition-colors" />
+                              <div className="border-2 border-dashed border-zinc-700 hover:border-white rounded-xl p-4 text-center transition-colors group">
+                                 <Upload className="w-6 h-6 text-zinc-500 mx-auto mb-2 group-hover:text-white transition-colors" />
                                  <p className="text-sm text-zinc-400">Upload custom banner</p>
                               </div>
                            </label>
@@ -846,7 +848,7 @@ export default function Customize() {
                                     setPreviews({ ...previews, cover: null });
                                  }}
                                  className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all ${formData.coverType === 'keep'
-                                    ? 'border-emerald-500 bg-emerald-500/10'
+                                    ? 'border-white bg-white/10'
                                     : 'border-zinc-700 hover:border-zinc-600 bg-zinc-800/50'
                                     }`}
                               >
@@ -860,8 +862,8 @@ export default function Customize() {
                                     <p className="text-sm text-zinc-400">Don't change my cover image</p>
                                  </div>
                                  {formData.coverType === 'keep' && (
-                                    <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center">
-                                       <Check className="w-4 h-4 text-white" />
+                                    <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
+                                       <Check className="w-4 h-4 text-black" />
                                     </div>
                                  )}
                               </button>
@@ -899,7 +901,7 @@ export default function Customize() {
                         className="space-y-6"
                      >
                         <div className="text-center mb-6">
-                           <h2 className="text-2xl font-bold text-white mb-2">Preview Your Profile</h2>
+                           <h2 className="font-display text-2xl font-bold text-white mb-2">Preview Your Profile</h2>
                            <p className="text-zinc-400">Here's how you'll appear to others</p>
                         </div>
 
@@ -977,10 +979,10 @@ export default function Customize() {
                         </div>
 
                         {/* Summary */}
-                        <div className="bg-linear-to-br from-emerald-900/20 to-green-900/20 border border-emerald-500/30 rounded-2xl p-6">
+                        <div className="bg-zinc-900 border border-zinc-700 rounded-2xl p-6">
                            <div className="flex items-start gap-4">
-                              <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center shrink-0">
-                                 <CheckCircle2 className="w-6 h-6 text-emerald-400" />
+                              <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center shrink-0">
+                                 <CheckCircle2 className="w-6 h-6 text-white" />
                               </div>
                               <div>
                                  <h4 className="text-white font-bold mb-2">Looking Great! 🎉</h4>
@@ -1042,7 +1044,7 @@ export default function Customize() {
                         <button
                            onClick={handleNext}
                            disabled={!canProceed()}
-                           className="flex items-center gap-2 px-8 py-3.5 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-900/30"
+                           className="flex items-center gap-2 px-8 py-3.5 bg-white text-black hover:bg-zinc-200 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-white/20"
                         >
                            Next
                            <ArrowRight className="w-4 h-4" />
@@ -1061,7 +1063,7 @@ export default function Customize() {
                            <button
                               onClick={handleSubmit}
                               disabled={updateMutation.isPending}
-                              className="flex items-center gap-2 px-8 py-3.5 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold transition-all disabled:opacity-50 shadow-lg shadow-emerald-900/30"
+                              className="flex items-center gap-2 px-8 py-3.5 bg-white text-black hover:bg-zinc-200 rounded-xl font-bold transition-all disabled:opacity-50 shadow-lg shadow-white/20"
                            >
                               {updateMutation.isPending ? (
                                  <>
