@@ -48,12 +48,12 @@ export default function Contact() {
    }
 
    return (
-      <div className="min-h-screen bg-[#050505] text-white relative overflow-hidden">
+      <div className="min-h-screen bg-zinc-950 text-white relative overflow-hidden">
          <NoiseOverlay />
 
          {/* Background Glow */}
-         <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-indigo-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
-         <div className="fixed bottom-0 right-0 w-200 h-125 bg-purple-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
+         <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-white opacity-4 blur-[120px] pointer-events-none gpu-layer" />
+         <div className="fixed bottom-0 right-0 w-200 h-125 bg-zinc-300 opacity-4 blur-[120px] pointer-events-none gpu-layer" />
 
          <div className="relative z-10 px-4 sm:px-6 lg:pl-72 lg:pr-72 pt-20 sm:pt-24 pb-20">
             <div className="max-w-5xl mx-auto">
@@ -64,11 +64,11 @@ export default function Contact() {
                   animate={{ opacity: 1, y: 0 }}
                   className="text-center mb-10 sm:mb-16"
                >
-                  <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl bg-indigo-500/20 border border-indigo-500/30 mb-4 sm:mb-6 relative overflow-hidden group">
-                     <div className="absolute inset-0 bg-indigo-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                     <Radio className="w-8 h-8 sm:w-10 sm:h-10 text-indigo-400 relative z-10" />
+                  <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl bg-white/10 border border-white/20 mb-4 sm:mb-6 relative overflow-hidden group">
+                     <div className="absolute inset-0 bg-white/15 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                     <Radio className="w-8 h-8 sm:w-10 sm:h-10 text-white relative z-10" />
                   </div>
-                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-3 sm:mb-4 bg-linear-to-r from-white via-indigo-200 to-purple-200 bg-clip-text text-transparent">
+                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-3 sm:mb-4 text-white">
                      Get in Touch
                   </h1>
                   <p className="text-zinc-400 text-sm sm:text-base lg:text-lg max-w-2xl mx-auto">
@@ -91,14 +91,14 @@ export default function Contact() {
                            {/* Official Email */}
                            <div className="group">
                               <div className="flex items-start gap-4">
-                                 <div className="w-12 h-12 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center shrink-0 group-hover:bg-indigo-500/30 transition-colors">
-                                    <Mail className="w-6 h-6 text-indigo-400" />
+                                 <div className="w-12 h-12 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center shrink-0 group-hover:bg-white/15 transition-colors">
+                                    <Mail className="w-6 h-6 text-white" />
                                  </div>
                                  <div>
                                     <h3 className="text-white font-semibold mb-2">Email Us</h3>
                                     <a
                                        href="mailto:contact.streamwire@gmail.com"
-                                       className="text-indigo-400 hover:text-indigo-300 transition-colors text-sm break-all"
+                                       className="text-zinc-200 hover:text-white transition-colors text-sm break-all"
                                     >
                                        contact.streamwire@gmail.com
                                     </a>
@@ -110,8 +110,8 @@ export default function Contact() {
                            {/* Support Hours */}
                            <div className="group">
                               <div className="flex items-start gap-4">
-                                 <div className="w-12 h-12 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center shrink-0 group-hover:bg-purple-500/30 transition-colors">
-                                    <MessageSquare className="w-6 h-6 text-purple-400" />
+                                 <div className="w-12 h-12 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center shrink-0 group-hover:bg-emerald-500/25 transition-colors">
+                                    <MessageSquare className="w-6 h-6 text-emerald-400" />
                                  </div>
                                  <div>
                                     <h3 className="text-white font-semibold mb-2">Support Hours</h3>
@@ -127,15 +127,15 @@ export default function Contact() {
                               <h3 className="text-white font-semibold mb-3">Before You Contact</h3>
                               <ul className="space-y-2 text-sm text-zinc-400">
                                  <li className="flex items-start gap-2">
-                                    <span className="text-indigo-400 mt-0.5">•</span>
+                                    <span className="text-zinc-300 mt-0.5">•</span>
                                     <span>Check our FAQ section for quick answers</span>
                                  </li>
                                  <li className="flex items-start gap-2">
-                                    <span className="text-indigo-400 mt-0.5">•</span>
+                                    <span className="text-zinc-300 mt-0.5">•</span>
                                     <span>Include relevant details in your message</span>
                                  </li>
                                  <li className="flex items-start gap-2">
-                                    <span className="text-indigo-400 mt-0.5">•</span>
+                                    <span className="text-zinc-300 mt-0.5">•</span>
                                     <span>Attach screenshots if reporting issues</span>
                                  </li>
                               </ul>
@@ -179,7 +179,7 @@ export default function Contact() {
                                        required: "Name is required",
                                        minLength: { value: 2, message: "Name must be at least 2 characters" }
                                     })}
-                                    className="w-full bg-black/20 border border-zinc-700 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:bg-black/40 focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all"
+                                    className="w-full bg-black/20 border border-zinc-700 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:bg-black/40 focus:border-white/50 focus:ring-2 focus:ring-white/20 outline-none transition-all"
                                     placeholder="John Doe"
                                  />
                               </div>
@@ -202,7 +202,7 @@ export default function Contact() {
                                           message: "Invalid email address"
                                        }
                                     })}
-                                    className="w-full bg-black/20 border border-zinc-700 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:bg-black/40 focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all"
+                                    className="w-full bg-black/20 border border-zinc-700 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:bg-black/40 focus:border-white/50 focus:ring-2 focus:ring-white/20 outline-none transition-all"
                                     placeholder="john@example.com"
                                  />
                               </div>
@@ -219,7 +219,7 @@ export default function Contact() {
                                     required: "Subject is required",
                                     minLength: { value: 5, message: "Subject must be at least 5 characters" }
                                  })}
-                                 className="w-full bg-black/20 border border-zinc-700 rounded-xl py-3.5 px-4 text-white placeholder:text-zinc-600 focus:bg-black/40 focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all"
+                                 className="w-full bg-black/20 border border-zinc-700 rounded-xl py-3.5 px-4 text-white placeholder:text-zinc-600 focus:bg-black/40 focus:border-white/50 focus:ring-2 focus:ring-white/20 outline-none transition-all"
                                  placeholder="Brief description of your inquiry"
                               />
                               {errors.subject && <p className="text-red-400 text-xs pl-1">{errors.subject.message}</p>}
@@ -236,7 +236,7 @@ export default function Contact() {
                                     minLength: { value: 20, message: "Message must be at least 20 characters" }
                                  })}
                                  rows={6}
-                                 className="w-full bg-black/20 border border-zinc-700 rounded-xl py-3.5 px-4 text-white placeholder:text-zinc-600 focus:bg-black/40 focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all resize-none"
+                                 className="w-full bg-black/20 border border-zinc-700 rounded-xl py-3.5 px-4 text-white placeholder:text-zinc-600 focus:bg-black/40 focus:border-white/50 focus:ring-2 focus:ring-white/20 outline-none transition-all resize-none"
                                  placeholder="Please provide as much detail as possible..."
                               />
                               {errors.message && <p className="text-red-400 text-xs pl-1">{errors.message.message}</p>}
@@ -246,7 +246,7 @@ export default function Contact() {
                            <button
                               disabled={isSubmitting}
                               type="submit"
-                              className="w-full group relative overflow-hidden bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:hover:scale-100"
+                              className="w-full group relative overflow-hidden bg-white hover:bg-zinc-200 text-black font-bold py-4 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:hover:scale-100"
                            >
                               <span className="relative z-10 flex items-center justify-center gap-2">
                                  {isSubmitting ? (

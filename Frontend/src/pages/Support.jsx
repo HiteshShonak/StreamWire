@@ -63,10 +63,10 @@ export default function Support() {
    }
 
    return (
-      <div className="relative min-h-screen bg-[#050505] text-white">
+      <div className="relative min-h-screen bg-zinc-950 text-white">
 
          {/* Background Glow */}
-         <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-cyan-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
+         <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-zinc-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
 
          <div className="relative z-10 px-4 sm:px-6 lg:pl-72 lg:pr-72 pt-20 sm:pt-24 pb-20">
             <div className="max-w-4xl mx-auto">
@@ -78,7 +78,7 @@ export default function Support() {
                      animate={{ opacity: 1, y: 0 }}
                      className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight flex items-center justify-center gap-2 sm:gap-3 text-white"
                   >
-                     <HelpCircle className="w-8 h-8 sm:w-10 sm:h-10 text-cyan-400" />
+                     <HelpCircle className="w-8 h-8 sm:w-10 sm:h-10 text-zinc-300" />
                      Help & Support
                   </motion.h1>
                   <p className="text-zinc-500 mt-2 sm:mt-3 font-medium text-sm sm:text-lg">
@@ -90,12 +90,12 @@ export default function Support() {
                <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-cyan-500/30 bg-linear-to-r from-cyan-500/10 to-transparent mb-8 sm:mb-12"
+                  className="p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-zinc-700 bg-linear-to-r from-zinc-800/40 to-transparent mb-8 sm:mb-12"
                >
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center">
-                           <MessageCircle className="w-6 h-6 text-cyan-400" />
+                        <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center">
+                           <MessageCircle className="w-6 h-6 text-zinc-300" />
                         </div>
                         <div>
                            <h2 className="font-bold text-white">Need help?</h2>
@@ -104,7 +104,7 @@ export default function Support() {
                      </div>
                      <a
                         href="mailto:support@streamwire.io"
-                        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold transition-colors"
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white hover:bg-zinc-200 text-black font-bold transition-colors"
                      >
                         <Mail className="w-4 h-4" />
                         Contact Support
@@ -120,7 +120,7 @@ export default function Support() {
                   className="mb-12"
                >
                   <h2 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6 flex items-center justify-center gap-2">
-                     <HelpCircle className="w-6 h-6 text-cyan-400" />
+                     <HelpCircle className="w-6 h-6 text-zinc-300" />
                      Frequently Asked Questions
                   </h2>
 
@@ -135,7 +135,7 @@ export default function Support() {
                               className="w-full px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between hover:bg-white/5 transition-colors"
                            >
                               <div className="flex items-center gap-4">
-                                 <faq.icon className="w-5 h-5 text-cyan-400" />
+                                 <faq.icon className="w-5 h-5 text-zinc-400" />
                                  <span className="font-medium text-white text-left text-sm sm:text-base">{faq.question}</span>
                               </div>
                               {openFaq === idx ? (

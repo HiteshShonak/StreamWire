@@ -30,7 +30,7 @@ export default function About() {
          icon: Video,
          title: "Cinema",
          description: "Premium video streaming platform with AI-powered features. Upload, share, and discover high-quality video content with automatic transcription, smart summaries, and interactive Q&A.",
-         color: "from-indigo-500 to-sky-500",
+         color: "from-zinc-300 to-zinc-500",
          features: [
             "HD video streaming with custom playback speeds",
             "AI-generated transcripts automatically",
@@ -45,7 +45,7 @@ export default function About() {
          icon: MessageSquare,
          title: "Wire",
          description: "Real-time social feed for creators and followers. Share thoughts, updates, and engage with your community through a Twitter-like microblogging experience.",
-         color: "from-blue-500 to-cyan-500",
+         color: "from-zinc-400 to-zinc-600",
          features: [
             "Quick text posts with rich formatting",
             "Like and comment on posts",
@@ -58,7 +58,7 @@ export default function About() {
          icon: Ghost,
          title: "Shadows",
          description: "Anonymous posting platform for privacy-conscious users. Share thoughts or feedback freely without revealing your identity - perfect for whistleblowers and honest opinions.",
-         color: "from-emerald-500 to-teal-500",
+         color: "from-emerald-500 to-green-500",
          features: [
             "Complete anonymity - no author tracking",
             "Anonymous comments on videos too",
@@ -74,7 +74,7 @@ export default function About() {
          icon: Brain,
          title: "AI-Powered Intelligence",
          description: "Advanced Groq AI integration that automatically generates transcripts, smart summaries, and answers questions about your video content in real-time.",
-         gradient: "from-violet-400 to-indigo-400"
+         gradient: "from-zinc-300 to-zinc-500"
       },
       {
          icon: Shield,
@@ -86,7 +86,7 @@ export default function About() {
          icon: Lock,
          title: "Advanced Security",
          description: "Multi-session management, encrypted data storage, and OTP-verified authentication keep your account secure.",
-         gradient: "from-blue-400 to-indigo-400"
+         gradient: "from-zinc-400 to-zinc-600"
       },
       {
          icon: BarChart3,
@@ -98,13 +98,13 @@ export default function About() {
          icon: Users,
          title: "Subscription System",
          description: "Build your audience with a flexible subscription system. Support creators and get notified of new content.",
-         gradient: "from-yellow-400 to-amber-400"
+         gradient: "from-zinc-200 to-zinc-400"
       },
       {
          icon: Cloud,
          title: "Smart Library",
          description: "Organize your content with Watch Later and viewing history. Keep track of videos you love and want to watch again.",
-         gradient: "from-cyan-400 to-blue-400"
+         gradient: "from-zinc-400 to-zinc-600"
       }
    ]
 
@@ -138,12 +138,12 @@ export default function About() {
          <Header />
          <Sidebar />
 
-         <div className="min-h-screen bg-[#050505] text-white relative overflow-hidden">
+         <div className="min-h-screen bg-zinc-950 text-white relative overflow-hidden">
             <NoiseOverlay />
 
             {/* Background Effects */}
-            <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-indigo-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
-            <div className="fixed bottom-0 right-0 w-200 h-125 bg-indigo-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
+            <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-white opacity-4 blur-[120px] pointer-events-none gpu-layer" />
+            <div className="fixed bottom-0 right-0 w-200 h-125 bg-zinc-300 opacity-4 blur-[120px] pointer-events-none gpu-layer" />
 
             <div className="relative z-10 lg:pl-72 lg:pr-72 pt-24 pb-20 px-6">
                <div className="max-w-7xl mx-auto">
@@ -154,17 +154,17 @@ export default function About() {
                      animate={{ opacity: 1, y: 0 }}
                      className="text-center mb-20"
                   >
-                     <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 mb-6 relative overflow-hidden group">
-                        <div className="absolute inset-0 bg-indigo-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <Radio className="w-10 h-10 text-indigo-400 relative z-10 animate-pulse" />
+                     <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white/10 border border-white/20 mb-6 relative overflow-hidden group">
+                        <div className="absolute inset-0 bg-white/15 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <Radio className="w-10 h-10 text-white relative z-10 animate-pulse" />
                      </div>
 
-                     <h1 className="text-5xl md:text-7xl font-black mb-6 bg-linear-to-r from-white to-indigo-200 bg-clip-text text-transparent">
+                     <h1 className="text-5xl md:text-7xl font-black mb-6 text-white">
                         About StreamWire
                      </h1>
 
                      <p className="text-xl md:text-2xl text-zinc-400 max-w-3xl mx-auto leading-relaxed">
-                        The revolutionary <span className="text-indigo-400 font-semibold">dual-mode streaming platform</span> where creators shine in the spotlight and whistleblowers speak freely in the shadows.
+                        The revolutionary <span className="text-zinc-200 font-semibold">dual-mode streaming platform</span> where creators shine in the spotlight and whistleblowers speak freely in the shadows.
                      </p>
                   </motion.div>
 
@@ -173,14 +173,14 @@ export default function About() {
                      initial={{ opacity: 0, y: 20 }}
                      animate={{ opacity: 1, y: 0 }}
                      transition={{ delay: 0.1 }}
-                     className="mb-20 bg-indigo-500/10 border border-indigo-500/20 rounded-3xl p-8 md:p-12"
+                     className="mb-20 bg-zinc-900/50 border border-zinc-800 rounded-3xl p-8 md:p-12"
                   >
                      <div className="max-w-4xl mx-auto text-center">
                         <h2 className="text-3xl font-bold text-white mb-4">Our Mission</h2>
                         <p className="text-lg text-zinc-300 leading-relaxed">
                            StreamWire was built on the belief that <strong className="text-white">expression should be free</strong>,
                            whether you want to build a brand or expose the truth. We provide a single platform with two distinct experiences:
-                           <span className="text-indigo-400 font-semibold"> Cinema & Wire</span> for public creators, and
+                           <span className="text-zinc-200 font-semibold"> Cinema & Wire</span> for public creators, and
                            <span className="text-emerald-400 font-semibold"> Shadows</span> for anonymous voices.
                            All powered by cutting-edge AI and uncompromising security.
                         </p>
@@ -197,9 +197,9 @@ export default function About() {
                      {statistics.map((stat, idx) => (
                         <div
                            key={idx}
-                           className="bg-zinc-900/40 backdrop-blur-sm border border-zinc-800 rounded-2xl p-6 text-center hover:border-indigo-500/50 transition-all hover:-translate-y-1"
+                           className="bg-zinc-900/40 backdrop-blur-sm border border-zinc-800 rounded-2xl p-6 text-center hover:border-white/30 transition-all hover:-translate-y-1"
                         >
-                           <div className="text-4xl font-black text-indigo-400 mb-2">{stat.value}</div>
+                           <div className="text-4xl font-black text-white mb-2">{stat.value}</div>
                            <div className="text-white font-bold mb-1">{stat.label}</div>
                            <div className="text-sm text-zinc-500">{stat.desc}</div>
                         </div>
@@ -248,7 +248,7 @@ export default function About() {
                                     <div className="grid md:grid-cols-2 gap-3">
                                        {feature.features.map((item, itemIdx) => (
                                           <div key={itemIdx} className="flex items-start gap-2">
-                                             <Sparkles className="w-4 h-4 text-indigo-400 mt-1 shrink-0" />
+                                             <Sparkles className="w-4 h-4 text-zinc-300 mt-1 shrink-0" />
                                              <span className="text-sm text-zinc-400">{item}</span>
                                           </div>
                                        ))}
@@ -301,9 +301,9 @@ export default function About() {
                      transition={{ delay: 0.8 }}
                      className="mb-20"
                   >
-                     <div className="bg-linear-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 rounded-3xl p-8 md:p-12">
+                     <div className="bg-linear-to-r from-zinc-900/60 to-emerald-500/10 border border-zinc-700 rounded-3xl p-8 md:p-12">
                         <div className="text-center mb-10">
-                           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 mb-4">
+                           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-700 mb-4">
                               <Shield className="w-8 h-8 text-emerald-400" />
                            </div>
                            <h2 className="text-4xl font-black text-white mb-3">Privacy First</h2>
@@ -316,7 +316,7 @@ export default function About() {
                            {privacyFeatures.map((feature, idx) => (
                               <div
                                  key={idx}
-                                 className="bg-black/20 backdrop-blur-sm border border-emerald-500/20 rounded-xl p-6 text-center"
+                                 className="bg-black/20 backdrop-blur-sm border border-zinc-700 rounded-xl p-6 text-center"
                               >
                                  <feature.icon className="w-10 h-10 text-emerald-400 mx-auto mb-3" />
                                  <h3 className="text-lg font-bold text-white mb-2">{feature.title}</h3>
@@ -352,9 +352,9 @@ export default function About() {
                         ].map((tech, idx) => (
                            <div
                               key={idx}
-                              className="bg-zinc-900/40 backdrop-blur-sm border border-zinc-800 rounded-xl p-6 text-center hover:border-indigo-500/50 transition-all hover:-translate-y-1"
+                              className="bg-zinc-900/40 backdrop-blur-sm border border-zinc-800 rounded-xl p-6 text-center hover:border-white/30 transition-all hover:-translate-y-1"
                            >
-                              <div className="text-2xl font-bold text-indigo-400 mb-1">{tech.name}</div>
+                              <div className="text-2xl font-bold text-white mb-1">{tech.name}</div>
                               <div className="text-xs text-zinc-500">{tech.desc}</div>
                            </div>
                         ))}
@@ -366,7 +366,7 @@ export default function About() {
                      initial={{ opacity: 0, scale: 0.95 }}
                      animate={{ opacity: 1, scale: 1 }}
                      transition={{ delay: 1 }}
-                     className="text-center bg-indigo-500/10 border border-indigo-500/20 rounded-3xl p-12"
+                     className="text-center bg-zinc-900/60 border border-zinc-700 rounded-3xl p-12"
                   >
                      <h2 className="text-4xl font-black text-white mb-4">Ready to Get Started?</h2>
                      <p className="text-lg text-zinc-300 mb-8 max-w-2xl mx-auto">
@@ -377,7 +377,7 @@ export default function About() {
                            /* LOGGED IN: Show Dashboard Button */
                            <Link
                               to="/dashboard"
-                              className="px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition-all hover:scale-105"
+                              className="px-8 py-4 bg-white hover:bg-zinc-200 text-black font-bold rounded-xl transition-all hover:scale-105"
                            >
                               Go to Dashboard
                            </Link>
@@ -385,7 +385,7 @@ export default function About() {
                            /* LOGGED OUT: Show Create Account Button */
                            <Link
                               to="/register"
-                              className="px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition-all hover:scale-105"
+                              className="px-8 py-4 bg-white hover:bg-zinc-200 text-black font-bold rounded-xl transition-all hover:scale-105"
                            >
                               Create Account
                            </Link>

@@ -68,7 +68,7 @@ export default function Settings() {
       {
          title: 'Account',
          icon: User,
-         color: 'text-blue-400',
+         color: 'text-zinc-400',
          items: [
             {
                label: 'Profile Information',
@@ -114,7 +114,7 @@ export default function Settings() {
    // Not logged in state
    if (!user) {
       return (
-         <div className="relative min-h-screen bg-[#050505] text-white">
+         <div className="relative min-h-screen bg-zinc-950 text-white">
             <div className="relative z-10 px-4 sm:px-6 lg:pl-72 lg:pr-72 pt-20 sm:pt-24 pb-20">
                <div className="max-w-4xl mx-auto">
                   <motion.div
@@ -123,7 +123,7 @@ export default function Settings() {
                   >
                      <SettingsIcon className="w-12 h-12 text-zinc-700 mx-auto mb-4" />
                      <h3 className="text-xl font-bold text-zinc-400">Sign in to access settings.</h3>
-                     <Link to="/login" className="mt-6 inline-block text-indigo-400 hover:text-indigo-300 font-bold text-sm">
+                     <Link to="/login" className="mt-6 inline-block text-zinc-300 hover:text-white font-bold text-sm">
                         Sign In &rarr;
                      </Link>
                   </motion.div>
@@ -134,10 +134,10 @@ export default function Settings() {
    }
 
    return (
-      <div className="relative min-h-screen bg-[#050505] text-white">
+      <div className="relative min-h-screen bg-zinc-950 text-white">
 
          {/* Background Glow */}
-         <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-indigo-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
+         <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-zinc-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
 
          <div className="relative z-10 px-4 sm:px-6 lg:pl-72 lg:pr-72 pt-20 sm:pt-24 pb-20">
             <div className="max-w-4xl mx-auto">
@@ -149,7 +149,7 @@ export default function Settings() {
                      animate={{ opacity: 1, y: 0 }}
                      className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight flex items-center justify-center gap-2 sm:gap-3 text-white"
                   >
-                     <SettingsIcon className="w-8 h-8 sm:w-10 sm:h-10 text-indigo-400" />
+                     <SettingsIcon className="w-8 h-8 sm:w-10 sm:h-10 text-zinc-300" />
                      Settings
                   </motion.h1>
                   <p className="text-zinc-500 mt-2 sm:mt-3 font-medium text-sm sm:text-lg">
@@ -190,7 +190,7 @@ export default function Settings() {
                                           <item.icon className="w-5 h-5 text-zinc-400 group-hover:text-white transition-colors" />
                                        </div>
                                        <div className="text-left">
-                                          <div className="font-medium text-white group-hover:text-indigo-400 transition-colors">
+                                          <div className="font-medium text-white group-hover:text-zinc-200 transition-colors">
                                              {item.label}
                                           </div>
                                           <div className="text-sm text-zinc-500">
