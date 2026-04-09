@@ -19,8 +19,8 @@ import { toActionError } from '../utils/errorMessages'
 
 const tabs = [
    { id: 'all', label: 'All', icon: TrendingUp, color: 'text-white', bg: 'bg-white' },
-   { id: 'videos', label: 'Cinema', icon: Film, color: 'text-pink-400', bg: 'bg-pink-500' },
-   { id: 'tweets', label: 'The Wire', icon: MessageSquare, color: 'text-sky-400', bg: 'bg-sky-500' },
+   { id: 'videos', label: 'Cinema', icon: Film, color: 'text-zinc-200', bg: 'bg-zinc-200' },
+   { id: 'tweets', label: 'The Wire', icon: MessageSquare, color: 'text-white', bg: 'bg-white' },
    { id: 'stealth', label: 'Shadows', icon: Ghost, color: 'text-emerald-400', bg: 'bg-emerald-500' },
 ]
 
@@ -174,7 +174,7 @@ export default function Trending() {
    const activeBg = useMemo(() => tabs.find(t => t.id === activeTab)?.bg || 'bg-white', [activeTab])
 
    return (
-      <div className="relative min-h-screen bg-[#050505] text-white">
+      <div className="relative min-h-screen bg-zinc-950 text-white">
 
          {/* Background Glow */}
          <div className={`fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 ${activeBg} opacity-5 blur-[120px] pointer-events-none transition-colors duration-700 gpu-layer`} />
@@ -217,7 +217,7 @@ export default function Trending() {
                            onClick={handleUnlockContext}
                            className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 hover:bg-white/10 transition-all group shrink-0"
                         >
-                           <Globe className="w-4 h-4 text-zinc-400 group-hover:text-indigo-400 transition-colors" />
+                           <Globe className="w-4 h-4 text-zinc-400 group-hover:text-white transition-colors" />
                            <span className="text-sm font-bold text-zinc-300 group-hover:text-white">View All Trending</span>
                            <ArrowRight className="w-4 h-4 text-zinc-500 group-hover:text-white transition-all opacity-50 group-hover:translate-x-1 group-hover:opacity-100" />
                         </motion.button>
@@ -314,7 +314,7 @@ export default function Trending() {
                {(activeTab === 'all' || activeTab === 'videos') && videoData?.videos?.length > 0 && (
                   <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                      {activeTab === 'all' && (
-                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-pink-400">
+                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-white">
                            <Film className="w-5 h-5" /> Trending in Cinema
                         </h2>
                      )}
@@ -344,11 +344,11 @@ export default function Trending() {
                {(activeTab === 'all' || activeTab === 'tweets') && tweetData?.docs?.length > 0 && (
                   <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                      {activeTab === 'all' && (
-                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-sky-400">
+                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-white">
                            <MessageSquare className="w-5 h-5" /> Trending on Wire
                         </h2>
                      )}
-                     <div className="space-y-0 border border-zinc-800 rounded-2xl overflow-hidden bg-[#0a0a0c]">
+                     <div className="space-y-0 border border-zinc-800 rounded-2xl overflow-hidden bg-zinc-950">
                         {tweetData.docs.map(wire => (
                            <WireCard
                               key={wire._id}
@@ -366,7 +366,7 @@ export default function Trending() {
                      <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-emerald-400">
                         <MessageSquare className="w-5 h-5" /> Encrypted Wires
                      </h2>
-                     <div className="space-y-0 border border-zinc-800 rounded-2xl overflow-hidden bg-[#0a0a0c]">
+                     <div className="space-y-0 border border-zinc-800 rounded-2xl overflow-hidden bg-zinc-950">
                         {shadowTweetData.docs.map(wire => (
                            <WireCard
                               key={wire._id}

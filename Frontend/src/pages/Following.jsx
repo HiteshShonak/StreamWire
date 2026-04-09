@@ -142,7 +142,7 @@ export default function Following() {
    // Not logged in state
    if (!user) {
       return (
-         <div className="relative min-h-screen bg-[#050505] text-white">
+         <div className="relative min-h-screen bg-zinc-950 text-white">
             <div className="relative z-10 lg:pl-72 lg:pr-72 pt-24 pb-20 px-6">
                <div className="max-w-7xl mx-auto">
                   <motion.div
@@ -151,7 +151,7 @@ export default function Following() {
                   >
                      <UserPlus className="w-12 h-12 text-zinc-700 mx-auto mb-4" />
                      <h3 className="text-xl font-bold text-zinc-400">Sign in to see channels you follow</h3>
-                     <Link to="/login" className="mt-6 inline-block text-indigo-400 hover:text-indigo-300 font-bold text-sm">
+                     <Link to="/login" className="mt-6 inline-block text-zinc-300 hover:text-white font-bold text-sm">
                         Sign In &rarr;
                      </Link>
                   </motion.div>
@@ -162,10 +162,10 @@ export default function Following() {
    }
 
    return (
-      <div className="relative min-h-screen bg-[#050505] text-white">
+         <div className="relative min-h-screen bg-zinc-950 text-white">
 
          {/* Background Glow */}
-         <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-purple-500 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
+            <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-150 bg-black/0 opacity-5 blur-[120px] pointer-events-none gpu-layer" />
 
          <div className="relative z-10 lg:pl-72 lg:pr-72 pt-24 pb-20 px-6">
             <div className="max-w-350 mx-auto">
@@ -177,7 +177,7 @@ export default function Following() {
                      animate={{ opacity: 1, y: 0 }}
                      className="text-4xl md:text-5xl font-black tracking-tight flex items-center gap-3 text-white mb-3"
                   >
-                     <Users className="w-10 h-10 text-purple-400" />
+                     <Users className="w-10 h-10 text-white" />
                      Following
                   </motion.h1>
                   <p className="text-zinc-500 font-medium text-lg">
@@ -231,7 +231,7 @@ export default function Following() {
                      <p className="text-zinc-600 mt-2">
                         Subscribe to channels to see their content here.
                      </p>
-                     <Link to="/trending" className="mt-6 inline-block text-purple-400 hover:text-purple-300 font-bold text-sm">
+                     <Link to="/trending" className="mt-6 inline-block text-zinc-300 hover:text-white font-bold text-sm">
                         Explore Trending &rarr;
                      </Link>
                   </motion.div>
@@ -243,10 +243,10 @@ export default function Following() {
 
                      {/* Subscribed Channels Grid */}
                      <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                        <h2 className="text-2xl font-bold mb-8 flex items-center gap-2 text-purple-400">
+                        <h2 className="text-2xl font-bold mb-8 flex items-center gap-2 text-white">
                            <Users className="w-6 h-6" />
                            Your Subscriptions
-                           <span className="ml-2 px-2.5 py-1 text-xs font-bold bg-purple-500/20 text-purple-300 rounded-full border border-purple-500/30">
+                           <span className="ml-2 px-2.5 py-1 text-xs font-bold bg-zinc-800 text-zinc-300 rounded-full border border-zinc-700">
                               {visibleSubscribedChannels.length}
                            </span>
                         </h2>
@@ -267,7 +267,7 @@ export default function Following() {
                      {/* Latest Videos */}
                      {hasVideos && (
                         <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-                           <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-pink-400">
+                           <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-white">
                               <Film className="w-5 h-5" /> Latest Videos
                            </h2>
                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -291,10 +291,10 @@ export default function Following() {
                      {/* Latest Wires */}
                      {hasTweets && (
                         <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-                           <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-sky-400">
+                           <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-white">
                               <MessageSquare className="w-5 h-5" /> Latest Wires
                            </h2>
-                           <div className="space-y-0 border border-zinc-800 rounded-2xl overflow-hidden bg-[#0a0a0c]">
+                           <div className="space-y-0 border border-zinc-800 rounded-2xl overflow-hidden bg-zinc-950">
                               {tweetData.docs.map(wire => (
                                  <WireCard
                                     key={wire._id}
