@@ -158,24 +158,24 @@ export default function UploadVideo() {
 
   if (isUploadingLocal) {
     return (
-      <div className="min-h-screen bg-[#050505] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-black flex items-center justify-center p-4">
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           className="max-w-md w-full bg-zinc-900/50 border border-zinc-800 rounded-2xl p-8 text-center"
         >
-          <div className="w-20 h-20 rounded-full bg-indigo-500/20 flex items-center justify-center mx-auto mb-6 relative">
-             <Upload className="w-10 h-10 text-indigo-400 animate-bounce" />
+           <div className="w-20 h-20 rounded-full bg-amber-500/20 flex items-center justify-center mx-auto mb-6 relative">
+             <Upload className="w-10 h-10 text-amber-400 animate-bounce" />
              <svg className="absolute inset-0 w-full h-full -rotate-90">
                 <circle cx="40" cy="40" r="38" className="stroke-zinc-800 transition-all duration-300" strokeWidth="4" fill="none" />
-                <circle cx="40" cy="40" r="38" className="stroke-indigo-500 transition-all duration-100" strokeWidth="4" fill="none" strokeDasharray="238.76" strokeDashoffset={238.76 - (localProgress / 100) * 238.76} />
+               <circle cx="40" cy="40" r="38" className="stroke-amber-500 transition-all duration-100" strokeWidth="4" fill="none" strokeDasharray="238.76" strokeDashoffset={238.76 - (localProgress / 100) * 238.76} />
              </svg>
           </div>
           <h2 className="text-2xl font-bold text-white mb-2">Starting Upload...</h2>
           <p className="text-zinc-400 mb-6">Preparing your video for the cinematic universe</p>
           <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
              <motion.div 
-                className="h-full bg-indigo-500"
+                className="h-full bg-amber-500"
                 initial={{ width: 0 }}
                 animate={{ width: `${localProgress}%` }}
                 transition={{ duration: 0.1 }}
@@ -187,7 +187,7 @@ export default function UploadVideo() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050505]">
+    <div className="min-h-screen bg-black">
       <div className="lg:pl-72 lg:pr-72 pt-24 pb-20 px-4 md:px-8">
         <div className="max-w-5xl mx-auto">
 
@@ -202,8 +202,8 @@ export default function UploadVideo() {
             </button>
 
             <div className="flex items-center gap-4 mb-3">
-              <div className="w-16 h-16 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center">
-                <Upload className="w-8 h-8 text-indigo-400" />
+              <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-700 flex items-center justify-center">
+                <Upload className="w-8 h-8 text-white" />
               </div>
               <div>
                 <h1 className="text-4xl font-black text-white">Upload Video</h1>
@@ -224,8 +224,8 @@ export default function UploadVideo() {
             {/* ── Video Upload Section ── */}
             <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-lg bg-indigo-500/20 flex items-center justify-center">
-                  <Video className="w-5 h-5 text-indigo-400" />
+                <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center">
+                  <Video className="w-5 h-5 text-amber-400" />
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-white">Video File</h3>
@@ -248,12 +248,12 @@ export default function UploadVideo() {
                       onChange={handleVideoChange}
                       className="hidden"
                     />
-                    <div className={`border-2 border-dashed rounded-xl p-12 text-center transition-all ${isDraggingVideo ? 'border-indigo-400 bg-indigo-500/10 scale-[1.01]' : 'border-zinc-700 hover:border-indigo-500/50'} group`}>
-                      <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 transition-colors ${isDraggingVideo ? 'bg-indigo-500/30' : 'bg-indigo-500/10 group-hover:bg-indigo-500/20'}`}>
-                        <Upload className={`w-8 h-8 ${isDraggingVideo ? 'text-indigo-300' : 'text-indigo-400'}`} />
+                    <div className={`border-2 border-dashed rounded-xl p-12 text-center transition-all ${isDraggingVideo ? 'border-amber-400 bg-amber-500/10 scale-[1.01]' : 'border-zinc-700 hover:border-amber-500/50'} group`}>
+                      <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 transition-colors ${isDraggingVideo ? 'bg-amber-500/30' : 'bg-amber-500/10 group-hover:bg-amber-500/20'}`}>
+                        <Upload className={`w-8 h-8 ${isDraggingVideo ? 'text-amber-300' : 'text-amber-400'}`} />
                       </div>
                       <p className="text-white font-semibold mb-1">
-                        {isDraggingVideo ? '⚡ Drop to upload' : 'Click or drag to upload video'}
+                        {isDraggingVideo ? 'Drop to upload' : 'Click or drag to upload video'}
                       </p>
                       <p className="text-sm text-zinc-500">All video formats supported · max {MAX_VIDEO_UPLOAD_MB}MB</p>
                     </div>
@@ -268,7 +268,7 @@ export default function UploadVideo() {
                         exit={{ opacity: 0 }}
                         className="absolute inset-0 flex items-center justify-center rounded-xl pointer-events-none"
                       >
-                        <p className="text-2xl font-black text-indigo-300 tracking-tight drop-shadow-lg">Drop to upload</p>
+                        <p className="text-2xl font-black text-amber-300 tracking-tight drop-shadow-lg">Drop to upload</p>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -296,8 +296,8 @@ export default function UploadVideo() {
             {/* ── Title ── */}
             <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-lg bg-indigo-500/20 flex items-center justify-center">
-                  <Film className="w-5 h-5 text-indigo-400" />
+                <div className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-700 flex items-center justify-center">
+                  <Film className="w-5 h-5 text-white" />
                 </div>
                 <div>
                   <label className="text-lg font-bold text-white">Title</label>
@@ -309,7 +309,7 @@ export default function UploadVideo() {
                 value={formData.title}
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                 placeholder="Enter video title..."
-                className="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all"
+                className="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:border-white focus:ring-2 focus:ring-white/20 outline-none transition-all"
                 maxLength={100}
               />
               <p className="text-xs text-zinc-600 mt-2">{formData.title.length}/100 characters</p>
@@ -318,8 +318,8 @@ export default function UploadVideo() {
             {/* ── Description ── */}
             <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center">
-                  <FileText className="w-5 h-5 text-emerald-400" />
+                <div className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-700 flex items-center justify-center">
+                  <FileText className="w-5 h-5 text-zinc-300" />
                 </div>
                 <div>
                   <label className="text-lg font-bold text-white">Description</label>
@@ -330,7 +330,7 @@ export default function UploadVideo() {
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 placeholder="Describe your video..."
-                className="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all resize-none"
+                className="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:border-white focus:ring-2 focus:ring-white/20 outline-none transition-all resize-none"
                 rows={5}
                 maxLength={500}
               />
@@ -353,21 +353,21 @@ export default function UploadVideo() {
                 value={formData.tags}
                 onChange={(e) => setFormData(prev => ({ ...prev, tags: e.target.value }))}
                 placeholder="gaming, tutorial, vlog..."
-                className="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all"
+                className="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 outline-none transition-all"
               />
             </div>
 
             {/* ── Thumbnail ── */}
             <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-lg bg-rose-500/20 flex items-center justify-center">
-                  <Image className="w-5 h-5 text-rose-400" />
+                <div className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-700 flex items-center justify-center">
+                  <Image className="w-5 h-5 text-zinc-300" />
                 </div>
                 <div className="flex-1">
                   <h3 className="text-lg font-bold text-white">Thumbnail <span className="text-sm font-normal text-zinc-500">(Optional)</span></h3>
                   <p className="text-sm text-zinc-500">AI will auto-generate if not provided</p>
                 </div>
-                <span className="px-3 py-1 text-xs font-bold bg-indigo-500/20 text-indigo-400 rounded-full border border-indigo-500/30 flex items-center gap-1">
+                <span className="px-3 py-1 text-xs font-bold bg-amber-500/20 text-amber-400 rounded-full border border-amber-500/30 flex items-center gap-1">
                   <Sparkles className="w-3 h-3" /> AI Fallback
                 </span>
               </div>
@@ -382,12 +382,12 @@ export default function UploadVideo() {
                 >
                   <label className="block cursor-pointer">
                     <input type="file" accept="image/*" onChange={handleThumbnailChange} className="hidden" />
-                    <div className={`border-2 border-dashed rounded-xl p-8 text-center transition-all ${isDraggingThumb ? 'border-rose-400 bg-rose-500/10 scale-[1.01]' : 'border-zinc-700 hover:border-rose-500/50'} group`}>
-                      <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 transition-colors ${isDraggingThumb ? 'bg-rose-500/30' : 'bg-rose-500/10 group-hover:bg-rose-500/20'}`}>
-                        <Upload className={`w-6 h-6 ${isDraggingThumb ? 'text-rose-300' : 'text-rose-400'}`} />
+                    <div className={`border-2 border-dashed rounded-xl p-8 text-center transition-all ${isDraggingThumb ? 'border-zinc-300 bg-zinc-800/60 scale-[1.01]' : 'border-zinc-700 hover:border-zinc-400'} group`}>
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 transition-colors ${isDraggingThumb ? 'bg-zinc-700' : 'bg-zinc-800 group-hover:bg-zinc-700'}`}>
+                        <Upload className={`w-6 h-6 ${isDraggingThumb ? 'text-zinc-200' : 'text-zinc-400'}`} />
                       </div>
                       <p className="text-white font-semibold mb-1 text-sm">
-                        {isDraggingThumb ? '⚡ Drop image here' : 'Upload or drag custom thumbnail'}
+                        {isDraggingThumb ? 'Drop image here' : 'Upload or drag custom thumbnail'}
                       </p>
                       <p className="text-xs text-zinc-500">JPG, PNG, WebP · max {MAX_THUMBNAIL_UPLOAD_MB}MB</p>
                     </div>
@@ -424,7 +424,7 @@ export default function UploadVideo() {
               <button
                 type="submit"
                 disabled={isSubmitting || !formData.videoFile || !formData.title.trim()}
-                className="w-full sm:flex-1 px-6 py-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full sm:flex-1 px-6 py-4 rounded-xl bg-white text-black hover:bg-zinc-200 font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {isSubmitting ? (
                   <><Upload className="w-5 h-5 animate-bounce" /> Starting upload...</>
@@ -435,20 +435,20 @@ export default function UploadVideo() {
             </div>
 
             {/* ── AI Info ── */}
-            <div className="bg-indigo-500/10 border border-indigo-500/30 rounded-2xl p-6">
+            <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-6">
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center shrink-0">
-                  <Sparkles className="w-6 h-6 text-indigo-400" />
+                <div className="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center shrink-0">
+                  <Sparkles className="w-6 h-6 text-amber-400" />
                 </div>
                 <div>
                   <h4 className="text-white font-bold mb-2 flex items-center gap-2">
                     AI-Powered Features
-                    <span className="px-2 py-0.5 text-xs font-bold bg-indigo-500/20 text-indigo-400 rounded-full">Auto</span>
+                    <span className="px-2 py-0.5 text-xs font-bold bg-amber-500/20 text-amber-400 rounded-full">Auto</span>
                   </h4>
                   <ul className="space-y-2 text-sm text-zinc-400">
-                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400 shrink-0" /> Automatic transcript generation</li>
-                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400 shrink-0" /> AI thumbnail generation (if not provided)</li>
-                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400 shrink-0" /> Smart video optimization</li>
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-amber-400 shrink-0" /> Automatic transcript generation</li>
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-amber-400 shrink-0" /> AI thumbnail generation (if not provided)</li>
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-amber-400 shrink-0" /> Smart video optimization</li>
                   </ul>
                 </div>
               </div>
