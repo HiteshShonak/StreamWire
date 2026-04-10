@@ -720,12 +720,12 @@ export const ContentPageSkeleton = () => (
 
 // Contact page
 export const ContactPageSkeleton = () => (
-    <div className="min-h-screen bg-[#050505]">
+    <div className="min-h-screen bg-zinc-950">
         <div className="lg:pl-72 lg:pr-72 pt-24 pb-20 px-6">
             <div className="max-w-5xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-16">
-                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 mb-6 mx-auto">
+                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white/10 border border-white/20 mb-6 mx-auto">
                         <div className="skeleton w-10 h-10 rounded" />
                     </div>
                     <div className="skeleton h-12 w-64 rounded mx-auto mb-4" />
@@ -788,12 +788,12 @@ export const ContactPageSkeleton = () => (
 
 // About page
 export const AboutPageSkeleton = () => (
-    <div className="min-h-screen bg-[#050505]">
+    <div className="min-h-screen bg-zinc-950">
         <div className="lg:pl-72 lg:pr-72 pt-24 pb-20 px-6">
             <div className="max-w-7xl mx-auto">
                 {/* Hero */}
                 <div className="text-center mb-20">
-                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 mb-6 mx-auto">
+                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white/10 border border-white/20 mb-6 mx-auto">
                         <div className="skeleton w-10 h-10 rounded" />
                     </div>
                     <div className="skeleton h-14 w-96 max-w-full rounded mx-auto mb-6" />
@@ -802,7 +802,7 @@ export const AboutPageSkeleton = () => (
                 </div>
 
                 {/* Mission box */}
-                <div className="mb-20 bg-indigo-500/10 border border-indigo-500/20 rounded-3xl p-8 md:p-12">
+                <div className="mb-20 bg-zinc-900/50 border border-zinc-800 rounded-3xl p-8 md:p-12">
                     <div className="max-w-4xl mx-auto text-center">
                         <div className="skeleton h-8 w-40 rounded mx-auto mb-4" />
                         <div className="skeleton h-5 w-full rounded mb-2" />
