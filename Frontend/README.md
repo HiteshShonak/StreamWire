@@ -1,4 +1,4 @@
-# 🎨 StreamWire — Frontend
+# 🎨 StreamWire - Frontend
 
 <p align="center">
   <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React 19"/>
@@ -11,26 +11,27 @@
   <img src="https://img.shields.io/badge/React_Router-v7-CA4245?style=for-the-badge&logo=reactrouter&logoColor=white" alt="React Router v7"/>
 </p>
 
-The client-side application for **StreamWire**, built with **React 19** and **Vite 7**. This modern frontend delivers a seamless social video experience, featuring real-time feeds, an immersive video player, and a dual-identity system (Public "Wire" vs. Anonymous "Shadows").
+The client-side application for **StreamWire**, built with **React 19** and **Vite 7**. It provides real-time feeds, a custom video player, and a dual-identity system (Public "Wire" vs Anonymous "Shadows").
 
 ---
 
 ## ⚡ Tech Stack
 
-| Layer | Technology |
-|---|---|
-| **Core** | [React 19](https://react.dev/), [Vite 7](https://vitejs.dev/) |
+| Layer                | Technology                                                                                                                                  |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Core**             | [React 19](https://react.dev/), [Vite 7](https://vitejs.dev/)                                                                               |
 | **State Management** | [Redux Toolkit](https://redux-toolkit.js.org/) (Auth/Global UI), [TanStack Query](https://tanstack.com/query/latest) (Server State/Caching) |
-| **Styling** | [Tailwind CSS v4](https://tailwindcss.com/), [Framer Motion](https://www.framer.com/motion/) |
-| **Routing** | `react-router-dom` v7 |
-| **HTTP** | `axios` with interceptors for JWT refresh + request queueing |
-| **Forms** | [React Hook Form](https://react-hook-form.com/) |
-| **Icons** | [Lucide React](https://lucide.dev/) |
-| **Utilities** | `date-fns`, `canvas-confetti`, `react-intersection-observer` |
+| **Styling**          | [Tailwind CSS v4](https://tailwindcss.com/), [Framer Motion](https://www.framer.com/motion/)                                                |
+| **Routing**          | `react-router-dom` v7                                                                                                                       |
+| **HTTP**             | `axios` with interceptors for JWT refresh + request queueing                                                                                |
+| **Forms**            | [React Hook Form](https://react-hook-form.com/)                                                                                             |
+| **Icons**            | [Lucide React](https://lucide.dev/)                                                                                                         |
+| **Utilities**        | `date-fns`, `canvas-confetti`, `react-intersection-observer`                                                                                |
 
 ---
 
 ## 📂 Project Structure
+
 ```
 src/
 ├── App.jsx                    # Root app component with router
@@ -159,9 +160,9 @@ src/
 ## ✨ Key Features
 
 - **Three Feed Experiences**: Cinema (video streaming), Wire (public discourse), Shadows (anonymous)
-- **Custom Video Player**: Speed controls (0.25x–4x), Picture-in-Picture, theater mode, keyboard shortcuts
-- **AI Features**: Video summarization + conversational Q&A powered by Groq AI (rendered as Markdown)
-- **Optimistic UI**: Instant feedback on likes and comments — rolls back on server error
+- **Custom Video Player**: Speed controls (0.25x-4x), Picture-in-Picture, theater mode, keyboard shortcuts
+- **AI Features**: Video summarization + conversational Q&A with Groq (rendered as Markdown)
+- **Optimistic UI**: Instant feedback on likes and comments, then rollback on server error if needed
 - **Infinite Scroll**: Intersection Observer-based pagination on Wire and Shadows feeds
 - **Auto JWT Refresh**: Axios interceptor queues failed requests during token refresh, replays them after
 - **Identity Cloaking**: KillSwitch page for toggling anonymous mode across all content
@@ -176,27 +177,33 @@ src/
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - **Node.js** v18+
-- Backend server running — see [Backend README](../Backend/README.md)
+- Backend server running. See [Backend README](../Backend/README.md)
 
 ### Setup
+
 ```bash
 cd Frontend
 npm install
 ```
 
 Create a `.env` file:
+
 ```env
 VITE_API_URL=http://localhost:8000/api/v1
 ```
 
 ### Development
+
 ```bash
 npm run dev
 ```
+
 Access at `http://localhost:5173`
 
 ### Production Build
+
 ```bash
 npm run build    # Outputs to dist/
 npm run preview  # Preview production build locally
