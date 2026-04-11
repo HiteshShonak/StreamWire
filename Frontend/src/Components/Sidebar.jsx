@@ -86,7 +86,7 @@ export default function Sidebar() {
   const location = useLocation()
   const [isExpanded, setIsExpanded] = useState(false)
 
-  // Detect current context for smart navigation
+  // Detect current context for context-aware navigation
   const contextTab = useMemo(() => getContextTab(location.pathname), [location.pathname])
 
   // Don't show sidebar on Landing Page ("/") or Login/Register

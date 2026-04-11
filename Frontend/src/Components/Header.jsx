@@ -19,7 +19,7 @@ export default function Header({ variant = 'gateway', onUploadClick: _onUploadCl
   const [showTooltip, setShowTooltip] = useState(false)
   const mobileInputRef = useRef(null)
 
-  // Smart search logic
+  // Search logic
   const navigate = useNavigate()
   const location = useLocation()
   const [searchParams] = useSearchParams()

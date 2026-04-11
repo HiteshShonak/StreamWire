@@ -10,7 +10,7 @@ import './index.css'
 import App from './App.jsx'
 import AuthLayout from './Components/AuthLayout.jsx'
 
-// Skeleton fallbacks (eagerly loaded so they render instantly while lazy chunks load)
+// Skeleton fallbacks (eagerly loaded so they render quickly while lazy chunks load)
 import {
   CinemaFeedSkeleton,
   VideoPlayerSkeleton,

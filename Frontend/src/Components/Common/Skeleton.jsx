@@ -1150,7 +1150,7 @@ export const HomePageSkeleton = () => (
 // Landing page
 export const LandingPageSkeleton = () => (
     <div className="min-h-screen bg-[#FDFDFD]">
-        {/* Floating navbar — white glass */}
+        {/* Floating navbar: white glass */}
         <div className="fixed top-4 inset-x-0 z-50 flex justify-center px-4">
             <div className="w-full max-w-[75rem] backdrop-blur-2xl rounded-full p-2 pl-6 flex items-center justify-between border border-zinc-200/50 bg-white/70 shadow-xl shadow-zinc-200/50">
                 <div className="flex items-center gap-3">
@@ -1164,7 +1164,7 @@ export const LandingPageSkeleton = () => (
             </div>
         </div>
 
-        {/* Hero section — 2-column grid */}
+        {/* Hero section: 2-column grid */}
         <section className="relative pt-40 sm:pt-48 md:pt-52 lg:pt-56 pb-8 sm:pb-12 md:pb-16 lg:pb-20 max-w-7xl mx-auto px-4 sm:px-6 grid lg:grid-cols-2 gap-6 sm:gap-8 md:gap-10 lg:gap-12 items-center">
             {/* Left column: text content */}
             <div className="space-y-4 sm:space-y-6 md:space-y-8">
@@ -1229,7 +1229,7 @@ export const LandingPageSkeleton = () => (
 
                 {/* 3 cards: 1 large (2×2) + 2 tall */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-                    {/* Large card — spans 2 cols, 2 rows */}
+                    {/* Large card: spans 2 cols, 2 rows */}
                     <div className="md:col-span-2 md:row-span-2 h-[420px] sm:h-112.5 rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-indigo-100 bg-linear-to-br from-indigo-50/50 via-white to-violet-50/50">
                         <div className="flex items-center gap-2 sm:gap-3 mb-3">
                             <div className="skeleton-light w-9 h-9 sm:w-10 sm:h-10 rounded-xl" />

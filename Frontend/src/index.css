@@ -1,12 +1,14 @@
 /* 1. Imports FIRST */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
 /* 2. Theme Configuration SECOND */
 @theme {
-  --font-display: 'Space Grotesk', system-ui, sans-serif;
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono:
+    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
   --color-primary: #ffffff;
   --color-primary-dark: #e4e4e7;
 
@@ -52,7 +54,6 @@
 
 /* 🫨 Animations */
 @keyframes shake {
-
   0%,
   100% {
     transform: rotate(0deg);
@@ -92,14 +93,16 @@
 }
 
 .skeleton::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   transform: translateX(-100%);
-  background: linear-gradient(90deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.04) 50%,
-      transparent 100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.04) 50%,
+    transparent 100%
+  );
   animation: shimmer 2s infinite;
 }
 
@@ -109,20 +112,21 @@
 }
 
 .skeleton-light::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   transform: translateX(-100%);
-  background: linear-gradient(90deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.6) 50%,
-      transparent 100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.6) 50%,
+    transparent 100%
+  );
   animation: shimmer 2s infinite;
 }
 
 /* 🔄 Loading Indicator Animations */
 @keyframes loadingDot {
-
   0%,
   80%,
   100% {
@@ -137,7 +141,6 @@
 }
 
 @keyframes loadingPulseRing {
-
   0%,
   100% {
     opacity: 0.3;
@@ -151,7 +154,6 @@
 }
 
 @keyframes loadingPulseIcon {
-
   0%,
   100% {
     opacity: 0.6;
@@ -166,7 +168,7 @@
 
 /* ⚡ Performance: GPU Acceleration & Containment */
 
-/* Forces element onto its own GPU compositing layer — use on fixed/animated elements */
+/* Forces element onto its own GPU compositing layer, use on fixed/animated elements */
 .gpu-layer {
   transform: translateZ(0);
   backface-visibility: hidden;
