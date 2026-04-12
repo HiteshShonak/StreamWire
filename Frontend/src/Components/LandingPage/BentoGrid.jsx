@@ -120,7 +120,7 @@ export const BentoGrid = ({ isStealth }) => {
                 </div>
                 <h3 className={`text-base sm:text-lg font-bold mb-2 transition-colors duration-700 shrink-0 ${isStealth ? "text-white" : "text-zinc-900"}`}>Ghost Mode</h3>
                 <p className={`text-xs leading-relaxed mb-3 sm:mb-4 shrink-0 ${isStealth ? "text-zinc-400" : "text-zinc-600"}`}>
-                  Hide your identity instantly. Complete anonymity across the platform.
+                  Hide your identity quickly. Stay anonymous across the platform.
                 </p>
 
                 <div className={`flex-1 rounded-xl p-3 sm:p-4 mb-3 overflow-y-auto ${isStealth ? "bg-zinc-900/50 border border-zinc-800" : "bg-white border border-red-100"}`}>

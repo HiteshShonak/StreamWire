@@ -7,7 +7,7 @@ const featureCards = [
     icon: FileText,
     title: 'Auto Transcription',
     signal: 'Whisper timeline sync',
-    desc: 'Real-time speech-to-text with Groq Whisper AI. Makes your content searchable and accessible instantly.',
+    desc: 'Turns speech into synced text with Groq Whisper for quick search and navigation.',
     lightIcon: 'bg-indigo-50 text-indigo-600 group-hover:bg-indigo-100',
     lightCard: 'hover:border-indigo-200 hover:shadow-[0_8px_30px_rgba(99,102,241,0.14)]',
     lightGlow: 'from-indigo-100/70 via-indigo-50/40 to-transparent',
@@ -15,9 +15,9 @@ const featureCards = [
   },
   {
     icon: Hash,
-    title: 'Smart Tag Generation',
+    title: 'Tag Generation',
     signal: 'SEO metadata in one pass',
-    desc: 'AI automatically generates relevant SEO tags from your video content to boost discoverability.',
+    desc: 'Creates relevant SEO tags from each upload so your videos are easier to find.',
     lightIcon: 'bg-violet-50 text-violet-600 group-hover:bg-violet-100',
     lightCard: 'hover:border-violet-200 hover:shadow-[0_8px_30px_rgba(139,92,246,0.14)]',
     lightGlow: 'from-violet-100/70 via-violet-50/40 to-transparent',
@@ -26,8 +26,8 @@ const featureCards = [
   {
     icon: Brain,
     title: 'Video Summarization',
-    signal: 'Key points, instantly',
-    desc: 'One-click AI summaries of any video. Get key insights and takeaways without watching the entire content.',
+    signal: 'Key points fast',
+    desc: 'Builds concise video summaries so viewers can catch key points in seconds.',
     lightIcon: 'bg-sky-50 text-sky-600 group-hover:bg-sky-100',
     lightCard: 'hover:border-sky-200 hover:shadow-[0_8px_30px_rgba(14,165,233,0.14)]',
     lightGlow: 'from-sky-100/70 via-sky-50/40 to-transparent',
@@ -37,7 +37,7 @@ const featureCards = [
     icon: MessageSquare,
     title: 'AI Q&A Assistant',
     signal: 'Context-aware responses',
-    desc: "Ask questions about video content and get instant answers. Powered by Groq's Llama model.",
+    desc: 'Answers questions from transcript context so viewers get useful responses fast.',
     lightIcon: 'bg-emerald-50 text-emerald-600 group-hover:bg-emerald-100',
     lightCard: 'hover:border-emerald-200 hover:shadow-[0_8px_30px_rgba(16,185,129,0.14)]',
     lightGlow: 'from-emerald-100/70 via-emerald-50/40 to-transparent',
@@ -57,7 +57,7 @@ export const AIFeatures = ({ isStealth }) => {
             <h2 className={`text-2xl font-bold ${isStealth ? 'text-white' : 'text-zinc-900'}`}>AI Co-Pilot Suite</h2>
           </div>
           <p className={`text-sm sm:text-base max-w-2xl ${isStealth ? 'text-zinc-400' : 'text-zinc-600'}`}>
-            Production-ready AI modules that transcribe, summarize, tag, and answer in real time.
+            Tools that transcribe, summarize, tag, and answer in real time.
           </p>
         </div>
       </ScrollReveal>

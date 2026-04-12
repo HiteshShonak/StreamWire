@@ -22,7 +22,7 @@ export const HeroSection = ({ isStealth, setIsStealth }) => {
             </AnimatePresence>
           </motion.div>
 
-          <div className="h-[150px] sm:h-[200px] flex flex-col justify-center">
+          <div className="h-37.5 sm:h-50 flex flex-col justify-center">
             <h1 className={`text-[clamp(2rem,5vw,4.5rem)] font-extrabold tracking-tight leading-[1.1] transition-colors duration-700 ${isStealth ? 'text-white' : 'text-zinc-900'}`}>
               <AnimatePresence mode="wait">
                 {isStealth ? (
@@ -38,7 +38,7 @@ export const HeroSection = ({ isStealth, setIsStealth }) => {
             </h1>
           </div>
 
-          <div className="h-[100px] sm:h-[84px] max-w-lg">
+          <div className="h-25 sm:h-21 max-w-lg">
             <AnimatePresence mode="wait">
               <motion.p
                 key={isStealth ? "stealth-desc" : "creator-desc"}
@@ -59,7 +59,7 @@ export const HeroSection = ({ isStealth, setIsStealth }) => {
                 whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.98, y: 0 }}
                 transition={{ duration: 0.15, ease: [0.4, 0.0, 0.2, 1] }}
-                className={`group relative w-full sm:w-[220px] lg:w-[240px] py-3.5 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg flex items-center justify-center gap-2 overflow-hidden transition-all duration-150 ease-out whitespace-nowrap ${isStealth
+                className={`group relative w-full sm:w-55 lg:w-60 py-3.5 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg flex items-center justify-center gap-2 overflow-hidden transition-all duration-150 ease-out whitespace-nowrap ${isStealth
                   ? "bg-green-500 text-zinc-950 shadow-[0_4px_20px_rgba(34,197,94,0.3)] hover:bg-green-400 hover:shadow-[0_8px_30px_rgba(34,197,94,0.45)]"
                   : "bg-zinc-900 text-white shadow-[0_4px_20px_rgba(0,0,0,0.2)] hover:bg-zinc-800 hover:shadow-[0_8px_30px_rgba(99,102,241,0.25)]"
                   }`}
@@ -86,7 +86,7 @@ export const HeroSection = ({ isStealth, setIsStealth }) => {
               whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98, y: 0 }}
               transition={{ duration: 0.15, ease: [0.4, 0.0, 0.2, 1] }}
-              className={`group relative w-full sm:w-[220px] lg:w-[240px] py-3.5 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg flex items-center justify-center gap-2 overflow-hidden transition-all duration-150 ease-out whitespace-nowrap ${isStealth
+              className={`group relative w-full sm:w-55 lg:w-60 py-3.5 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg flex items-center justify-center gap-2 overflow-hidden transition-all duration-150 ease-out whitespace-nowrap ${isStealth
                 ? 'border-2 border-green-500/30 bg-linear-to-br from-zinc-900/50 to-zinc-950/50 text-zinc-100 backdrop-blur-xl shadow-[0_0_25px_rgba(34,197,94,0.15)] hover:border-green-400/50 hover:shadow-[0_0_35px_rgba(34,197,94,0.3)] hover:text-white'
                 : 'border-2 border-zinc-200 bg-linear-to-br from-white to-zinc-50 text-zinc-700 shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:border-indigo-300 hover:shadow-[0_8px_30px_rgba(99,102,241,0.15)] hover:text-indigo-600'
                 }`}
