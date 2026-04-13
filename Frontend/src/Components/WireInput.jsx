@@ -73,7 +73,7 @@ export default function WireInput({ onSuccess }) {
         setPollOptions(["", ""])
     }
 
-    // Core file processing — shared by file picker and drag-and-drop
+    // Core file processing, shared by file picker and drag-and-drop
     const processFiles = async (rawFiles) => {
         const files = Array.from(rawFiles)
 
@@ -235,7 +235,7 @@ export default function WireInput({ onSuccess }) {
                 </button>
             </div>
 
-            {/* Input Area — accepts drag-and-drop */}
+            {/* Input area that accepts drag-and-drop */}
             <div
                 className={`p-4 transition-colors duration-200 ${isDragging ? (isStealth ? 'bg-green-900/10 ring-1 ring-green-500/40 rounded-xl' : 'bg-white/5 ring-1 ring-white/30 rounded-xl') : ''}`}
                 onDragEnter={handleDragEnter}

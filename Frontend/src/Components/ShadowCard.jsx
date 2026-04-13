@@ -28,6 +28,7 @@ const ShadowCard = memo(function ShadowCard({ shadow, onLike, onDelete }) {
     // ALL posts in shadows are anonymous
     const displayName = "Shadow User"
     const displayHandle = "@redacted"
+    const pollQuestion = shadow?.poll?.question || shadow?.pollQuestion || ''
 
     const handleShare = (e) => {
         e.stopPropagation()
@@ -179,6 +180,9 @@ const ShadowCard = memo(function ShadowCard({ shadow, onLike, onDelete }) {
                                 <BarChart2 className="w-3.5 h-3.5" />
                                 <span>Anonymous poll</span>
                             </div>
+                            {pollQuestion && (
+                                <p className="text-xs text-emerald-300/80 mb-2 line-clamp-2">{pollQuestion}</p>
+                            )}
                             <div className="space-y-1.5 opacity-60">
                                 {shadow.poll.options.slice(0, 2).map((opt, i) => (
                                     <div key={i} className="h-2 w-full bg-zinc-900 rounded-full overflow-hidden">

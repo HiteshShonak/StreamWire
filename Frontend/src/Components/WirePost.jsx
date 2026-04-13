@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useSelector } from 'react-redux'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import {
   Heart, MessageSquare, ArrowLeft, Send,
   Trash2, Ghost, BadgeCheck, ShieldCheck, MoreHorizontal, Eye, EyeOff, Share, UserCheck, UserPlus, BarChart2, Check
@@ -105,18 +105,48 @@ export default function WirePost() {
       // Optimistically update poll
       queryClient.setQueryData(['wire', wireId], (old) => {
         if (!old || !old.poll) return old
-        const newOptions = old.poll.options.map((opt, idx) => ({
-          ...opt,
-          votes: idx === optionIndex ? opt.votes + 1 : opt.votes
-        }))
+        const previousVote = old.userVote
+
+        const isRemovingVote = previousVote === optionIndex
+        const newOptions = old.poll.options.map((opt, idx) => {
+          if (isRemovingVote) {
+            return idx === optionIndex
+              ? { ...opt, votes: Math.max(0, opt.votes - 1) }
+              : opt
+          }
+
+          return {
+            ...opt,
+            votes:
+              idx === optionIndex
+                ? opt.votes + 1
+                : idx === previousVote
+                  ? Math.max(0, opt.votes - 1)
+                  : opt.votes
+          }
+        })
+
         return {
           ...old,
           poll: { ...old.poll, options: newOptions },
-          userVote: optionIndex
+          userVote: isRemovingVote ? null : optionIndex
         }
       })
 
-      return { previousWire }
+      return {
+        previousWire,
+        previousUserVote: previousWire?.userVote,
+        selectedOption: optionIndex
+      }
+    },
+    onSuccess: (updatedWire, _variables, context) => {
+      // Sync with server-confirmed result to avoid local drift.
+      if (updatedWire?._id) {
+        queryClient.setQueryData(['wire', wireId], updatedWire)
+      }
+      const hasPreviousVote = context?.previousUserVote !== undefined && context?.previousUserVote !== null
+      const isRemovingVote = hasPreviousVote && context?.previousUserVote === context?.selectedOption
+      toast.success(isRemovingVote ? 'Vote removed!' : hasPreviousVote ? 'Vote updated!' : 'Vote recorded!')
     },
     onError: (err, variables, context) => {
       if (context?.previousWire) {
@@ -128,10 +158,6 @@ export default function WirePost() {
           message: 'Please sign in to vote on this poll.'
         }
       ]))
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries(['wire', wireId])
-      queryClient.invalidateQueries(['wire'])
     }
   })
 
@@ -174,13 +200,16 @@ export default function WirePost() {
     onMutate: async (newComment) => {
       // Cancel outgoing queries
       await queryClient.cancelQueries(['wireComments', wireId])
+      await queryClient.cancelQueries(['wire', wireId])
       const previousComments = queryClient.getQueryData(['wireComments', wireId])
+      const previousWire = queryClient.getQueryData(['wire', wireId])
+      const tempId = `temp-${Date.now()}`
 
       // Optimistically update comments list
       queryClient.setQueryData(['wireComments', wireId], (old) => {
         if (!old) return old
         const optimisticComment = {
-          _id: `temp-${Date.now()}`,
+          _id: tempId,
           content: newComment.content,
           isStealthMode: newComment.isStealthMode,
           owner: {
@@ -189,7 +218,8 @@ export default function WirePost() {
             fullName: newComment.isStealthMode ? 'Shadow User' : userData?.fullName,
             avatar: { url: newComment.isStealthMode ? 'https://ui-avatars.com/api/?name=S&background=18181b&color=22c55e' : userData?.avatar?.url }
           },
-          createdAt: new Date().toISOString()
+          createdAt: new Date().toISOString(),
+          __optimisticMarker: true
         }
         return {
           ...old,
@@ -197,15 +227,52 @@ export default function WirePost() {
         }
       })
 
+      // Keep comment count responsive without forcing a comments refetch.
+      queryClient.setQueryData(['wire', wireId], (old) => {
+        if (!old) return old
+        return {
+          ...old,
+          commentsCount: (old.commentsCount || 0) + 1
+        }
+      })
+
       // Clear input immediately
       setCommentText('')
       setIsStealthComment(false)
-      return { previousComments }
+      return { previousComments, previousWire, tempId }
+    },
+    onSuccess: (serverComment, _newComment, context) => {
+      queryClient.setQueryData(['wireComments', wireId], (old) => {
+        if (!old?.docs?.length) return old
+        return {
+          ...old,
+          docs: old.docs.map((doc) => {
+            if (doc._id !== context?.tempId) return doc
+
+            const serverOwner =
+              serverComment?.owner && typeof serverComment.owner === 'object' && !Array.isArray(serverComment.owner)
+                ? serverComment.owner
+                : null
+
+            return {
+              ...doc,
+              ...serverComment,
+              _id: serverComment?._id || doc._id,
+              owner: serverOwner ? { ...doc.owner, ...serverOwner } : doc.owner,
+              __optimisticMarker: false
+            }
+          })
+        }
+      })
+      toast.success('Comment posted!')
     },
     onError: (err, newComment, context) => {
       // Revert on error
       if (context?.previousComments) {
         queryClient.setQueryData(['wireComments', wireId], context.previousComments)
+      }
+      if (context?.previousWire) {
+        queryClient.setQueryData(['wire', wireId], context.previousWire)
       }
       toast.error(toActionError(err, 'Could not add your comment. Please try again.', [
         {
@@ -213,12 +280,6 @@ export default function WirePost() {
           message: 'Please sign in to comment on this wire.'
         }
       ]))
-    },
-    onSettled: () => {
-      // Refresh to get real data from server
-      queryClient.invalidateQueries(['wireComments', wireId])
-      queryClient.invalidateQueries(['wire', wireId])
-      queryClient.invalidateQueries(['wire'])
     }
   })
 
@@ -414,6 +475,7 @@ export default function WirePost() {
   // Poll Data Logic
   const totalVotes = wire.poll?.options.reduce((acc, curr) => acc + curr.votes, 0) || 0
   const hasVoted = wire.userVote !== undefined && wire.userVote !== null
+  const pollQuestion = wire.poll?.question || wire.pollQuestion || ''
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
@@ -502,7 +564,7 @@ export default function WirePost() {
 
                       {/* Dropdown Menu */}
                       <div className="absolute right-0 top-0 hidden group-hover/menu:block pt-6 z-20">
-                        <div className="bg-text-main border border-zinc-800 rounded-xl p-1 shadow-xl w-36 overflow-hidden">
+                        <div className="bg-zinc-950 border border-zinc-700 rounded-xl p-1.5 shadow-2xl w-40 overflow-hidden">
 
                           {/* Claim / Go Stealth Button - Hidden when identity is globally cloaked */}
                           {!wire.owner?.isIdentityCloaked && (
@@ -510,8 +572,8 @@ export default function WirePost() {
                               onClick={() => toggleStealthMutation.mutate()}
                               disabled={toggleStealthMutation.isPending}
                               className={`flex items-center gap-2 w-full px-3 py-2 text-xs font-medium rounded-lg text-left transition-colors ${isStealth
-                                ? "text-white hover:bg-white/5"
-                                : "text-green-400 hover:bg-green-500/10"
+                                ? "text-zinc-100 bg-zinc-900 hover:bg-zinc-800"
+                                : "text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20"
                                 }`}
                             >
                               {isStealth ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
@@ -522,7 +584,7 @@ export default function WirePost() {
                           {/* Delete Button */}
                           <button
                             onClick={() => deleteMutation.mutate(wire._id)}
-                            className="flex items-center gap-2 w-full px-3 py-2 text-xs font-medium text-red-400 hover:bg-red-500/10 rounded-lg text-left transition-colors"
+                            className="mt-1 flex items-center gap-2 w-full px-3 py-2 text-xs font-medium text-red-300 hover:text-red-200 hover:bg-red-500/20 rounded-lg text-left transition-colors"
                           >
                             <Trash2 className="w-3.5 h-3.5" /> Delete
                           </button>
@@ -547,6 +609,9 @@ export default function WirePost() {
                 {/* Poll renderer */}
                 {wire.poll && (
                   <div className="mb-4 space-y-2 mt-2">
+                    {pollQuestion && (
+                      <p className="text-sm text-zinc-200 font-medium pl-1">{pollQuestion}</p>
+                    )}
                     {wire.poll.options.map((option, index) => {
                       const percentage = totalVotes > 0 ? Math.round((option.votes / totalVotes) * 100) : 0
                       const isVotedOption = wire.userVote === index
@@ -555,6 +620,10 @@ export default function WirePost() {
                         <button
                           key={index}
                           onClick={() => {
+                            if (!userData) {
+                              navigate('/login')
+                              return
+                            }
                             if (!voteMutation.isPending) {
                               voteMutation.mutate({ tweetId: wire._id, optionIndex: index })
                             }
@@ -589,7 +658,7 @@ export default function WirePost() {
                       )
                     })}
                     <div className="text-xs text-zinc-500 pl-1">
-                      {totalVotes} votes • {hasVoted ? "Final results" : "Click to vote"}
+                      {totalVotes} votes • {hasVoted ? "Live results" : "Poll is open"}
                     </div>
                   </div>
                 )}
@@ -705,7 +774,7 @@ export default function WirePost() {
                 <LoadingDots size="md" className="text-white" />
               </div>
             ) : commentsData?.docs?.length > 0 ? (
-              <AnimatePresence>
+              <>
                 {commentsData.docs.map((comment) => {
                   const commentIsStealth = comment.isStealthMode || comment.owner?.isIdentityCloaked
                   const commentOwner = userData?._id === comment.owner?._id
@@ -718,9 +787,10 @@ export default function WirePost() {
                   return (
                     <motion.div
                       key={comment._id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
+                      layout="position"
+                      initial={comment.__optimisticMarker ? { opacity: 0, y: 10, scale: 0.98 } : false}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
                       className={`bg-zinc-950 border border-zinc-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 ${commentIsStealth ? "border-l-4 border-l-green-500/30" : ""
                         }`}
                     >
@@ -811,7 +881,7 @@ export default function WirePost() {
                     </motion.div>
                   )
                 })}
-              </AnimatePresence>
+              </>
             ) : (
               <div className="text-center py-16 border border-dashed border-zinc-800 rounded-2xl bg-zinc-900/20">
                 <MessageSquare className="w-12 h-12 text-zinc-700 mx-auto mb-4" />

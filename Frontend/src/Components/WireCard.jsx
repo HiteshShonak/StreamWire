@@ -35,6 +35,7 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
     const avatarUrl = isStealth
         ? `https://ui-avatars.com/api/?name=S&background=18181b&color=22c55e`
         : wire?.owner?.avatar?.url
+    const pollQuestion = wire?.poll?.question || wire?.pollQuestion || ''
 
     const handleShare = (e) => {
         e.stopPropagation()
@@ -254,6 +255,9 @@ const WireCard = memo(function WireCard({ wire, onLike, onDelete }) {
                                 <BarChart2 className="w-3.5 h-3.5" />
                                 <span>Poll available</span>
                             </div>
+                            {pollQuestion && (
+                                <p className="text-xs text-zinc-300 mb-2 line-clamp-2">{pollQuestion}</p>
+                            )}
                             <div className="space-y-1.5 opacity-60">
                                 {wire.poll.options.slice(0, 2).map((opt, i) => (
                                     <div key={i} className="h-2 w-full bg-zinc-800 rounded-full overflow-hidden">

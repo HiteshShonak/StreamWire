@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useSelector } from 'react-redux'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import {
   Heart, MessageSquare, ArrowLeft, Send,
   Trash2, Ghost, BadgeCheck, ShieldCheck, MoreHorizontal, Eye, EyeOff, Share, Check, BarChart2
@@ -105,18 +105,48 @@ export default function ShadowPost() {
       // Optimistically update poll
       queryClient.setQueryData(['shadow', shadowId], (old) => {
         if (!old || !old.poll) return old
-        const newOptions = old.poll.options.map((opt, idx) => ({
-          ...opt,
-          votes: idx === optionIndex ? opt.votes + 1 : opt.votes
-        }))
+        const previousVote = old.userVote
+
+        const isRemovingVote = previousVote === optionIndex
+        const newOptions = old.poll.options.map((opt, idx) => {
+          if (isRemovingVote) {
+            return idx === optionIndex
+              ? { ...opt, votes: Math.max(0, opt.votes - 1) }
+              : opt
+          }
+
+          return {
+            ...opt,
+            votes:
+              idx === optionIndex
+                ? opt.votes + 1
+                : idx === previousVote
+                  ? Math.max(0, opt.votes - 1)
+                  : opt.votes
+          }
+        })
+
         return {
           ...old,
           poll: { ...old.poll, options: newOptions },
-          userVote: optionIndex
+          userVote: isRemovingVote ? null : optionIndex
         }
       })
 
-      return { previousShadow }
+      return {
+        previousShadow,
+        previousUserVote: previousShadow?.userVote,
+        selectedOption: optionIndex
+      }
+    },
+    onSuccess: (updatedShadow, _variables, context) => {
+      // Sync with server-confirmed result to avoid local drift.
+      if (updatedShadow?._id) {
+        queryClient.setQueryData(['shadow', shadowId], updatedShadow)
+      }
+      const hasPreviousVote = context?.previousUserVote !== undefined && context?.previousUserVote !== null
+      const isRemovingVote = hasPreviousVote && context?.previousUserVote === context?.selectedOption
+      toast.success(isRemovingVote ? 'Vote removed!' : hasPreviousVote ? 'Vote updated!' : 'Vote recorded!')
     },
     onError: (err, variables, context) => {
       if (context?.previousShadow) {
@@ -128,10 +158,6 @@ export default function ShadowPost() {
           message: 'Please sign in to vote on this poll.'
         }
       ]))
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries(['shadow', shadowId])
-      queryClient.invalidateQueries(['shadows'])
     }
   })
 
@@ -173,13 +199,16 @@ export default function ShadowPost() {
     onMutate: async (newComment) => {
       // Cancel outgoing queries
       await queryClient.cancelQueries(['shadowComments', shadowId])
+      await queryClient.cancelQueries(['shadow', shadowId])
       const previousComments = queryClient.getQueryData(['shadowComments', shadowId])
+      const previousShadow = queryClient.getQueryData(['shadow', shadowId])
+      const tempId = `temp-${Date.now()}`
 
       // Optimistically update comments list
       queryClient.setQueryData(['shadowComments', shadowId], (old) => {
         if (!old) return old
         const optimisticComment = {
-          _id: `temp-${Date.now()}`,
+          _id: tempId,
           content: newComment.content,
           isStealthMode: newComment.isStealthMode,
           owner: {
@@ -188,7 +217,8 @@ export default function ShadowPost() {
             fullName: newComment.isStealthMode ? 'Shadow User' : userData?.fullName,
             avatar: { url: newComment.isStealthMode ? 'https://ui-avatars.com/api/?name=S&background=18181b&color=22c55e' : userData?.avatar?.url }
           },
-          createdAt: new Date().toISOString()
+          createdAt: new Date().toISOString(),
+          __optimisticMarker: true
         }
         return {
           ...old,
@@ -196,14 +226,51 @@ export default function ShadowPost() {
         }
       })
 
+      // Keep comment count responsive without forcing a comments refetch.
+      queryClient.setQueryData(['shadow', shadowId], (old) => {
+        if (!old) return old
+        return {
+          ...old,
+          commentsCount: (old.commentsCount || 0) + 1
+        }
+      })
+
       // Clear input immediately
       setCommentText('')
-      return { previousComments }
+      return { previousComments, previousShadow, tempId }
+    },
+    onSuccess: (serverComment, _newComment, context) => {
+      queryClient.setQueryData(['shadowComments', shadowId], (old) => {
+        if (!old?.docs?.length) return old
+        return {
+          ...old,
+          docs: old.docs.map((doc) => {
+            if (doc._id !== context?.tempId) return doc
+
+            const serverOwner =
+              serverComment?.owner && typeof serverComment.owner === 'object' && !Array.isArray(serverComment.owner)
+                ? serverComment.owner
+                : null
+
+            return {
+              ...doc,
+              ...serverComment,
+              _id: serverComment?._id || doc._id,
+              owner: serverOwner ? { ...doc.owner, ...serverOwner } : doc.owner,
+              __optimisticMarker: false
+            }
+          })
+        }
+      })
+      toast.success('Comment posted!')
     },
     onError: (err, newComment, context) => {
       // Revert on error
       if (context?.previousComments) {
         queryClient.setQueryData(['shadowComments', shadowId], context.previousComments)
+      }
+      if (context?.previousShadow) {
+        queryClient.setQueryData(['shadow', shadowId], context.previousShadow)
       }
       toast.error(toActionError(err, 'Could not add your comment. Please try again.', [
         {
@@ -211,12 +278,6 @@ export default function ShadowPost() {
           message: 'Please sign in to comment in Shadows.'
         }
       ]))
-    },
-    onSettled: () => {
-      // Refresh to get real data from server
-      queryClient.invalidateQueries(['shadowComments', shadowId])
-      queryClient.invalidateQueries(['shadow', shadowId])
-      queryClient.invalidateQueries(['shadows'])
     }
   })
 
@@ -330,6 +391,7 @@ export default function ShadowPost() {
   // Poll Data Logic
   const totalVotes = shadow.poll?.options.reduce((acc, curr) => acc + curr.votes, 0) || 0
   const hasVoted = shadow.userVote !== undefined && shadow.userVote !== null
+  const pollQuestion = shadow.poll?.question || shadow.pollQuestion || ''
 
   return (
     <div className="min-h-screen bg-black text-white font-mono">
@@ -431,6 +493,9 @@ export default function ShadowPost() {
                 {/* Poll renderer */}
                 {shadow.poll && (
                   <div className="mb-4 space-y-2 mt-2">
+                    {pollQuestion && (
+                      <p className="text-sm text-emerald-300/90 font-medium pl-1">{pollQuestion}</p>
+                    )}
                     {shadow.poll.options.map((option, index) => {
                       const percentage = totalVotes > 0 ? Math.round((option.votes / totalVotes) * 100) : 0
                       const isVotedOption = shadow.userVote === index
@@ -439,6 +504,10 @@ export default function ShadowPost() {
                         <button
                           key={index}
                           onClick={() => {
+                            if (!userData) {
+                              navigate('/login')
+                              return
+                            }
                             if (!voteMutation.isPending) {
                               voteMutation.mutate({ tweetId: shadow._id, optionIndex: index })
                             }
@@ -473,7 +542,7 @@ export default function ShadowPost() {
                       )
                     })}
                     <div className="text-xs text-zinc-600 pl-1">
-                      {totalVotes} votes • {hasVoted ? "Final results" : "Click to vote"}
+                      {totalVotes} votes • {hasVoted ? "Live results" : "Poll is open"}
                     </div>
                   </div>
                 )}
@@ -592,7 +661,7 @@ export default function ShadowPost() {
                 <LoadingDots size="md" className="text-emerald-500" />
               </div>
             ) : commentsData?.docs?.length > 0 ? (
-              <AnimatePresence>
+              <>
                 {commentsData.docs.map((comment) => {
                   const commentOwner = userData?._id === comment.owner?._id
                   const commentIsStealth = comment.isStealthMode
@@ -605,9 +674,10 @@ export default function ShadowPost() {
                   return (
                     <motion.div
                       key={comment._id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
+                      layout="position"
+                      initial={comment.__optimisticMarker ? { opacity: 0, y: 10, scale: 0.98 } : false}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
                       className={`bg-black border border-zinc-900 rounded-xl sm:rounded-2xl p-4 sm:p-6 ${commentIsStealth ? "border-l-4 border-l-emerald-950/40" : ""
                         }`}
                     >
@@ -673,7 +743,7 @@ export default function ShadowPost() {
                     </motion.div>
                   )
                 })}
-              </AnimatePresence>
+              </>
             ) : (
               <div className="text-center py-16 border border-dashed border-zinc-900 rounded-2xl bg-zinc-950/20">
                 <MessageSquare className="w-12 h-12 text-zinc-800 mx-auto mb-4" />

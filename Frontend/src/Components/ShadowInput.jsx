@@ -71,7 +71,7 @@ export default function ShadowInput({ onSuccess }) {
         setPollOptions(["", ""])
     }
 
-    // Core file processing — shared by file picker and drag-and-drop
+    // Core file processing, shared by file picker and drag-and-drop
     const processFiles = async (rawFiles) => {
         const files = Array.from(rawFiles)
 
@@ -229,7 +229,7 @@ export default function ShadowInput({ onSuccess }) {
                 </div>
             </div>
 
-            {/* Input Area — accepts drag-and-drop */}
+            {/* Input area that accepts drag-and-drop */}
             <div
                 className={`p-4 transition-colors duration-200 ${isDragging ? 'bg-emerald-900/10 ring-1 ring-emerald-500/30 rounded-xl' : ''}`}
                 onDragEnter={handleDragEnter}
