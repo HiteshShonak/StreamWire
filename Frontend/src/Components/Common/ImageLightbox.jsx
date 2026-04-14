@@ -29,7 +29,7 @@ export default function ImageLightbox({ src, alt = 'Image', onClose }) {
     }
 
     return createPortal(
-        // Backdrop — fixed, covers everything including Header + Sidebar
+        // Backdrop: fixed, covers everything including Header + Sidebar
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -82,7 +82,7 @@ export default function ImageLightbox({ src, alt = 'Image', onClose }) {
                 </div>
             </motion.div>
 
-            {/* Image — spring entrance, click to zoom */}
+            {/* Image: spring entrance, click to zoom */}
             <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}

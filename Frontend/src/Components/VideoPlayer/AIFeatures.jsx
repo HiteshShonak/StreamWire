@@ -7,7 +7,7 @@ import toast from 'react-hot-toast'
 import AuthLock from '../../Components/Common/AuthLock'
 import { formatDuration } from '../../utils/formatters'
 
-const TIMESTAMP_LINE_PATTERN = /^\s*(?:\[)?((?:\d{1,2}:)?\d{1,2}:\d{2})(?:\])?\s*(?:[-–—:]?\s*)?(.*)$/
+const TIMESTAMP_LINE_PATTERN = /^\s*(?:\[)?((?:\d{1,2}:)?\d{1,2}:\d{2})(?:\])?\s*(?:[-:]?\s*)?(.*)$/
 
 const parseTimestampToSeconds = (timestamp) => {
     const parts = timestamp.split(':').map((value) => Number(value))
@@ -460,7 +460,7 @@ const AIFeatures = React.memo(({
 
                                         {chatMessages.length === 0 && (
                                             <p className="text-xs text-zinc-500 mt-2">
-                                                Ask questions about the video content and get AI-powered answers based on the transcript.
+                                                Ask questions about the video content and get answers based on the transcript.
                                             </p>
                                         )}
                                     </div>

@@ -95,7 +95,7 @@ const VideoPlayerControls = React.memo(({
     const [pendingQuality, setPendingQuality] = useState(null);
     const preloadRef = React.useRef(null);
 
-    // Handle quality change - seamlessly preload and switch when ready
+    // Handle quality change: preload and switch when ready
     const handleQualityChange = (newQuality) => {
         if (!videoRef.current || quality === newQuality || pendingQuality === newQuality) return;
 
@@ -128,7 +128,7 @@ const VideoPlayerControls = React.memo(({
         const savedTime = videoRef.current.currentTime;
         const wasPlaying = !videoRef.current.paused;
 
-        // When preload has enough data, switch seamlessly
+        // When preload has enough data, switch quality
         const onCanPlay = () => {
             if (!videoRef.current) return;
 
@@ -451,7 +451,7 @@ const VideoPlayerControls = React.memo(({
                                                         </button>
                                                     ))}
                                                     <p className="text-[10px] text-zinc-600 px-3 mt-2 text-center">
-                                                        {pendingQuality ? 'Processing new quality...' : 'Seamless quality switching'}
+                                                        {pendingQuality ? 'Processing new quality...' : 'Quality switch ready'}
                                                     </p>
                                                 </div>
                                             )}

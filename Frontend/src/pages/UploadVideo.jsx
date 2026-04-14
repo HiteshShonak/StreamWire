@@ -91,7 +91,7 @@ export default function UploadVideo() {
     setPreviews(prev => ({ ...prev, thumbnail: null }));
   };
 
-  // ─── Drag-and-drop — Video ───────────────────────────────────────────────────
+  // Drag-and-drop: Video
 
   const onVideoDragEnter = (e) => { e.preventDefault(); e.stopPropagation(); setIsDraggingVideo(true); };
   const onVideoDragOver  = (e) => { e.preventDefault(); e.stopPropagation(); };
@@ -102,7 +102,7 @@ export default function UploadVideo() {
     processVideoFile(file);
   };
 
-  // ─── Drag-and-drop — Thumbnail ───────────────────────────────────────────────
+  // Drag-and-drop: Thumbnail
 
   const onThumbDragEnter = (e) => { e.preventDefault(); e.stopPropagation(); setIsDraggingThumb(true); };
   const onThumbDragOver  = (e) => { e.preventDefault(); e.stopPropagation(); };
@@ -113,7 +113,7 @@ export default function UploadVideo() {
     processThumbnailFile(file);
   };
 
-  // ─── Submit ──────────────────────────────────────────────────────────────────
+  // Submit
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -442,13 +442,13 @@ export default function UploadVideo() {
                 </div>
                 <div>
                   <h4 className="text-white font-bold mb-2 flex items-center gap-2">
-                    AI-Powered Features
+                    Automatic Features
                     <span className="px-2 py-0.5 text-xs font-bold bg-amber-500/20 text-amber-400 rounded-full">Auto</span>
                   </h4>
                   <ul className="space-y-2 text-sm text-zinc-400">
                     <li className="flex items-center gap-2"><Check className="w-4 h-4 text-amber-400 shrink-0" /> Automatic transcript generation</li>
-                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-amber-400 shrink-0" /> AI thumbnail generation (if not provided)</li>
-                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-amber-400 shrink-0" /> Smart video optimization</li>
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-amber-400 shrink-0" /> Automatic thumbnail generation (if not provided)</li>
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-amber-400 shrink-0" /> Video optimization</li>
                   </ul>
                 </div>
               </div>

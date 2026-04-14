@@ -225,11 +225,14 @@ export default function VideoPlayer() {
       await queryClient.cancelQueries(['videoComments', videoId]);
       const previousComments = queryClient.getQueryData(['videoComments', videoId]);
 
-      // Optimistic update — infinite query stores data as { pages: [...], pageParams: [...] }
+      // Store temp ID for later replacement
+      const tempId = 'temp-' + Date.now();
+
+      // Optimistic update: infinite query stores data as { pages: [...], pageParams: [...] }
       queryClient.setQueryData(['videoComments', videoId], (old) => {
         if (!old?.pages?.length) return old;
         const optimisticComment = {
-          _id: 'temp-' + Date.now(),
+          _id: tempId,
           content: newComment.content,
           isStealthMode: newComment.isStealthMode,
           owner: {
@@ -241,7 +244,8 @@ export default function VideoPlayer() {
                 : userData?.avatar?.url
             }
           },
-          createdAt: new Date().toISOString()
+          createdAt: new Date().toISOString(),
+          __optimisticMarker: true // Mark as optimistic to prevent re-animation
         };
         return {
           ...old,
@@ -253,13 +257,42 @@ export default function VideoPlayer() {
         };
       });
 
-      return { previousComments };
+      return { previousComments, tempId };
     },
-    onSuccess: () => {
+    onSuccess: (newComment, variables, context) => {
       setCommentText('');
       setIsStealthComment(false);
       toast.success(isStealthComment ? 'Stealth comment added' : 'Comment posted!');
-      queryClient.invalidateQueries(['video', videoId]); // Update comment count
+      
+      // Merge server comment with optimistic by updating in place (preserve position, prevent re-animation)
+      queryClient.setQueryData(['videoComments', videoId], (old) => {
+        if (!old?.pages?.length) return old;
+        return {
+          ...old,
+          pages: old.pages.map((page, index) =>
+            index === 0
+              ? {
+                  ...page,
+                  docs: (page.docs || []).map((doc) => {
+                    // Check if this is our optimistic comment (by temp ID or content match)
+                    if (doc._id === context?.tempId || (doc.__optimisticMarker && doc.content === newComment.content)) {
+                      // Merge: keep position, update with server data, remove marker
+                      return {
+                        ...doc,
+                        ...newComment,
+                        __optimisticMarker: false // Remove marker to allow normal rendering
+                      };
+                    }
+                    return doc;
+                  })
+                }
+              : page
+          )
+        };
+      });
+      
+      // Update comment count
+      queryClient.invalidateQueries(['video', videoId]);
     },
     onError: (err, vars, context) => {
       if (context?.previousComments) {
@@ -270,9 +303,6 @@ export default function VideoPlayer() {
         { when: ['comment is required', 'empty'], message: 'Comment cannot be empty' },
         { when: ['unauthorized', 'not authorized', 'login'], message: 'Please sign in to comment' },
       ]));
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries(['videoComments', videoId]);
     }
   });
 

@@ -59,7 +59,6 @@ const CommentsSection = React.memo(({
                 </h3>
             </div>
 
-            {/* Comment Input */}
             {userData ? (
                 <form onSubmit={handleSubmitComment} className="mb-6">
                     <div className="flex gap-3">
@@ -80,7 +79,6 @@ const CommentsSection = React.memo(({
                                 className="w-full px-4 py-3 bg-zinc-900/50 border border-zinc-800 rounded-xl text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/60 resize-none text-sm"
                             />
                             <div className="flex items-center justify-between">
-                                {/* Stealth Toggle */}
                                 <button
                                     type="button"
                                     onClick={() => setIsStealthComment(!isStealthComment)}
@@ -121,7 +119,6 @@ const CommentsSection = React.memo(({
                 </div>
             )}
 
-            {/* Comments List */}
             {commentsLoading ? (
                 <CommentListSkeleton count={4} />
             ) : commentsList.length === 0 && pinnedComments.length === 0 ? (
@@ -131,7 +128,6 @@ const CommentsSection = React.memo(({
                 </div>
             ) : (
                 <div className="space-y-4">
-                    {/* Pinned Comments */}
                     {pinnedComments.length > 0 && (
                         <div className="space-y-3 mb-6">
                             <div className="flex items-center gap-2 text-xs text-rose-400 font-medium">
@@ -170,7 +166,6 @@ const CommentsSection = React.memo(({
                                             <p className="text-sm text-zinc-300 leading-relaxed">{comment.content}</p>
                                         </div>
 
-                                        {/* Video Owner: Unpin button */}
                                         {isOwner && (
                                             <button
                                                 onClick={() => togglePinMutation.mutate(comment._id)}
@@ -182,7 +177,6 @@ const CommentsSection = React.memo(({
                                             </button>
                                         )}
 
-                                        {/* Comment Owner Actions */}
                                         {isCommentOwner && (
                                             <button
                                                 onClick={() => deleteCommentMutation.mutate(comment._id)}
@@ -198,7 +192,6 @@ const CommentsSection = React.memo(({
                         </div>
                     )}
 
-                    {/* Regular Comments */}
                     {displayedComments.map((comment) => {
                         const isCommentOwner = userData?._id === comment.owner?._id;
                         const commentStealth = comment.isStealthMode || comment.owner?.isIdentityCloaked;
@@ -211,7 +204,7 @@ const CommentsSection = React.memo(({
                         return (
                             <motion.div
                                 key={comment._id}
-                                initial={{ opacity: 0, y: 10 }}
+                                initial={comment.__optimisticMarker ? { opacity: 0, y: 10 } : false}
                                 animate={{ opacity: 1, y: 0 }}
                                 className="flex gap-3 group"
                             >
@@ -234,7 +227,6 @@ const CommentsSection = React.memo(({
                                     <p className="text-sm text-zinc-300 leading-relaxed">{comment.content}</p>
                                 </div>
 
-                                {/* Video Owner: Pin button */}
                                 {isOwner && !isPinned && (
                                     <button
                                         onClick={() => togglePinMutation.mutate(comment._id)}
@@ -246,10 +238,8 @@ const CommentsSection = React.memo(({
                                     </button>
                                 )}
 
-                                {/* Comment Owner Actions */}
                                 {isCommentOwner && (
                                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                                        {/* Claim/Stealth Toggle */}
                                         <button
                                             onClick={() => toggleCommentStealthMutation.mutate({
                                                 commentId: comment._id,
@@ -265,7 +255,6 @@ const CommentsSection = React.memo(({
                                             {comment.isStealthMode ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                                         </button>
 
-                                        {/* Delete */}
                                         <button
                                             onClick={() => deleteCommentMutation.mutate(comment._id)}
                                             className="p-2 text-zinc-600 hover:text-red-400 hover:bg-red-500/10 transition-colors rounded-lg"
@@ -279,7 +268,6 @@ const CommentsSection = React.memo(({
                         );
                     })}
 
-                    {/* Load More Button (Infinite Scroll) */}
                     {hasNextPage && (
                         <button
                             onClick={() => fetchNextPage()}
