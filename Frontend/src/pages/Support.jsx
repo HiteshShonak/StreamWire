@@ -9,7 +9,7 @@ import {
 const faqs = [
    {
       question: "What is StreamWire?",
-      answer: "StreamWire is a next-generation content platform that combines video streaming (Cinema), microblogging (Wire), and anonymous content sharing (Shadows) into one seamless experience.",
+      answer: "StreamWire combines video streaming (Cinema), microblogging (Wire), and anonymous sharing (Shadows) in one platform.",
       icon: Zap
    },
    {
@@ -48,7 +48,7 @@ faqs.push(
    },
    {
       question: "Can I change my username or handle?",
-      answer: "Yes — visit Profile > Edit and update your username. Note that some usernames may be restricted or already taken.",
+      answer: "Yes, visit Profile > Edit and update your username. Some usernames may be restricted or already taken.",
       icon: PenSquare
    }
 )

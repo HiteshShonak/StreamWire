@@ -96,7 +96,7 @@ export default function Register() {
 
             const isBypassed = response?.smtpBypassed || response?.data?.smtpBypassed || response?.data?.data?.smtpBypassed;
 
-            // SMTP was blocked — user already created & logged in by backend
+            // SMTP was blocked, user was already created and logged in by backend
             if (isBypassed) {
                 sessionStorage.setItem('pendingRedirect', 'true')
                 dispatch(login(response?.data || response))
@@ -105,7 +105,7 @@ export default function Register() {
                 return
             }
 
-            // Normal flow — SMTP worked, show OTP screen
+            // Normal flow, SMTP worked, show OTP screen
             setTempData(data)
             setStep("OTP")
             toast.success(`Verification code sent to ${data.email}`)

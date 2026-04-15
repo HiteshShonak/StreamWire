@@ -494,7 +494,7 @@ export default function Customize() {
                                  </li>
                                  <li className="flex items-start gap-2">
                                     <span className="text-white mt-0.5">•</span>
-                                    <span>Add personality — be yourself!</span>
+                                    <span>Add personality, be yourself.</span>
                                  </li>
                               </ul>
                            </div>

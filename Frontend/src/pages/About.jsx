@@ -29,7 +29,7 @@ export default function About() {
       {
          icon: Video,
          title: "Cinema",
-         description: "Premium video streaming platform with AI-powered features. Upload, share, and discover high-quality video content with automatic transcription, smart summaries, and interactive Q&A.",
+         description: "Video streaming for creators. Upload, share, and discover content with transcription, summaries, and built-in Q&A.",
          color: "from-zinc-300 to-zinc-500",
          features: [
             "HD video streaming with custom playback speeds",
@@ -49,7 +49,7 @@ export default function About() {
          features: [
             "Quick text posts with rich formatting",
             "Like and comment on posts",
-            "Follow/unfollow creators instantly",
+            "Follow and unfollow creators",
             "Delete your own posts anytime",
             "View all creator wires on their channel"
          ]
@@ -72,14 +72,14 @@ export default function About() {
    const advancedFeatures = [
       {
          icon: Brain,
-         title: "AI-Powered Intelligence",
-         description: "Advanced Groq AI integration that automatically generates transcripts, smart summaries, and answers questions about your video content in real-time.",
+         title: "Transcript and Q&A Tools",
+         description: "Built-in tools generate transcripts, create summaries, and answer questions about your video content.",
          gradient: "from-zinc-300 to-zinc-500"
       },
       {
          icon: Shield,
          title: "Kill Switch Privacy",
-         description: "Instantly toggle between public and completely anonymous browsing. Your identity is protected when you need it most.",
+         description: "Switch between public and anonymous browsing whenever you need it.",
          gradient: "from-red-400 to-orange-400"
       },
       {
@@ -102,7 +102,7 @@ export default function About() {
       },
       {
          icon: Cloud,
-         title: "Smart Library",
+         title: "Library Tools",
          description: "Organize your content with Watch Later and viewing history. Keep track of videos you love and want to watch again.",
          gradient: "from-zinc-400 to-zinc-600"
       }
@@ -121,14 +121,14 @@ export default function About() {
       },
       {
          icon: Bell,
-         title: "Smart Notifications",
+         title: "Notifications",
          description: "Stay updated without compromising privacy. Customize what you want to hear about."
       }
    ]
 
    const statistics = [
       { value: "3", label: "Core Platforms", desc: "Cinema, Wire & Shadows" },
-      { value: "AI", label: "Powered", desc: "Smart transcription & summaries" },
+      { value: "AI", label: "Tools", desc: "Transcription and summaries" },
       { value: "100%", label: "Anonymous", desc: "Shadows platform guarantee" },
       { value: "24/7", label: "Support", desc: "Help when you need it" }
    ]
@@ -164,7 +164,7 @@ export default function About() {
                      </h1>
 
                      <p className="text-xl md:text-2xl text-zinc-400 max-w-3xl mx-auto leading-relaxed">
-                        The revolutionary <span className="text-zinc-200 font-semibold">dual-mode streaming platform</span> where creators shine in the spotlight and whistleblowers speak freely in the shadows.
+                        A <span className="text-zinc-200 font-semibold">dual-mode platform</span> where creators publish openly and people can also speak privately when needed.
                      </p>
                   </motion.div>
 
@@ -182,7 +182,7 @@ export default function About() {
                            whether you want to build a brand or expose the truth. We provide a single platform with two distinct experiences:
                            <span className="text-zinc-200 font-semibold"> Cinema & Wire</span> for public creators, and
                            <span className="text-emerald-400 font-semibold"> Shadows</span> for anonymous voices.
-                           All powered by cutting-edge AI and uncompromising security.
+                           Built with practical tools and strong security.
                         </p>
                      </div>
                   </motion.div>
@@ -269,7 +269,7 @@ export default function About() {
                   >
                      <h2 className="text-4xl font-black text-center mb-4 text-white">Advanced Features</h2>
                      <p className="text-center text-zinc-400 mb-12 max-w-2xl mx-auto">
-                        Cutting-edge technology that sets StreamWire apart from the rest.
+                        Useful platform features designed for everyday creators and viewers.
                      </p>
 
                      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -308,7 +308,7 @@ export default function About() {
                            </div>
                            <h2 className="text-4xl font-black text-white mb-3">Privacy First</h2>
                            <p className="text-zinc-300 max-w-2xl mx-auto">
-                              Your privacy is not optional—it's fundamental. We've built multiple layers of protection into every feature.
+                              Your privacy is not optional, it's fundamental. We've built multiple layers of protection into every feature.
                            </p>
                         </div>
 
@@ -336,7 +336,7 @@ export default function About() {
                   >
                      <h2 className="text-4xl font-black text-center mb-4 text-white">Built with Modern Technology</h2>
                      <p className="text-center text-zinc-400 mb-12 max-w-2xl mx-auto">
-                        StreamWire leverages cutting-edge technologies to deliver a fast, secure, and reliable experience.
+                        StreamWire uses modern tools to keep the experience fast, secure, and reliable.
                      </p>
 
                      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -344,7 +344,7 @@ export default function About() {
                            { name: "React 18", desc: "Modern UI framework" },
                            { name: "Node.js", desc: "Scalable backend" },
                            { name: "MongoDB", desc: "Flexible database" },
-                           { name: "Groq AI", desc: "Smart features" },
+                           { name: "Groq", desc: "Transcript and summary tools" },
                            { name: "Cloudinary", desc: "Media hosting" },
                            { name: "JWT", desc: "Secure auth" },
                            { name: "Nodemailer", desc: "Email service" },
