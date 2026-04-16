@@ -197,31 +197,35 @@ StreamWire/
 <table>
   <tr>
     <td><strong>🏠 Home</strong><br/><img src="./Screenshots/home.png" alt="Home"/></td>
-    <td><strong>🛬 Landing Page</strong><br/><img src="./Screenshots/landing.png" alt="Landing Page"/></td>
+    <td><strong>🛬 Landing Page (Light)</strong><br/><img src="./Screenshots/landing.png" alt="Landing Page Light"/></td>
   </tr>
   <tr>
+    <td><strong>🌙 Landing Page (Dark)</strong><br/><img src="./Screenshots/landing_dark.png" alt="Landing Page Dark"/></td>
     <td><strong>⚡ The Wire - Public Feed</strong><br/><img src="./Screenshots/wire_feed.png" alt="Wire Feed"/></td>
+  </tr>
+  <tr>
     <td><strong>👻 The Shadows - Anonymous Feed</strong><br/><img src="./Screenshots/shadow_feed.png" alt="Shadows Feed"/></td>
-  </tr>
-  <tr>
     <td><strong>🎬 Cinema - Video Discovery</strong><br/><img src="./Screenshots/cinema_feed.png" alt="Cinema Feed"/></td>
+  </tr>
+  <tr>
     <td><strong>▶️ Video Player</strong><br/><img src="./Screenshots/video_player.png" alt="Video Player"/></td>
-  </tr>
-  <tr>
     <td><strong>🤖 AI Features - Summarization & Q&A</strong><br/><img src="./Screenshots/ai_features.png" alt="AI Features"/></td>
+  </tr>
+  <tr>
     <td><strong>📊 Creator Studio - Dashboard</strong><br/><img src="./Screenshots/dashboard.png" alt="Dashboard"/></td>
-  </tr>
-  <tr>
     <td><strong>🔥 Trending - Cross-Platform</strong><br/><img src="./Screenshots/trending.png" alt="Trending"/></td>
+  </tr>
+  <tr>
     <td><strong>👤 Channel Page</strong><br/><img src="./Screenshots/channel.png" alt="Channel Page"/></td>
-  </tr>
-  <tr>
     <td><strong>🔐 Login</strong><br/><img src="./Screenshots/login.png" alt="Login"/></td>
-    <td><strong>📝 Register</strong><br/><img src="./Screenshots/register.png" alt="Register"/></td>
   </tr>
   <tr>
+    <td><strong>📝 Register</strong><br/><img src="./Screenshots/register.png" alt="Register"/></td>
     <td><strong>🎨 Customize / Onboarding</strong><br/><img src="./Screenshots/customize.png" alt="Customize"/></td>
+  </tr>
+  <tr>
     <td><strong>⚙️ Settings</strong><br/><img src="./Screenshots/settings.png" alt="Settings"/></td>
+    <td>&nbsp;</td>
   </tr>
 </table>
 
