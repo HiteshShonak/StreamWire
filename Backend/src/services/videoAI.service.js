@@ -12,9 +12,10 @@ const getGroq = () => {
 };
 
 // smart AI Request with Fallback Strategy
+// Models verified from live Groq API on 2026-08-15 — both active with tools + json_mode features
 const generateWithFallback = async (messages, maxTokens = 500) => {
-    const SMART_MODEL = "llama-3.3-70b-versatile";
-    const FAST_MODEL = "llama-3.1-8b-instant";
+    const SMART_MODEL = "openai/gpt-oss-120b"; // Primary: 65,536 max output, tools + json_mode + reasoning
+    const FAST_MODEL = "openai/gpt-oss-20b";  // Fallback: same features, lower cost, 65,536 max output
 
     try {
         // Attempt Primary Model
@@ -25,13 +26,15 @@ const generateWithFallback = async (messages, maxTokens = 500) => {
             max_tokens: maxTokens,
         });
     } catch (error) {
-        // Check for Rate Limit or Service Overload
+        // Check for Rate Limit, Service Overload, or Decommissioned Model
         const isRateLimit = error.status === 429 ||
             error.status === 503 ||
-            error.message?.includes('quota');
+            error.message?.includes('quota') ||
+            error.message?.includes('model_decommissioned') ||
+            error.error?.code === 'model_decommissioned';
 
         if (isRateLimit) {
-            console.warn(`[AI Service] 70B Model busy/limited. Failover to 8B Model.`);
+            console.warn(`[AI Service] Primary model busy/limited. Failing over to fast model.`);
 
             // Run backup model
             return await getGroq().chat.completions.create({
@@ -62,9 +65,17 @@ export const summarizeVideo = async (videoId) => {
         const messages = [
             {
                 role: "system",
-                content: `You are a video content summarizer. Create concise, informative summaries that capture the key points and main topics discussed in videos. 
-                Format your summary in clear sections with bullet points where appropriate. 
-                Keep it engaging and easy to understand.`
+                content: `You are a video content summarizer. Create concise, informative summaries that capture the key points and main topics discussed in videos.
+
+Always format your responses using Markdown:
+- Use **bold** for key terms and important values
+- Use *italic* for emphasis
+- Use \`code\` for technical names, values, and identifiers
+- Use bullet lists for multiple items
+- Use ## headings for longer structured answers
+- Use tables when comparing multiple items
+
+Keep your summary engaging and easy to understand.`
             },
             {
                 role: "user",
@@ -103,11 +114,19 @@ export const askVideoQuestion = async (videoId, question, conversationHistory = 
         console.log(`[AI Service] Question: "${question.substring(0, 40)}..." | Video: "${video.title}"`);
 
         // Construct Context Window
-        const contextPrompt = `You are StreamWire AI, an expert video assistant created by StreamWire. Answer user questions about the video in a confident, helpful, and concise way. Use the video's available title, description, and content as your source of truth. 
+        const contextPrompt = `You are StreamWire AI, an expert video assistant created by StreamWire. Answer user questions about the video in a confident, helpful, and concise way. Use the video's available title, description, and content as your source of truth.
 
 CRITICAL RULE: If the user asks who owns StreamWire, you MUST answer: "StreamWire is owned by Hitesh Sharma."
 
 Do NOT reveal internal implementation details (for example, avoid saying you 'only have a transcript' or describing how you processed the video). If the requested information is not present in the video (and is not about the owner), reply simply that the information is not available in the video.
+
+Always format your responses using Markdown:
+- Use **bold** for key terms and important values
+- Use *italic* for emphasis
+- Use \`code\` for technical names, values, and identifiers
+- Use bullet lists for multiple items
+- Use ## headings for longer structured answers
+- Use tables when comparing multiple items
 
 Provide clear, user-focused answers and keep tone professional and immersive. When appropriate, present short summaries, bullet-point takeaways, or step-by-step guidance based on the video's content.
 

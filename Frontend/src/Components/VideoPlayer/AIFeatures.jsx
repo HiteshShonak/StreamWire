@@ -1,6 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import remarkBreaks from 'remark-breaks'
+import rehypeHighlight from 'rehype-highlight'
 import { FileText, Sparkles, ChevronUp, ChevronDown, Brain, MessageSquare, User, Send, Search } from 'lucide-react'
 import { LoadingDots } from '../Common/LoadingIndicator'
 import toast from 'react-hot-toast'
@@ -8,6 +11,126 @@ import AuthLock from '../../Components/Common/AuthLock'
 import { formatDuration } from '../../utils/formatters'
 
 const TIMESTAMP_LINE_PATTERN = /^\s*(?:\[)?((?:\d{1,2}:)?\d{1,2}:\d{2})(?:\])?\s*(?:[-:]?\s*)?(.*)$/
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Shared Markdown Renderer — used for both AI Summary and AI Q&A
+// Uses react-markdown v10 + remark-gfm + remark-breaks + rehype-highlight
+// NOTE: react-markdown v10 removed the `inline` prop from the code component.
+//       Block code has className="hljs language-*" (set by rehype-highlight).
+//       Inline code has no className — detected via Boolean(className).
+// ─────────────────────────────────────────────────────────────────────────────
+const makeMarkdownComponents = (theme) => ({
+    // Paragraphs
+    p: ({ children }) => <p className="mb-1.5 last:mb-0 leading-relaxed">{children}</p>,
+
+    // Bold / italic / strikethrough (remark-gfm adds ~~strikethrough~~ support)
+    strong: ({ children }) => <strong className="font-bold text-white">{children}</strong>,
+    em: ({ children }) => <em className={`italic ${theme.em}`}>{children}</em>,
+    del: ({ children }) => <del className="line-through opacity-50">{children}</del>,
+
+    // IMPORTANT: inline vs block code — inline prop was REMOVED in react-markdown v10.
+    // rehype-highlight adds `hljs language-*` className to block <code>.
+    // Inline <code> elements have no className at all.
+    code: ({ className, children }) => {
+        const isBlock = Boolean(className) // block code always has "hljs language-*" className
+        if (isBlock) {
+            // Block code — rehype-highlight already rendered hljs token spans inside
+            return <code className={className}>{children}</code>
+        }
+        // Inline code — style with theme accent color
+        return (
+            <code className={`rounded px-1 py-0.5 ${theme.inlineCode} text-xs font-mono`}>
+                {children}
+            </code>
+        )
+    },
+
+    // Pre wrapper for code blocks — tokyo-night-dark theme CSS provides background
+    pre: ({ children }) => (
+        <pre className="my-2 rounded-lg p-3 overflow-x-auto text-xs leading-relaxed border border-white/5">
+            {children}
+        </pre>
+    ),
+
+    // Lists (remark-gfm enables task lists too)
+    ul: ({ children }) => <ul className="list-disc list-inside space-y-0.5 my-1.5 pl-1 text-zinc-300">{children}</ul>,
+    ol: ({ children }) => <ol className="list-decimal list-inside space-y-0.5 my-1.5 pl-1 text-zinc-300">{children}</ol>,
+    li: ({ children }) => <li className="text-zinc-300">{children}</li>,
+
+    // Headings
+    h1: ({ children }) => <h1 className="font-black text-white text-lg mb-2 mt-3">{children}</h1>,
+    h2: ({ children }) => <h2 className={`font-bold text-base mb-1.5 mt-3 ${theme.h2}`}>{children}</h2>,
+    h3: ({ children }) => <h3 className={`font-semibold mb-1 mt-2 ${theme.h3}`}>{children}</h3>,
+    h4: ({ children }) => <h4 className={`font-semibold text-sm mb-0.5 mt-1.5 ${theme.h4}`}>{children}</h4>,
+
+    // Blockquote
+    blockquote: ({ children }) => (
+        <blockquote className={`border-l-2 ${theme.blockquote} pl-3 my-1.5 italic text-zinc-400`}>
+            {children}
+        </blockquote>
+    ),
+
+    // Horizontal rule
+    hr: () => <hr className={`my-3 ${theme.hr} opacity-30`} />,
+
+    // Links
+    a: ({ href, children }) => (
+        <a
+            href={href}
+            target="_blank"
+            rel="noreferrer"
+            className={`underline underline-offset-2 ${theme.link} hover:opacity-70 transition-opacity`}
+        >
+            {children}
+        </a>
+    ),
+
+    // Tables (requires remark-gfm)
+    table: ({ children }) => (
+        <div className="my-2 overflow-x-auto rounded-lg border border-white/10">
+            <table className="w-full text-xs border-collapse">{children}</table>
+        </div>
+    ),
+    thead: ({ children }) => <thead className={`border-b ${theme.tableHead}`}>{children}</thead>,
+    tbody: ({ children }) => <tbody className="divide-y divide-white/5">{children}</tbody>,
+    tr: ({ children }) => <tr className="hover:bg-white/5 transition-colors">{children}</tr>,
+    th: ({ children }) => <th className={`px-3 py-1.5 text-left font-bold whitespace-nowrap ${theme.th}`}>{children}</th>,
+    td: ({ children }) => <td className="px-3 py-1.5 align-top text-zinc-300">{children}</td>,
+})
+
+// Pre-built themes matching the existing design system colors
+const SUMMARY_THEME = {
+    em: 'text-violet-300',
+    inlineCode: 'bg-violet-500/20 text-violet-300 border border-violet-500/20',
+    h2: 'text-white',
+    h3: 'text-violet-300',
+    h4: 'text-fuchsia-300',
+    blockquote: 'border-violet-500/50',
+    hr: 'border-violet-500',
+    link: 'text-violet-400',
+    tableHead: 'border-violet-500/30',
+    th: 'text-violet-300',
+}
+
+const CHAT_THEME = {
+    em: 'text-emerald-300',
+    inlineCode: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/20',
+    h2: 'text-white',
+    h3: 'text-emerald-300',
+    h4: 'text-cyan-300',
+    blockquote: 'border-emerald-500/50',
+    hr: 'border-emerald-500',
+    link: 'text-emerald-400',
+    tableHead: 'border-emerald-500/30',
+    th: 'text-emerald-300',
+}
+
+// Memoized component instances (avoids recreating objects on every render)
+const summaryComponents = makeMarkdownComponents(SUMMARY_THEME)
+const chatComponents = makeMarkdownComponents(CHAT_THEME)
+
+const REMARK_PLUGINS = [remarkGfm, remarkBreaks]
+const REHYPE_PLUGINS = [rehypeHighlight]
 
 const parseTimestampToSeconds = (timestamp) => {
     const parts = timestamp.split(':').map((value) => Number(value))
@@ -168,6 +291,26 @@ const AIFeatures = React.memo(({
         }
     }, [chatMessages.length, chatEndRef]);
 
+    // Keep input focused: refocus after AI finishes answering (isPending: true → false)
+    const chatInputRef = useRef(null);
+    const prevIsPending = useRef(false);
+    useEffect(() => {
+        const justFinished = prevIsPending.current && !askQuestionMutation.isPending;
+        if (justFinished) {
+            chatInputRef.current?.focus();
+        }
+        prevIsPending.current = askQuestionMutation.isPending;
+    }, [askQuestionMutation.isPending]);
+
+    // Focus input as soon as the chat panel opens
+    useEffect(() => {
+        if (showAIChat) {
+            // Small delay to let the open animation start before focusing
+            const t = setTimeout(() => chatInputRef.current?.focus(), 120);
+            return () => clearTimeout(t);
+        }
+    }, [showAIChat]);
+
     if (!video.transcript) return null;
 
     return (
@@ -309,25 +452,14 @@ const AIFeatures = React.memo(({
                                     className="overflow-hidden"
                                 >
                                     <div className="mt-3 pt-3 border-t border-violet-500/20">
-                                        <div className="text-zinc-300 text-sm leading-relaxed max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-violet-500/30 prose prose-invert prose-sm max-w-none
-                  [&_h1]:text-white [&_h1]:font-black [&_h1]:text-2xl [&_h1]:mb-4 [&_h1]:mt-6
-                  [&_h2]:text-white [&_h2]:font-bold [&_h2]:text-xl [&_h2]:mb-3 [&_h2]:mt-5
-                  [&_h3]:text-violet-300 [&_h3]:font-bold [&_h3]:text-lg [&_h3]:mb-2 [&_h3]:mt-4
-                  [&_h4]:text-fuchsia-300 [&_h4]:font-semibold [&_h4]:text-base [&_h4]:mb-2 [&_h4]:mt-3
-                  [&_p]:text-zinc-300 [&_p]:mb-3 [&_p]:leading-relaxed
-                  [&_ul]:list-disc [&_ul]:list-inside [&_ul]:mb-3 [&_ul]:space-y-1
-                  [&_ol]:list-decimal [&_ol]:list-inside [&_ol]:mb-3 [&_ol]:space-y-1
-                  [&_li]:text-zinc-300 [&_li]:ml-2
-                  [&_strong]:text-white [&_strong]:font-bold
-                  [&_em]:text-violet-300 [&_em]:italic
-                  [&_code]:bg-violet-500/20 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-violet-300 [&_code]:text-xs
-                  [&_pre]:bg-zinc-900/80 [&_pre]:p-3 [&_pre]:rounded-lg [&_pre]:mb-3 [&_pre]:overflow-x-auto
-                  [&_blockquote]:border-l-4 [&_blockquote]:border-violet-500/50 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-zinc-400 [&_blockquote]:my-3
-                  [&_hr]:border-violet-500/30 [&_hr]:my-4
-                ">
-                                            <ReactMarkdown>
+                                        <div className="text-zinc-300 text-sm leading-relaxed max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-violet-500/30">
+                                            <ReactMarkdown
+                                                remarkPlugins={REMARK_PLUGINS}
+                                                rehypePlugins={REHYPE_PLUGINS}
+                                                components={summaryComponents}
+                                            >
                                                 {aiSummary.split('\n').filter((line, idx) =>
-                                                    !(idx === 0 && (line.includes('Video Summary:') || line.includes('**Video Summary:')))
+                                                    !(idx === 0 && (line.includes('Video Summary:') || line.includes('**Video Summary:**')))
                                                 ).join('\n')}
                                             </ReactMarkdown>
                                         </div>
@@ -379,65 +511,84 @@ const AIFeatures = React.memo(({
                             {showAIChat && (
                                 <motion.div
                                     initial={{ height: 0, opacity: 0 }}
-                                    animate={{ height: 'auto', opacity: 1 }}
+                                    animate={{ height: '400px', opacity: 1 }}
                                     exit={{ height: 0, opacity: 0 }}
+                                    transition={{ duration: 0.25, ease: 'easeInOut' }}
                                     className="overflow-hidden"
                                 >
-                                    <div className="mt-3 pt-3 border-t border-emerald-500/20">
-                                        {/* Chat Messages */}
-                                        {chatMessages.length > 0 && (
-                                            <div className="mb-3 space-y-2 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-emerald-500/30">
-                                                {chatMessages.map((msg, idx) => (
-                                                    <div
-                                                        key={idx}
-                                                        className={`p-3 rounded-lg ${msg.role === 'user'
-                                                            ? 'bg-emerald-500/10 border border-emerald-500/20 ml-8'
-                                                            : 'bg-zinc-900/50 border border-zinc-800 mr-8'
-                                                            }`}
-                                                    >
-                                                        <div className="flex items-center gap-2 mb-1">
-                                                            {msg.role === 'user' ? (
-                                                                <User className="w-3 h-3 text-emerald-400" />
-                                                            ) : (
-                                                                <Brain className="w-3 h-3 text-cyan-300" />
-                                                            )}
-                                                            <span className="text-xs font-bold text-zinc-400">
-                                                                {msg.role === 'user' ? 'You' : 'StreamWire AI'}
-                                                            </span>
-                                                        </div>
-                                                        <div className="text-sm text-zinc-300 leading-relaxed prose prose-invert prose-sm max-w-none
-                          [&_h1]:text-white [&_h1]:font-bold [&_h1]:text-base [&_h1]:mb-2
-                          [&_h2]:text-white [&_h2]:font-bold [&_h2]:text-sm [&_h2]:mb-1.5
-                          [&_h3]:text-emerald-300 [&_h3]:font-semibold [&_h3]:text-sm [&_h3]:mb-1
-                          [&_p]:text-zinc-300 [&_p]:mb-2
-                          [&_ul]:list-disc [&_ul]:list-inside [&_ul]:mb-2 [&_ul]:space-y-0.5
-                          [&_ol]:list-decimal [&_ol]:list-inside [&_ol]:mb-2 [&_ol]:space-y-0.5
-                          [&_li]:text-zinc-300 [&_li]:ml-2
-                          [&_strong]:text-white [&_strong]:font-bold
-                          [&_em]:text-emerald-300 [&_em]:italic
-                          [&_code]:bg-emerald-500/20 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-emerald-300 [&_code]:text-xs
-                          [&_blockquote]:border-l-2 [&_blockquote]:border-emerald-500/50 [&_blockquote]:pl-2 [&_blockquote]:italic [&_blockquote]:text-zinc-400
-                        ">
-                                                            <ReactMarkdown>{msg.content}</ReactMarkdown>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                                {askQuestionMutation.isPending && (
-                                                    <div className="p-3 rounded-lg bg-zinc-900/50 border border-zinc-800 mr-8">
-                                                        <div className="flex items-center gap-2">
-                                                            <LoadingDots size="xs" className="text-emerald-400" />
-                                                            <span className="text-sm text-zinc-400">Thinking...</span>
-                                                        </div>
-                                                    </div>
-                                                )}
-                                                {/* scroll anchor */}
-                                                <div ref={chatEndRef} />
-                                            </div>
-                                        )}
+                                    <div className="mt-3 pt-3 border-t border-emerald-500/20 flex flex-col h-[368px]">
 
-                                        {/* Question Input */}
-                                        <form onSubmit={handleAskQuestion} className="flex gap-2">
+                                        {/* Messages area — always rendered, scrollable, fills remaining space */}
+                                        <div className="flex-1 overflow-y-auto space-y-2 pr-1 scrollbar-thin scrollbar-thumb-emerald-500/30 mb-3">
+                                            {/* Welcome message — always the first message */}
+                                            <motion.div 
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: 0.3, duration: 0.3 }}
+                                                className="p-3 rounded-lg bg-zinc-900/50 border border-zinc-800 mr-8 shrink-0"
+                                            >
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <Brain className="w-3 h-3 text-cyan-300" />
+                                                    <span className="text-xs font-bold text-zinc-400">StreamWire AI</span>
+                                                </div>
+                                                <p className="text-sm text-zinc-300 leading-relaxed">
+                                                    Hey! 👋 I&apos;m <span className="font-semibold text-emerald-300">StreamWire AI</span>. I&apos;m ready to help you explore the video <span className="font-semibold text-white">&quot;{video.title}&quot;</span>. Ask me about key points and takeaways, specific topics, summaries and explanations, or any other questions you have.
+                                                </p>
+                                            </motion.div>
+
+                                            {/* Chat History */}
+                                            {chatMessages.map((msg, idx) => (
+                                                <div
+                                                    key={idx}
+                                                    className={`p-3 rounded-lg shrink-0 ${msg.role === 'user'
+                                                        ? 'bg-emerald-500/10 border border-emerald-500/20 ml-8'
+                                                        : 'bg-zinc-900/50 border border-zinc-800 mr-8'
+                                                        }`}
+                                                >
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        {msg.role === 'user' ? (
+                                                            <User className="w-3 h-3 text-emerald-400" />
+                                                        ) : (
+                                                            <Brain className="w-3 h-3 text-cyan-300" />
+                                                        )}
+                                                        <span className="text-xs font-bold text-zinc-400">
+                                                            {msg.role === 'user' ? 'You' : 'StreamWire AI'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="text-sm text-zinc-300 leading-relaxed">
+                                                        {msg.role === 'user' ? (
+                                                            // User messages: plain text, no markdown rendering
+                                                            <p>{msg.content}</p>
+                                                        ) : (
+                                                            // AI messages: full markdown with syntax highlighting
+                                                            <ReactMarkdown
+                                                                remarkPlugins={REMARK_PLUGINS}
+                                                                rehypePlugins={REHYPE_PLUGINS}
+                                                                components={chatComponents}
+                                                            >
+                                                                {msg.content}
+                                                            </ReactMarkdown>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            {/* Thinking indicator — shown inside the scrollable area */}
+                                            {askQuestionMutation.isPending && (
+                                                <div className="p-3 rounded-lg bg-zinc-900/50 border border-zinc-800 mr-8 shrink-0">
+                                                    <div className="flex items-center gap-2">
+                                                        <LoadingDots size="xs" className="text-emerald-400" />
+                                                        <span className="text-sm text-zinc-400">Thinking...</span>
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {/* scroll anchor */}
+                                            <div ref={chatEndRef} />
+                                        </div>
+
+                                        {/* Question Input — always pinned at the bottom */}
+                                        <form onSubmit={handleAskQuestion} className="flex gap-2 shrink-0">
                                             <input
+                                                ref={chatInputRef}
                                                 type="text"
                                                 value={aiQuestion}
                                                 onChange={(e) => setAIQuestion(e.target.value)}
@@ -457,12 +608,6 @@ const AIFeatures = React.memo(({
                                                 )}
                                             </button>
                                         </form>
-
-                                        {chatMessages.length === 0 && (
-                                            <p className="text-xs text-zinc-500 mt-2">
-                                                Ask questions about the video content and get answers based on the transcript.
-                                            </p>
-                                        )}
                                     </div>
                                 </motion.div>
                             )}

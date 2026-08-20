@@ -181,10 +181,10 @@ export const generateVideoMetadataFromUrl = async (cloudinaryUrl, videoId, optio
             const transcript = transcription || "";
             console.log(`[AI Worker] Transcript received (${transcript.length} chars). Generating tags...`);
 
-            // 5. Generate Tags with Llama (super fast on Groq!)
+            // 5. Generate Tags with Groq (super fast on Groq!)
             const tagsResponse = await retryWithBackoff(async () => {
                 return await getGroq().chat.completions.create({
-                    model: "llama-3.3-70b-versatile", // Fast & capable
+                    model: "openai/gpt-oss-120b", // Verified active 2026-08-15 — tools + json_mode + reasoning
                     messages: [
                         {
                             role: "system",
@@ -216,7 +216,7 @@ export const generateVideoMetadataFromUrl = async (cloudinaryUrl, videoId, optio
                 console.log(`[AI Worker] Generating AI description...`);
                 const descriptionResponse = await retryWithBackoff(async () => {
                     return await getGroq().chat.completions.create({
-                        model: "llama-3.3-70b-versatile",
+                        model: "openai/gpt-oss-120b",
                         messages: [
                             {
                                 role: "system",

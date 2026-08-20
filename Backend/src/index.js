@@ -3,12 +3,14 @@ import mongoose from "mongoose";
 import connectDB from "./db/connection.js";
 import { app } from "./app.js";
 import { initTrendCron } from "./cron/trendCron.js";
+import { initCloudinaryKeepAliveCron } from "./cron/cloudinaryKeepAlive.js";
 
 let server;
 
 connectDB(process.env.MONGODB_URL)
   .then(() => {
     initTrendCron();
+    initCloudinaryKeepAliveCron();
     console.log("Cron Jobs Initialized");
 
     server = app.listen(process.env.PORT || 8000, () => {
